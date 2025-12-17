@@ -1,4 +1,4 @@
-# 🛡️ DataCenter Hardware Security - Interactive Course
+# 🛡️ DataCenter Hardware Security - Interactive Course 
 
 > **Master datacenter hardware security through interactive learning, hands-on labs, and real-world scenarios**
 
