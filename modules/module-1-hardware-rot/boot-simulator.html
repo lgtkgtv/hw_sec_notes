@@ -1,0 +1,686 @@
+---
+layout: default
+title: "Interactive Boot Sequence Simulator"
+description: "Step through the complete secure boot process from power-on to OS handoff"
+module_id: "module-1-hardware-rot"
+permalink: /modules/module-1-hardware-rot/boot-simulator/
+---
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Boot Sequence Interactive Simulator - DataCenter Hardware Security</title>
+    <link rel="stylesheet" href="../../assets/css/main.css">
+    <link rel="stylesheet" href="../../assets/css/interactive.css">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-brand">
+                <a href="../../index.html">🔒 DataCenter Hardware Security</a>
+            </div>
+            <div class="nav-menu">
+                <a href="index.html" class="nav-link">Module 1</a>
+                <a href="../../games/" class="nav-link">Games</a>
+                <a href="../../reference/" class="nav-link">Reference</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="container">
+            <!-- Module Header -->
+            <div class="module-header">
+                <div class="breadcrumb">
+                    <a href="../../index.html">Home</a> →
+                    <a href="index.html">Module 1: Hardware Root of Trust</a> →
+                    <span>Boot Sequence Simulator</span>
+                </div>
+                <h1>🔐 Boot Sequence Interactive Simulator</h1>
+                <p class="module-description">
+                    Learn how secure boot works by stepping through each phase of the boot process.
+                    Understand hardware verification, measurements, and trust establishment.
+                </p>
+            </div>
+
+            <!-- Learning Objectives -->
+            <div class="learning-objectives">
+                <h2>🎯 Learning Objectives</h2>
+                <ul>
+                    <li>Understand the secure boot process from power-on to OS loading</li>
+                    <li>Learn how hardware root of trust is established</li>
+                    <li>Identify security decision points in the boot sequence</li>
+                    <li>Understand the difference between measured and verified boot</li>
+                </ul>
+            </div>
+
+            <!-- Interactive Boot Simulator -->
+            <div class="simulator-container">
+                <div class="boot-simulator">
+                    <div class="simulator-header">
+                        <h2>🖥️ Server Boot Simulation</h2>
+                        <div class="simulator-controls">
+                            <button id="reset-btn" onclick="resetSimulation()" class="btn btn-secondary">🔄 Reset</button>
+                            <button id="auto-play-btn" onclick="toggleAutoPlay()" class="btn btn-outline">▶️ Auto Play</button>
+                        </div>
+                    </div>
+
+                    <div class="boot-timeline">
+                        <div class="phase-indicator">
+                            <div class="phase-step active" data-phase="power-on">Power On</div>
+                            <div class="phase-step" data-phase="sec">SEC</div>
+                            <div class="phase-step" data-phase="pei">PEI</div>
+                            <div class="phase-step" data-phase="dxe">DXE</div>
+                            <div class="phase-step" data-phase="bds">BDS</div>
+                            <div class="phase-step" data-phase="os">OS Boot</div>
+                        </div>
+
+                        <div class="phase-content">
+                            <div class="phase active" data-phase="power-on">
+                                <h3>🔌 Power On Reset</h3>
+                                <div class="phase-details">
+                                    <div class="phase-description">
+                                        <p>System receives power and CPU begins execution from reset vector</p>
+                                        <div class="technical-details">
+                                            <strong>CPU Reset Vector:</strong> 0xFFFFFFF0<br>
+                                            <strong>First Action:</strong> Fetch instruction from SPI Flash ROM<br>
+                                            <strong>Security State:</strong> Hardware Root of Trust activation
+                                        </div>
+                                    </div>
+                                    <div class="phase-visual">
+                                        <div class="cpu-diagram">
+                                            <div class="cpu-core active">CPU Core</div>
+                                            <div class="reset-vector">Reset Vector: 0xFFFFFFF0</div>
+                                            <div class="spi-flash">SPI Flash ROM</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="phase-actions">
+                                    <button onclick="nextPhase('sec')" class="btn btn-primary">Load Microcode →</button>
+                                </div>
+                            </div>
+
+                            <div class="phase" data-phase="sec">
+                                <h3>🔐 SEC (Security) Phase</h3>
+                                <div class="phase-details">
+                                    <div class="phase-description">
+                                        <p>Security phase runs with CPU cache only - no RAM available yet</p>
+                                        <div class="technical-details">
+                                            <strong>Memory:</strong> CPU cache only (no RAM)<br>
+                                            <strong>Key Action:</strong> Verify CPU microcode signature<br>
+                                            <strong>Security Control:</strong> Hardware-based verification
+                                        </div>
+                                    </div>
+                                    <div class="security-checkpoint">
+                                        <h4>🔍 Security Checkpoint</h4>
+                                        <p>CPU verifies microcode signature using fused keys</p>
+                                        <div class="verification-process">
+                                            <div class="step">✓ Load CPU fused public key</div>
+                                            <div class="step">✓ Extract microcode signature</div>
+                                            <div class="step">✓ Verify signature matches</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="phase-actions">
+                                    <button onclick="nextPhase('pei')" class="btn btn-primary">Continue to PEI →</button>
+                                </div>
+                            </div>
+
+                            <div class="phase" data-phase="pei">
+                                <h3>🧠 PEI (Pre-EFI Initialization)</h3>
+                                <div class="phase-details">
+                                    <div class="phase-description">
+                                        <p>RAM initialization and TPM activation occurs in this phase</p>
+                                        <div class="technical-details">
+                                            <strong>Memory:</strong> RAM now available<br>
+                                            <strong>Key Action:</strong> Initialize TPM and platform components<br>
+                                            <strong>Security Control:</strong> Begin measuring boot process
+                                        </div>
+                                    </div>
+                                    <div class="interactive-choice">
+                                        <h4>🎯 Security Decision Point</h4>
+                                        <p>Boot Guard detects potentially modified firmware. What should happen?</p>
+                                        <div class="choice-buttons">
+                                            <button onclick="handleBootGuardChoice('halt')" class="choice-btn">🛑 System Halts</button>
+                                            <button onclick="handleBootGuardChoice('continue')" class="choice-btn">🔄 Continues Anyway</button>
+                                            <button onclick="handleBootGuardChoice('measured')" class="choice-btn">📝 Logs Only</button>
+                                        </div>
+                                        <div id="choice-feedback" class="choice-feedback"></div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="phase" data-phase="dxe">
+                                <h3>🔧 DXE (Driver Execution Environment)</h3>
+                                <div class="phase-details">
+                                    <div class="phase-description">
+                                        <p>Load and execute device drivers and UEFI services</p>
+                                        <div class="technical-details">
+                                            <strong>Memory:</strong> Full memory services available<br>
+                                            <strong>Key Action:</strong> Load verified device drivers<br>
+                                            <strong>Security Control:</strong> Signature verification of drivers
+                                        </div>
+                                    </div>
+                                    <div class="driver-loading">
+                                        <h4>📦 Driver Loading Process</h4>
+                                        <div class="driver-list">
+                                            <div class="driver-item">
+                                                <span class="driver-name">Storage Controller</span>
+                                                <span class="verification-status verified">✓ Verified</span>
+                                            </div>
+                                            <div class="driver-item">
+                                                <span class="driver-name">Network Controller</span>
+                                                <span class="verification-status verified">✓ Verified</span>
+                                            </div>
+                                            <div class="driver-item">
+                                                <span class="driver-name">Graphics Controller</span>
+                                                <span class="verification-status verified">✓ Verified</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="phase-actions">
+                                    <button onclick="nextPhase('bds')" class="btn btn-primary">Continue to BDS →</button>
+                                </div>
+                            </div>
+
+                            <div class="phase" data-phase="bds">
+                                <h3>🥾 BDS (Boot Device Selection)</h3>
+                                <div class="phase-details">
+                                    <div class="phase-description">
+                                        <p>Select and verify the boot device and OS loader</p>
+                                        <div class="technical-details">
+                                            <strong>Memory:</strong> Runtime services active<br>
+                                            <strong>Key Action:</strong> Locate and verify OS bootloader<br>
+                                            <strong>Security Control:</strong> UEFI Secure Boot verification
+                                        </div>
+                                    </div>
+                                    <div class="secure-boot-check">
+                                        <h4>🔐 UEFI Secure Boot Verification</h4>
+                                        <div class="verification-steps">
+                                            <div class="step completed">✓ Locate OS bootloader</div>
+                                            <div class="step completed">✓ Check signature against db</div>
+                                            <div class="step completed">✓ Verify not in dbx (revocation list)</div>
+                                            <div class="step completed">✓ Signature validation passed</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="phase-actions">
+                                    <button onclick="nextPhase('os')" class="btn btn-primary">Boot Operating System →</button>
+                                </div>
+                            </div>
+
+                            <div class="phase" data-phase="os">
+                                <h3>🖥️ Operating System Boot</h3>
+                                <div class="phase-details">
+                                    <div class="phase-description">
+                                        <p>Transfer control to the verified operating system</p>
+                                        <div class="technical-details">
+                                            <strong>Control:</strong> Transferred to OS bootloader<br>
+                                            <strong>Security State:</strong> Hardware Root of Trust established<br>
+                                            <strong>Measurements:</strong> Recorded in TPM PCRs
+                                        </div>
+                                    </div>
+                                    <div class="boot-success">
+                                        <h4>🎉 Secure Boot Completed Successfully!</h4>
+                                        <div class="boot-summary">
+                                            <div class="summary-item">
+                                                <strong>Trust Chain:</strong> Hardware → Firmware → OS
+                                            </div>
+                                            <div class="summary-item">
+                                                <strong>Verification:</strong> All signatures validated
+                                            </div>
+                                            <div class="summary-item">
+                                                <strong>Measurements:</strong> Recorded in TPM PCRs
+                                            </div>
+                                            <div class="summary-item">
+                                                <strong>Result:</strong> Trusted execution environment
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="phase-actions">
+                                    <button onclick="resetSimulation()" class="btn btn-secondary">🔄 Run Again</button>
+                                    <a href="../module-2-gpu-security/index.html" class="btn btn-primary">Next Module →</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Key Concepts Summary -->
+            <div class="concepts-summary">
+                <h2>🎓 Key Concepts Learned</h2>
+                <div class="concepts-grid">
+                    <div class="concept-card">
+                        <h3>Hardware Root of Trust</h3>
+                        <p>Immutable foundation for all security decisions, established through CPU fused keys and hardware verification</p>
+                    </div>
+                    <div class="concept-card">
+                        <h3>Measured Boot</h3>
+                        <p>Records what happens during boot in TPM PCRs for later verification and attestation</p>
+                    </div>
+                    <div class="concept-card">
+                        <h3>Verified Boot</h3>
+                        <p>Actively prevents execution of unauthorized code through signature verification</p>
+                    </div>
+                    <div class="concept-card">
+                        <h3>Trust Chain</h3>
+                        <p>Each component verifies the next before transferring control, building transitive trust</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Navigation -->
+            <div class="module-navigation">
+                <a href="index.html" class="nav-btn nav-back">← Back to Module 1</a>
+                <a href="tpm-demo.html" class="nav-btn nav-next">Next: TPM Demo →</a>
+            </div>
+        </div>
+    </main>
+
+    <script src="../../assets/js/main.js"></script>
+    <script>
+        let currentPhase = 'power-on';
+        let autoPlayMode = false;
+        let autoPlayInterval = null;
+
+        function nextPhase(phase) {
+            // Hide current phase
+            document.querySelector(`[data-phase="${currentPhase}"]`).classList.remove('active');
+
+            // Show next phase
+            currentPhase = phase;
+            document.querySelector(`[data-phase="${currentPhase}"]`).classList.add('active');
+
+            // Update phase indicator
+            updatePhaseIndicator();
+
+            // Track progress
+            trackProgress('boot-simulator', phase);
+        }
+
+        function handleBootGuardChoice(choice) {
+            const feedback = document.getElementById('choice-feedback');
+            let message = '';
+            let className = '';
+
+            switch(choice) {
+                case 'halt':
+                    message = '✅ Correct! In Verified Boot mode, Boot Guard halts the system on verification failure to prevent compromised firmware execution.';
+                    className = 'correct';
+                    setTimeout(() => nextPhase('dxe'), 2000);
+                    break;
+                case 'measured':
+                    message = '⚠️ Partially correct! This happens in Measured Boot mode only. Measured boot records but doesn\'t prevent execution.';
+                    className = 'partial';
+                    break;
+                case 'continue':
+                    message = '❌ Incorrect! Modern systems with Boot Guard will not continue with unsigned firmware in verified boot mode.';
+                    className = 'incorrect';
+                    break;
+            }
+
+            feedback.innerHTML = `<div class="feedback ${className}">${message}</div>`;
+            feedback.style.display = 'block';
+        }
+
+        function updatePhaseIndicator() {
+            // Remove active from all steps
+            document.querySelectorAll('.phase-step').forEach(step => {
+                step.classList.remove('active');
+            });
+
+            // Add active to current step
+            document.querySelector(`[data-phase="${currentPhase}"]`).classList.add('active');
+        }
+
+        function resetSimulation() {
+            currentPhase = 'power-on';
+
+            // Hide all phases
+            document.querySelectorAll('.phase').forEach(phase => {
+                phase.classList.remove('active');
+            });
+
+            // Show first phase
+            document.querySelector('[data-phase="power-on"]').classList.add('active');
+
+            // Reset phase indicator
+            updatePhaseIndicator();
+
+            // Clear any feedback
+            const feedback = document.getElementById('choice-feedback');
+            if (feedback) {
+                feedback.style.display = 'none';
+            }
+
+            // Stop auto play
+            if (autoPlayInterval) {
+                clearInterval(autoPlayInterval);
+                autoPlayMode = false;
+                document.getElementById('auto-play-btn').innerHTML = '▶️ Auto Play';
+            }
+        }
+
+        function toggleAutoPlay() {
+            const button = document.getElementById('auto-play-btn');
+
+            if (!autoPlayMode) {
+                autoPlayMode = true;
+                button.innerHTML = '⏸️ Pause';
+
+                const phases = ['power-on', 'sec', 'pei', 'dxe', 'bds', 'os'];
+                let currentIndex = phases.indexOf(currentPhase);
+
+                autoPlayInterval = setInterval(() => {
+                    currentIndex++;
+                    if (currentIndex < phases.length) {
+                        nextPhase(phases[currentIndex]);
+                    } else {
+                        clearInterval(autoPlayInterval);
+                        autoPlayMode = false;
+                        button.innerHTML = '▶️ Auto Play';
+                    }
+                }, 3000);
+            } else {
+                autoPlayMode = false;
+                button.innerHTML = '▶️ Auto Play';
+                clearInterval(autoPlayInterval);
+            }
+        }
+
+        function trackProgress(component, phase) {
+            // Track learning progress in localStorage
+            let progress = JSON.parse(localStorage.getItem('courseProgress') || '{}');
+            if (!progress.module1) progress.module1 = {};
+            if (!progress.module1[component]) progress.module1[component] = [];
+
+            if (!progress.module1[component].includes(phase)) {
+                progress.module1[component].push(phase);
+                localStorage.setItem('courseProgress', JSON.stringify(progress));
+            }
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            resetSimulation();
+        });
+    </script>
+
+    <style>
+        .boot-simulator {
+            background: linear-gradient(135deg, #1a1a2e, #16213e);
+            border-radius: 12px;
+            padding: 30px;
+            margin: 30px 0;
+            color: #ffffff;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+
+        .simulator-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #333;
+        }
+
+        .simulator-controls {
+            display: flex;
+            gap: 10px;
+        }
+
+        .phase-indicator {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 30px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 25px;
+            padding: 5px;
+        }
+
+        .phase-step {
+            flex: 1;
+            text-align: center;
+            padding: 10px 15px;
+            border-radius: 20px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .phase-step.active {
+            background: linear-gradient(45deg, #00ff87, #60efff);
+            color: #1a1a2e;
+        }
+
+        .phase {
+            display: none;
+            background: rgba(255,255,255,0.05);
+            border-radius: 10px;
+            padding: 25px;
+            margin: 20px 0;
+        }
+
+        .phase.active {
+            display: block;
+            animation: fadeInUp 0.5s ease;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .phase-details {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 30px;
+            margin: 20px 0;
+        }
+
+        .technical-details {
+            background: rgba(0,255,135,0.1);
+            border-left: 4px solid #00ff87;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 5px;
+            font-family: 'Courier New', monospace;
+        }
+
+        .cpu-diagram {
+            text-align: center;
+            padding: 20px;
+        }
+
+        .cpu-core {
+            background: #00ff87;
+            color: #1a1a2e;
+            padding: 15px;
+            border-radius: 10px;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+
+        .security-checkpoint {
+            background: rgba(255,193,7,0.1);
+            border: 2px solid #ffc107;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+
+        .verification-process .step {
+            padding: 8px 0;
+            color: #00ff87;
+        }
+
+        .interactive-choice {
+            background: rgba(255,255,255,0.08);
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+
+        .choice-buttons {
+            display: flex;
+            gap: 15px;
+            margin: 15px 0;
+            flex-wrap: wrap;
+        }
+
+        .choice-btn {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .choice-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102,126,234,0.4);
+        }
+
+        .choice-feedback {
+            margin-top: 15px;
+            display: none;
+        }
+
+        .feedback {
+            padding: 15px;
+            border-radius: 8px;
+            font-weight: 500;
+        }
+
+        .feedback.correct {
+            background: rgba(40,167,69,0.2);
+            border: 1px solid #28a745;
+            color: #00ff87;
+        }
+
+        .feedback.partial {
+            background: rgba(255,193,7,0.2);
+            border: 1px solid #ffc107;
+            color: #ffc107;
+        }
+
+        .feedback.incorrect {
+            background: rgba(220,53,69,0.2);
+            border: 1px solid #dc3545;
+            color: #ff6b6b;
+        }
+
+        .driver-loading {
+            background: rgba(255,255,255,0.05);
+            border-radius: 8px;
+            padding: 20px;
+            margin: 15px 0;
+        }
+
+        .driver-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            margin: 5px 0;
+            background: rgba(255,255,255,0.05);
+            border-radius: 5px;
+        }
+
+        .verification-status.verified {
+            color: #00ff87;
+            font-weight: bold;
+        }
+
+        .secure-boot-check {
+            background: rgba(0,255,135,0.1);
+            border-radius: 8px;
+            padding: 20px;
+            margin: 15px 0;
+        }
+
+        .verification-steps .step {
+            padding: 8px 0;
+            color: #00ff87;
+        }
+
+        .boot-success {
+            background: linear-gradient(45deg, rgba(40,167,69,0.2), rgba(0,255,135,0.2));
+            border: 2px solid #00ff87;
+            border-radius: 10px;
+            padding: 25px;
+            margin: 20px 0;
+            text-align: center;
+        }
+
+        .boot-summary {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .summary-item {
+            background: rgba(255,255,255,0.1);
+            padding: 15px;
+            border-radius: 8px;
+        }
+
+        .concepts-summary {
+            margin: 50px 0;
+        }
+
+        .concepts-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+            margin-top: 25px;
+        }
+
+        .concept-card {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 8px 25px rgba(102,126,234,0.3);
+        }
+
+        .concept-card h3 {
+            margin-bottom: 15px;
+            color: #ffffff;
+        }
+
+        @media (max-width: 768px) {
+            .phase-details {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+
+            .choice-buttons {
+                flex-direction: column;
+            }
+
+            .boot-summary {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</body>
+</html>

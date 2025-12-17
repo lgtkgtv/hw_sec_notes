@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GPU Memory Protection Demo - DataCenter Hardware Security</title>
+    <link rel="stylesheet" href="../../assets/css/main.css">
+    <link rel="stylesheet" href="../../assets/css/interactive.css">
+    <style>
+        .gpu-memory-demo {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            border-radius: 15px;
+            padding: 30px;
+            color: white;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.2);
+        }
+
+        .memory-regions {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+            margin: 30px 0;
+            padding: 20px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 10px;
+            backdrop-filter: blur(10px);
+        }
+
+        .memory-region {
+            background: linear-gradient(45deg, #667eea 0%, #764ba2 100%);
+            border: 2px solid transparent;
+            border-radius: 8px;
+            padding: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+            min-height: 80px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .memory-region:hover {
+            transform: translateY(-5px);
+            border-color: #4CAF50;
+            box-shadow: 0 8px 25px rgba(76, 175, 80, 0.3);
+        }
+
+        .memory-region.secure {
+            background: linear-gradient(45deg, #4CAF50 0%, #2E7D32 100%);
+            border-color: #66BB6A;
+        }
+
+        .memory-region.vulnerable {
+            background: linear-gradient(45deg, #f44336 0%, #c62828 100%);
+            border-color: #ef5350;
+        }
+
+        .memory-region.encrypted {
+            background: linear-gradient(45deg, #FF9800 0%, #E65100 100%);
+            border-color: #FFB74D;
+        }
+
+        .memory-region h4 {
+            margin: 0 0 8px 0;
+            font-size: 0.9em;
+            font-weight: bold;
+        }
+
+        .memory-region .protection-level {
+            font-size: 0.8em;
+            opacity: 0.9;
+        }
+
+        .region-details {
+            background: rgba(255,255,255,0.95);
+            color: #333;
+            padding: 25px;
+            border-radius: 10px;
+            margin-top: 20px;
+            border-left: 5px solid #4CAF50;
+        }
+
+        .threat-model {
+            background: rgba(244, 67, 54, 0.1);
+            border: 1px solid rgba(244, 67, 54, 0.3);
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 15px;
+        }
+
+        .threat-model strong {
+            color: #d32f2f;
+        }
+
+        .demo-controls {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .demo-btn {
+            background: linear-gradient(45deg, #4CAF50 0%, #2E7D32 100%);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(76, 175, 80, 0.3);
+        }
+
+        .demo-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(76, 175, 80, 0.4);
+        }
+
+        .demo-btn.attack {
+            background: linear-gradient(45deg, #f44336 0%, #c62828 100%);
+            box-shadow: 0 4px 15px rgba(244, 67, 54, 0.3);
+        }
+
+        .demo-btn.attack:hover {
+            box-shadow: 0 6px 20px rgba(244, 67, 54, 0.4);
+        }
+
+        .status-display {
+            background: rgba(0,0,0,0.3);
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 15px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+        }
+
+        .navigation {
+            margin-bottom: 20px;
+        }
+
+        .nav-link {
+            color: rgba(255,255,255,0.8);
+            text-decoration: none;
+            margin-right: 15px;
+        }
+
+        .nav-link:hover {
+            color: white;
+            text-decoration: underline;
+        }
+
+        @media (max-width: 768px) {
+            .memory-regions {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .demo-controls {
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navigation">
+        <a href="../../index.html" class="nav-link">← Back to Course</a>
+        <a href="index.html" class="nav-link">Module 2: GPU Security</a>
+        <a href="../module-3-cloud-security/bmc-assessment.html" class="nav-link">Next: BMC Assessment →</a>
+    </nav>
+
+    <!-- GPU Memory Protection Interactive Demo -->
+    <div class="gpu-memory-demo">
+        <h2>🎮 GPU Memory Protection Interactive Demo</h2>
+        <p>Explore different GPU memory regions and their security characteristics. Click on memory regions to learn about protection mechanisms.</p>
+
+        <div class="demo-controls">
+            <button class="demo-btn" onclick="resetDemo()">🔄 Reset Demo</button>
+            <button class="demo-btn" onclick="enableProtection()">🛡️ Enable Protection</button>
+            <button class="demo-btn attack" onclick="simulateAttack()">⚠️ Simulate DMA Attack</button>
+            <button class="demo-btn" onclick="showThreatModel()">🕵️ View Threat Model</button>
+        </div>
+
+        <div class="memory-regions">
+            <div class="memory-region" data-region="framebuffer" onclick="showRegionDetails('framebuffer')">
+                <h4>Frame Buffer</h4>
+                <p class="protection-level">Unprotected</p>
+            </div>
+
+            <div class="memory-region secure" data-region="secure-enclave" onclick="showRegionDetails('secure-enclave')">
+                <h4>Secure Enclave</h4>
+                <p class="protection-level">Hardware Protected</p>
+            </div>
+
+            <div class="memory-region" data-region="kernel-space" onclick="showRegionDetails('kernel-space')">
+                <h4>Kernel Space</h4>
+                <p class="protection-level">Software Protected</p>
+            </div>
+
+            <div class="memory-region encrypted" data-region="confidential-compute" onclick="showRegionDetails('confidential-compute')">
+                <h4>Confidential Compute</h4>
+                <p class="protection-level">Memory Encrypted</p>
+            </div>
+        </div>
+
+        <div id="region-details" class="region-details" style="display: none;">
+            <h3>Memory Region Details</h3>
+            <p>Click on a memory region above to see detailed security information.</p>
+        </div>
+
+        <div id="status-display" class="status-display">
+            <strong>System Status:</strong> GPU memory regions initialized. Click buttons above to interact with the demo.
+        </div>
+
+        <div class="learning-objectives" style="margin-top: 30px; background: rgba(255,255,255,0.1); padding: 20px; border-radius: 10px;">
+            <h3>🎯 Learning Objectives</h3>
+            <ul>
+                <li>Understand different GPU memory protection mechanisms</li>
+                <li>Learn about DMA attack vectors and mitigation strategies</li>
+                <li>Explore confidential computing implementations on modern GPUs</li>
+                <li>Compare software vs hardware-based protection approaches</li>
+            </ul>
+        </div>
+    </div>
+
+<script>
+function resetDemo() {
+    // Reset all memory regions to default state
+    const regions = document.querySelectorAll('.memory-region');
+    regions.forEach(region => {
+        region.classList.remove('vulnerable', 'secure', 'encrypted');
+        if (region.dataset.region === 'secure-enclave') {
+            region.classList.add('secure');
+        } else if (region.dataset.region === 'confidential-compute') {
+            region.classList.add('encrypted');
+        }
+    });
+
+    document.getElementById('status-display').innerHTML =
+        '<strong>System Status:</strong> GPU memory regions reset to default configuration.';
+    document.getElementById('region-details').style.display = 'none';
+}
+
+function enableProtection() {
+    const regions = document.querySelectorAll('.memory-region');
+    regions.forEach(region => {
+        region.classList.remove('vulnerable');
+        region.classList.add('secure');
+        const protectionLevel = region.querySelector('.protection-level');
+        protectionLevel.textContent = 'Hardware Protected';
+    });
+
+    document.getElementById('status-display').innerHTML =
+        '<strong>System Status:</strong> ✅ All memory regions now have hardware-level protection enabled. IOMMU and memory encryption active.';
+}
+
+function simulateAttack() {
+    const regions = document.querySelectorAll('.memory-region');
+    regions.forEach(region => {
+        if (!region.classList.contains('secure') && !region.classList.contains('encrypted')) {
+            region.classList.add('vulnerable');
+            const protectionLevel = region.querySelector('.protection-level');
+            protectionLevel.textContent = 'Compromised!';
+        }
+    });
+
+    document.getElementById('status-display').innerHTML =
+        '<strong>System Status:</strong> ⚠️ DMA attack detected! Unprotected memory regions compromised. Secure regions remained protected.';
+}
+
+function showThreatModel() {
+    document.getElementById('region-details').style.display = 'block';
+    document.getElementById('region-details').innerHTML = `
+        <h3>🕵️ GPU Security Threat Model</h3>
+        <div class="threat-model">
+            <strong>Primary Attack Vectors:</strong>
+            <ul>
+                <li><strong>DMA Attacks:</strong> Direct Memory Access bypassing CPU security controls</li>
+                <li><strong>Side-Channel Attacks:</strong> Timing analysis and power consumption monitoring</li>
+                <li><strong>Memory Scraping:</strong> Reading sensitive data from unprotected GPU memory</li>
+                <li><strong>Privilege Escalation:</strong> Exploiting GPU drivers for system access</li>
+            </ul>
+            <strong>Mitigation Strategies:</strong>
+            <ul>
+                <li><strong>IOMMU:</strong> Hardware-level memory access control and isolation</li>
+                <li><strong>Memory Encryption:</strong> Real-time encryption/decryption of sensitive data</li>
+                <li><strong>Secure Enclaves:</strong> Hardware-protected execution environments</li>
+                <li><strong>Driver Hardening:</strong> Secure coding practices and regular updates</li>
+            </ul>
+        </div>
+    `;
+}
+
+function showRegionDetails(region) {
+    const details = {
+        'framebuffer': `
+            <h3>📺 Frame Buffer Memory</h3>
+            <p><strong>Purpose:</strong> Stores visual output data for display rendering</p>
+            <p><strong>Security Risk:</strong> Highly vulnerable to DMA attacks and memory scraping</p>
+            <ul>
+                <li>Direct hardware access without CPU involvement</li>
+                <li>Often unencrypted for performance reasons</li>
+                <li>Can leak sensitive visual information</li>
+            </ul>
+            <div class="threat-model">
+                <strong>Attack Vectors:</strong> Screen scraping, visual data theft, DMA-based exploits
+            </div>
+        `,
+        'secure-enclave': `
+            <h3>🛡️ Secure Enclave</h3>
+            <p><strong>Purpose:</strong> Hardware-protected execution environment for sensitive computations</p>
+            <p><strong>Security Features:</strong> Strongest protection available on modern GPUs</p>
+            <ul>
+                <li>Hardware-enforced memory isolation</li>
+                <li>Cryptographic attestation support</li>
+                <li>Tamper-resistant execution environment</li>
+                <li>Protected against privileged software attacks</li>
+            </ul>
+            <div class="threat-model" style="background: rgba(76, 175, 80, 0.1); border-color: rgba(76, 175, 80, 0.3);">
+                <strong style="color: #2E7D32;">Protection Level:</strong> Maximum - Hardware-enforced isolation
+            </div>
+        `,
+        'kernel-space': `
+            <h3>⚙️ Kernel Space Memory</h3>
+            <p><strong>Purpose:</strong> GPU driver and kernel-level operations</p>
+            <p><strong>Security Characteristics:</strong> Software-based protection with moderate security</p>
+            <ul>
+                <li>Protected by operating system controls</li>
+                <li>Vulnerable to privilege escalation attacks</li>
+                <li>Driver security depends on implementation quality</li>
+                <li>Access controls enforced by GPU scheduler</li>
+            </ul>
+            <div class="threat-model">
+                <strong>Attack Vectors:</strong> Driver exploits, privilege escalation, kernel-level malware
+            </div>
+        `,
+        'confidential-compute': `
+            <h3>🔐 Confidential Computing Memory</h3>
+            <p><strong>Purpose:</strong> Encrypted execution environment for sensitive workloads</p>
+            <p><strong>Security Features:</strong> Advanced memory encryption and attestation</p>
+            <ul>
+                <li>Real-time memory encryption/decryption</li>
+                <li>Remote attestation capabilities</li>
+                <li>Protected against physical memory attacks</li>
+                <li>Support for secure multi-party computation</li>
+            </ul>
+            <div class="threat-model" style="background: rgba(255, 152, 0, 0.1); border-color: rgba(255, 152, 0, 0.3);">
+                <strong style="color: #E65100;">Protection Level:</strong> High - Memory encryption with hardware support
+            </div>
+        `
+    };
+
+    document.getElementById('region-details').style.display = 'block';
+    document.getElementById('region-details').innerHTML = details[region];
+}
+
+// Initialize demo on page load
+document.addEventListener('DOMContentLoaded', function() {
+    resetDemo();
+});
+</script>
+
+</body>
+</html>

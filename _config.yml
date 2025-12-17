@@ -1,0 +1,118 @@
+# DataCenter Hardware Security - Interactive Course
+# Jekyll Configuration for GitHub Pages
+
+# Site settings
+title: "DataCenter Hardware Security - Interactive Course"
+description: "Master datacenter hardware security through interactive learning, hands-on labs, and real-world scenarios. Comprehensive coverage of TPM, HSM, secure boot, and confidential computing."
+
+# GitHub Pages settings (update with your new repository name)
+url: "https://lgtkgtv.github.io"
+baseurl: "/hw_sec_notes"  # Update this to match your new repository name
+
+# Author information
+author:
+  name: "Sachin Godse"
+  email: "lgtkgtv+sachin-godse@gmail.com"
+  bio: "Interactive course for datacenter hardware security professionals"
+
+# Build settings
+markdown: kramdown
+highlighter: rouge
+permalink: /:title/
+
+# Plugins (GitHub Pages compatible only)
+plugins:
+  - jekyll-feed
+  - jekyll-sitemap
+  - jekyll-seo-tag
+
+# Theme
+remote_theme: minima
+
+# Exclude from processing
+exclude:
+  - Gemfile
+  - Gemfile.lock
+  - node_modules
+  - vendor
+  - .bundle
+  - .sass-cache
+  - .jekyll-cache
+  - .jekyll-metadata
+  - .git
+  - .github
+  - DEPLOYMENT.md
+
+# Include in processing
+include:
+  - modules
+  - assets
+
+# Collections for course content
+collections:
+  modules:
+    output: true
+    permalink: /:collection/:name/
+
+# Defaults
+defaults:
+  - scope:
+      path: ""
+      type: "modules"
+    values:
+      layout: "default"
+  - scope:
+      path: ""
+    values:
+      layout: "default"
+
+# Course metadata
+course:
+  version: "1.0.0"
+  modules:
+    - id: 0
+      name: "Cryptography Fundamentals"
+      path: "modules/module-0-crypto"
+      difficulty: "Foundation"
+      duration: "8-12 hours"
+    - id: 1
+      name: "Hardware Root of Trust"
+      path: "modules/module-1-hardware-rot"
+      difficulty: "Intermediate"
+      duration: "8-12 hours"
+    - id: 2
+      name: "GPU & Accelerator Security"
+      path: "modules/module-2-gpu-security"
+      difficulty: "Advanced"
+      duration: "6-10 hours"
+      status: "coming-soon"
+    - id: 3
+      name: "Cloud Infrastructure Security"
+      path: "modules/module-3-cloud-security"
+      difficulty: "Advanced"
+      duration: "8-12 hours"
+      status: "coming-soon"
+
+# SEO and social media
+seo:
+  type: "Course"
+  name: "DataCenter Hardware Security Interactive Course"
+  description: "Learn datacenter hardware security through hands-on interactive demos, real-world scenarios, and comprehensive coverage of TPM, HSM, secure boot technologies."
+
+# Security settings
+security:
+  content_policy: "educational"
+  compliance:
+    - "Educational use only"
+    - "Defensive security focus"
+    - "No malicious code"
+
+# Site features
+features:
+  interactive_demos: true
+  progress_tracking: true
+  mobile_responsive: true
+  accessibility_compliant: true
+
+# GitHub repository (update with your new repository)
+repository: "lgtkgtv/hw_sec_notes"

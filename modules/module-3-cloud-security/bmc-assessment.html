@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BMC Security Assessment Tool - DataCenter Hardware Security</title>
+    <link rel="stylesheet" href="../../assets/css/main.css">
+    <link rel="stylesheet" href="../../assets/css/interactive.css">
+    <style>
+        .bmc-security-tool {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: linear-gradient(135deg, #2c3e50 0%, #3498db 100%);
+            border-radius: 15px;
+            padding: 30px;
+            color: white;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.2);
+        }
+
+        .security-category {
+            background: rgba(255,255,255,0.1);
+            margin: 20px 0;
+            padding: 25px;
+            border-radius: 10px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+
+        .security-category h4 {
+            margin: 0 0 20px 0;
+            color: #ecf0f1;
+            font-size: 1.2em;
+            border-bottom: 2px solid rgba(255,255,255,0.3);
+            padding-bottom: 10px;
+        }
+
+        .security-category label {
+            display: block;
+            margin: 12px 0;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            padding: 10px;
+            border-radius: 5px;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid transparent;
+        }
+
+        .security-category label:hover {
+            background: rgba(255,255,255,0.1);
+            border-color: rgba(52, 152, 219, 0.5);
+            transform: translateX(5px);
+        }
+
+        .security-category input[type="checkbox"] {
+            margin-right: 12px;
+            transform: scale(1.2);
+            cursor: pointer;
+        }
+
+        .assess-btn {
+            background: linear-gradient(45deg, #27ae60 0%, #2ecc71 100%);
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            border-radius: 30px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 1.1em;
+            transition: all 0.3s ease;
+            box-shadow: 0 6px 20px rgba(39, 174, 96, 0.3);
+            margin: 30px 0 20px 0;
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .assess-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(39, 174, 96, 0.4);
+        }
+
+        .assessment-result {
+            background: rgba(255,255,255,0.95);
+            color: #2c3e50;
+            padding: 30px;
+            border-radius: 15px;
+            margin-top: 25px;
+            border-left: 6px solid #3498db;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+
+        .assessment-score h4 {
+            margin: 0 0 15px 0;
+            font-size: 1.5em;
+            color: #2c3e50;
+        }
+
+        .risk-level {
+            font-size: 1.2em;
+            font-weight: bold;
+            margin: 15px 0;
+            padding: 10px;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .risk-level.low {
+            background: rgba(46, 204, 113, 0.2);
+            color: #27ae60;
+            border: 2px solid #2ecc71;
+        }
+
+        .risk-level.medium {
+            background: rgba(241, 196, 15, 0.2);
+            color: #f39c12;
+            border: 2px solid #f1c40f;
+        }
+
+        .risk-level.high {
+            background: rgba(231, 76, 60, 0.2);
+            color: #e74c3c;
+            border: 2px solid #e74c3c;
+        }
+
+        .recommendations {
+            background: rgba(52, 152, 219, 0.1);
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 20px;
+            border-left: 4px solid #3498db;
+        }
+
+        .compliance-info {
+            background: rgba(142, 68, 173, 0.1);
+            border: 1px solid rgba(142, 68, 173, 0.3);
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 20px;
+        }
+
+        .progress-indicator {
+            background: rgba(255,255,255,0.1);
+            padding: 15px;
+            border-radius: 10px;
+            margin: 20px 0;
+            text-align: center;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 20px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 10px;
+            overflow: hidden;
+            margin: 10px 0;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(45deg, #27ae60 0%, #2ecc71 100%);
+            border-radius: 10px;
+            transition: width 0.3s ease;
+            width: 0%;
+        }
+
+        .navigation {
+            margin-bottom: 20px;
+        }
+
+        .nav-link {
+            color: rgba(255,255,255,0.8);
+            text-decoration: none;
+            margin-right: 15px;
+        }
+
+        .nav-link:hover {
+            color: white;
+            text-decoration: underline;
+        }
+
+        @media (max-width: 768px) {
+            .bmc-security-tool {
+                padding: 20px;
+                margin: 10px;
+            }
+
+            .security-category {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navigation">
+        <a href="../../index.html" class="nav-link">← Back to Course</a>
+        <a href="index.html" class="nav-link">Module 3: Cloud Security</a>
+        <a href="../../games/detective-mystery.html" class="nav-link">Next: Security Detective →</a>
+    </nav>
+
+    <!-- BMC Security Assessment Tool -->
+    <div class="bmc-security-tool">
+        <h2>🔧 BMC Security Assessment Tool</h2>
+        <p>Evaluate your Baseboard Management Controller (BMC) security posture with this comprehensive assessment checklist.
+        BMCs are critical components that provide out-of-band management capabilities but often represent significant security risks if not properly configured.</p>
+
+        <div class="progress-indicator">
+            <h3>Assessment Progress</h3>
+            <div class="progress-bar">
+                <div class="progress-fill" id="progress-fill"></div>
+            </div>
+            <p id="progress-text">0 of 12 items completed (0%)</p>
+        </div>
+
+        <form id="bmc-assessment">
+            <div class="security-category">
+                <h4>🔑 Authentication & Access Control</h4>
+                <label><input type="checkbox" name="mfa" onchange="updateProgress()"> Multi-factor authentication enabled for all BMC access</label>
+                <label><input type="checkbox" name="rbac" onchange="updateProgress()"> Role-based access control (RBAC) configured with principle of least privilege</label>
+                <label><input type="checkbox" name="session" onchange="updateProgress()"> Session timeout configured (≤30 minutes for security)</label>
+                <label><input type="checkbox" name="lockout" onchange="updateProgress()"> Account lockout policy after failed authentication attempts</label>
+            </div>
+
+            <div class="security-category">
+                <h4>🌐 Network Security</h4>
+                <label><input type="checkbox" name="vlan" onchange="updateProgress()"> Dedicated management VLAN isolated from production traffic</label>
+                <label><input type="checkbox" name="tls" onchange="updateProgress()"> TLS 1.3 enforced for all BMC communications</label>
+                <label><input type="checkbox" name="firewall" onchange="updateProgress()"> Host-based firewall configured with restrictive rules</label>
+                <label><input type="checkbox" name="monitoring" onchange="updateProgress()"> Network traffic monitoring and anomaly detection enabled</label>
+            </div>
+
+            <div class="security-category">
+                <h4>🔄 Firmware & Updates</h4>
+                <label><input type="checkbox" name="signature" onchange="updateProgress()"> Firmware signature verification enforced</label>
+                <label><input type="checkbox" name="rollback" onchange="updateProgress()"> Anti-rollback protection prevents downgrade attacks</label>
+                <label><input type="checkbox" name="backup" onchange="updateProgress()"> Secure firmware backup and recovery procedures implemented</label>
+                <label><input type="checkbox" name="updates" onchange="updateProgress()"> Automated security update process with testing validation</label>
+            </div>
+
+            <button type="button" class="assess-btn" onclick="assessSecurity()">🔍 Assess Security Posture</button>
+        </form>
+
+        <div id="assessment-result" class="assessment-result" style="display: none;">
+            <!-- Results will be populated by JavaScript -->
+        </div>
+
+        <div class="compliance-info">
+            <h3>📋 Compliance & Best Practices</h3>
+            <p><strong>Industry Standards:</strong> This assessment aligns with NIST Cybersecurity Framework, ISO 27001, and vendor-specific BMC security guidelines from Dell, HPE, Supermicro, and others.</p>
+            <p><strong>Critical Priority:</strong> BMC security is essential for datacenter operations as these devices often have privileged access to server hardware and can be exploited for persistent attacks.</p>
+        </div>
+
+        <div class="learning-objectives" style="margin-top: 30px; background: rgba(255,255,255,0.1); padding: 20px; border-radius: 10px;">
+            <h3>🎯 Learning Objectives</h3>
+            <ul>
+                <li>Understand BMC attack vectors and security vulnerabilities</li>
+                <li>Learn industry best practices for BMC hardening</li>
+                <li>Evaluate security posture using standardized criteria</li>
+                <li>Implement systematic security assessment processes</li>
+            </ul>
+        </div>
+    </div>
+
+<script>
+function updateProgress() {
+    const form = document.getElementById('bmc-assessment');
+    const checkboxes = form.querySelectorAll('input[type="checkbox"]');
+    const checkedBoxes = form.querySelectorAll('input[type="checkbox"]:checked');
+
+    const completed = checkedBoxes.length;
+    const total = checkboxes.length;
+    const percentage = Math.round((completed / total) * 100);
+
+    document.getElementById('progress-fill').style.width = percentage + '%';
+    document.getElementById('progress-text').textContent = `${completed} of ${total} items completed (${percentage}%)`;
+}
+
+function assessSecurity() {
+    const form = document.getElementById('bmc-assessment');
+    const checkboxes = form.querySelectorAll('input[type="checkbox"]');
+    const checkedBoxes = form.querySelectorAll('input[type="checkbox"]:checked');
+
+    const totalItems = checkboxes.length;
+    const checkedItems = checkedBoxes.length;
+    const percentage = Math.round((checkedItems / totalItems) * 100);
+
+    let riskLevel, riskClass, recommendations, additionalInfo;
+
+    if (percentage >= 90) {
+        riskLevel = '🟢 Low Risk - Excellent Security Posture';
+        riskClass = 'low';
+        recommendations = `Outstanding BMC security implementation! Your configuration demonstrates enterprise-grade security practices.
+        Continue with regular security reviews, vulnerability assessments, and stay current with firmware updates.
+        Consider implementing additional monitoring for advanced threat detection.`;
+        additionalInfo = `
+            <strong>Next Steps:</strong>
+            <ul>
+                <li>Implement continuous compliance monitoring</li>
+                <li>Regular penetration testing of BMC interfaces</li>
+                <li>Advanced threat hunting procedures</li>
+                <li>Zero-trust network architecture integration</li>
+            </ul>`;
+    } else if (percentage >= 70) {
+        riskLevel = '🟡 Medium Risk - Good Foundation with Gaps';
+        riskClass = 'medium';
+        recommendations = `Good security foundation with room for improvement. Focus on implementing the missing controls
+        to achieve comprehensive protection. Priority should be given to authentication controls and network isolation.`;
+        additionalInfo = `
+            <strong>Priority Actions:</strong>
+            <ul>
+                <li>Enable multi-factor authentication immediately</li>
+                <li>Implement dedicated management VLANs</li>
+                <li>Upgrade to TLS 1.3 for all communications</li>
+                <li>Establish automated firmware update procedures</li>
+            </ul>`;
+    } else if (percentage >= 50) {
+        riskLevel = '🟠 High Risk - Significant Vulnerabilities';
+        riskClass = 'high';
+        recommendations = `Multiple critical security gaps detected. BMC systems are highly vulnerable to attack.
+        Immediate remediation required for basic security controls before proceeding with advanced configurations.`;
+        additionalInfo = `
+            <strong>Immediate Actions Required:</strong>
+            <ul>
+                <li>Change default credentials immediately</li>
+                <li>Isolate BMCs from production networks</li>
+                <li>Implement basic access controls and session management</li>
+                <li>Audit all BMC configurations for security compliance</li>
+            </ul>`;
+    } else {
+        riskLevel = '🔴 Critical Risk - Severe Security Exposure';
+        riskClass = 'high';
+        recommendations = `Critical security vulnerabilities detected. BMC systems pose severe risk to infrastructure security.
+        Consider disconnecting from network until basic security controls are implemented. Engage security team immediately.`;
+        additionalInfo = `
+            <strong>Emergency Response:</strong>
+            <ul>
+                <li>Isolate BMCs from all network access</li>
+                <li>Conduct immediate security audit</li>
+                <li>Implement emergency access controls</li>
+                <li>Coordinate with security incident response team</li>
+            </ul>`;
+    }
+
+    // Get missing controls for detailed feedback
+    const missingControls = [];
+    checkboxes.forEach(checkbox => {
+        if (!checkbox.checked) {
+            missingControls.push(checkbox.parentElement.textContent.trim());
+        }
+    });
+
+    document.getElementById('assessment-result').style.display = 'block';
+    document.getElementById('assessment-result').innerHTML = `
+        <div class="assessment-score">
+            <h4>BMC Security Score: ${percentage}/100</h4>
+            <p class="risk-level ${riskClass}">${riskLevel}</p>
+            <div class="recommendations">
+                <h4>📝 Recommendations</h4>
+                <p>${recommendations}</p>
+                ${additionalInfo}
+            </div>
+            ${missingControls.length > 0 ? `
+                <div class="missing-controls" style="background: rgba(231, 76, 60, 0.1); padding: 15px; border-radius: 8px; margin-top: 20px;">
+                    <h4 style="color: #e74c3c;">❌ Missing Security Controls:</h4>
+                    <ul style="margin: 10px 0 0 20px;">
+                        ${missingControls.map(control => `<li>${control}</li>`).join('')}
+                    </ul>
+                </div>
+            ` : ''}
+            <div style="background: rgba(52, 152, 219, 0.1); padding: 15px; border-radius: 8px; margin-top: 20px;">
+                <h4 style="color: #3498db;">🏆 Industry Benchmark</h4>
+                <p><strong>Enterprise Standard:</strong> 85-95% compliance</p>
+                <p><strong>Your Score:</strong> ${percentage}% ${percentage >= 85 ? '(Meets enterprise standard ✅)' : '(Below enterprise standard ⚠️)'}</p>
+            </div>
+        </div>
+    `;
+
+    // Scroll to results
+    document.getElementById('assessment-result').scrollIntoView({ behavior: 'smooth' });
+}
+
+// Initialize progress indicator
+document.addEventListener('DOMContentLoaded', function() {
+    updateProgress();
+});
+</script>
+
+</body>
+</html>

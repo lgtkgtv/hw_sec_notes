@@ -1,0 +1,1378 @@
+---
+layout: default
+title: "Module 1: Hardware Root of Trust"
+description: "CPU security features, secure boot mechanisms, TPM, and hardware supply chain security"
+module_id: "module-1-hardware-rot"
+module_number: 1
+permalink: /modules/module-1-hardware-rot/
+---
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Module 1: Hardware Root of Trust - DataCenter Hardware Security</title>
+    <link rel="stylesheet" href="../../assets/css/main.css">
+    <link rel="stylesheet" href="../../assets/css/interactive.css">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-brand">
+                <h1>🏗️ Module 1: Hardware Root of Trust</h1>
+                <p>Foundation of hardware security architecture</p>
+            </div>
+            <div class="nav-menu">
+                <a href="../../index.html" class="nav-link">← Home</a>
+                <a href="#overview" class="nav-link">Overview</a>
+                <a href="#concepts" class="nav-link">Core Concepts</a>
+                <a href="#simulator" class="nav-link">Boot Simulator</a>
+                <a href="#assessment" class="nav-link">Assessment</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Module Overview -->
+    <section id="overview" class="hero">
+        <div class="container">
+            <div class="hero-content">
+                <h1>Hardware Root of Trust Fundamentals</h1>
+                <p class="hero-subtitle">Master the foundation of all hardware security: establishing and maintaining trust from power-on to runtime</p>
+                <div class="hero-stats">
+                    <div class="stat">
+                        <span class="stat-number">8-12</span>
+                        <span class="stat-label">Hours</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-number">4</span>
+                        <span class="stat-label">Key Topics</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-number">15+</span>
+                        <span class="stat-label">Interactive Examples</span>
+                    </div>
+                </div>
+                <div class="hero-actions">
+                    <a href="#concepts" class="btn btn-primary">Start Learning</a>
+                    <a href="boot-simulator.html" class="btn btn-secondary">Try Simulator</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Learning Objectives -->
+    <section class="section">
+        <div class="container">
+            <h2>🎯 Learning Objectives</h2>
+            <div class="learning-paths">
+                <div class="path-card">
+                    <div class="path-icon">🔗</div>
+                    <h3>Chain of Trust</h3>
+                    <p>Understand how hardware establishes trust from immutable silicon roots through the entire boot process to runtime operations.</p>
+                </div>
+                <div class="path-card">
+                    <div class="path-icon">🛡️</div>
+                    <h3>Secure Boot Process</h3>
+                    <p>Learn UEFI Secure Boot, Intel Boot Guard, and how each stage verifies the next component in the boot chain.</p>
+                </div>
+                <div class="path-card">
+                    <div class="path-icon">📋</div>
+                    <h3>Platform Attestation</h3>
+                    <p>Master TPM-based measurement and remote attestation protocols that prove system integrity to external verifiers.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Core Concepts -->
+    <section id="concepts" class="section bg-light">
+        <div class="container">
+            <h2>🏗️ Hardware Root of Trust Architecture</h2>
+
+            <!-- Trust Problem -->
+            <div class="interactive-container">
+                <div class="interactive-header">
+                    <h3>1. The Fundamental Trust Problem</h3>
+                    <p>Why we need immutable hardware anchors in an era of sophisticated attacks</p>
+                </div>
+
+                <div class="trust-problem-demo">
+                    <div class="attack-scenarios">
+                        <div class="attack-scenario">
+                            <h4>🦠 Software-Only Security</h4>
+                            <div class="vulnerability-chain">
+                                <div class="vuln-step">Operating System</div>
+                                <div class="vuln-arrow">↓ Modifiable</div>
+                                <div class="vuln-step">Bootloader</div>
+                                <div class="vuln-arrow">↓ Modifiable</div>
+                                <div class="vuln-step">Firmware</div>
+                                <div class="vuln-arrow">↓ Modifiable</div>
+                                <div class="vuln-step danger">❌ No Trust Anchor</div>
+                            </div>
+                            <p class="vulnerability-note">Everything can be modified by attackers!</p>
+                        </div>
+
+                        <div class="attack-scenario">
+                            <h4>🛡️ Hardware Root of Trust</h4>
+                            <div class="security-chain">
+                                <div class="sec-step">Operating System</div>
+                                <div class="sec-arrow">↑ Verified by</div>
+                                <div class="sec-step">Bootloader</div>
+                                <div class="sec-arrow">↑ Verified by</div>
+                                <div class="sec-step">Firmware</div>
+                                <div class="sec-arrow">↑ Verified by</div>
+                                <div class="sec-step secure">✅ Immutable Silicon</div>
+                            </div>
+                            <p class="security-note">Trust anchored in unchangeable hardware!</p>
+                        </div>
+                    </div>
+
+                    <div class="threat-examples">
+                        <h4>Real-World Attack Examples Prevented by Hardware RoT:</h4>
+                        <div class="threat-grid">
+                            <div class="threat-item">
+                                <h5>🦠 Bootkits/Rootkits</h5>
+                                <p>Malware that infects the boot process before OS loads, nearly impossible to detect or remove</p>
+                                <span class="prevention">Hardware RoT: Blocks unsigned boot components</span>
+                            </div>
+                            <div class="threat-item">
+                                <h5>🏭 Evil Maid Attacks</h5>
+                                <p>Physical access to modify firmware or install hardware implants</p>
+                                <span class="prevention">Hardware RoT: Detects unauthorized modifications</span>
+                            </div>
+                            <div class="threat-item">
+                                <h5>🎯 Advanced Persistent Threats</h5>
+                                <p>Nation-state actors compromising supply chain or firmware</p>
+                                <span class="prevention">Hardware RoT: Validates authentic components only</span>
+                            </div>
+                            <div class="threat-item">
+                                <h5>⚡ Firmware Attacks</h5>
+                                <p>UEFI rootkits, SMM exploitation, BMC compromise</p>
+                                <span class="prevention">Hardware RoT: Establishes clean execution environment</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="interactive-controls">
+                    <button class="interactive-btn" onclick="demonstrateTrustProblem()">🔍 Show Attack Vectors</button>
+                    <button class="interactive-btn" onclick="demonstrateHardwareSolution()">🛡️ Hardware Protection</button>
+                    <button class="interactive-btn info" onclick="showRealWorldExamples()">📰 Real Attacks</button>
+                </div>
+
+                <div id="trust-demo-result" class="simulation-display" style="display: none;">
+                    <div class="simulation-output" id="trust-output"></div>
+                </div>
+            </div>
+
+            <!-- Hardware Implementations -->
+            <div class="interactive-container">
+                <div class="interactive-header">
+                    <h3>2. Hardware Root of Trust Implementations</h3>
+                    <p>Compare different approaches to establishing immutable trust anchors</p>
+                </div>
+
+                <div class="implementation-comparison">
+                    <div class="impl-grid">
+                        <div class="impl-card cpu-integrated">
+                            <h4>🔧 CPU-Integrated Solutions</h4>
+                            <div class="impl-details">
+                                <h5>Intel Boot Guard</h5>
+                                <ul>
+                                    <li>eFused keys in CPU silicon</li>
+                                    <li>Verifies initial firmware (IBB)</li>
+                                    <li>Cannot be disabled or modified</li>
+                                    <li>Locks platform to specific firmware</li>
+                                </ul>
+
+                                <h5>AMD Platform Security Processor</h5>
+                                <ul>
+                                    <li>ARM Cortex-A5 security processor</li>
+                                    <li>Isolated from main CPU</li>
+                                    <li>Manages secure boot and attestation</li>
+                                    <li>Hardware-validated code execution</li>
+                                </ul>
+
+                                <h5>ARM TrustZone</h5>
+                                <ul>
+                                    <li>Secure and non-secure worlds</li>
+                                    <li>Hardware-enforced isolation</li>
+                                    <li>Secure monitor controls transitions</li>
+                                    <li>Foundation for secure boot</li>
+                                </ul>
+                            </div>
+                            <div class="impl-pros-cons">
+                                <div class="pros">
+                                    <h6>✅ Advantages</h6>
+                                    <ul>
+                                        <li>Highest security (silicon-level)</li>
+                                        <li>Cannot be bypassed or disabled</li>
+                                        <li>No additional hardware cost</li>
+                                        <li>Manufacturer-controlled keys</li>
+                                    </ul>
+                                </div>
+                                <div class="cons">
+                                    <h6>❌ Limitations</h6>
+                                    <ul>
+                                        <li>Vendor lock-in</li>
+                                        <li>Limited user control</li>
+                                        <li>Difficult to customize</li>
+                                        <li>Recovery complexity</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="impl-card discrete-chip">
+                            <h4>🔲 Discrete Security Chips</h4>
+                            <div class="impl-details">
+                                <h5>TPM 2.0 (Trusted Platform Module)</h5>
+                                <ul>
+                                    <li>Standardized by TCG consortium</li>
+                                    <li>Platform Configuration Registers (PCRs)</li>
+                                    <li>Attestation and sealing capabilities</li>
+                                    <li>Hardware random number generation</li>
+                                </ul>
+
+                                <h5>Google Titan Security Chip</h5>
+                                <ul>
+                                    <li>Custom secure microcontroller</li>
+                                    <li>Verified boot and attestation</li>
+                                    <li>Secure storage for keys/certificates</li>
+                                    <li>Tamper detection and response</li>
+                                </ul>
+
+                                <h5>Apple T2 Security Chip</h5>
+                                <ul>
+                                    <li>ARM-based secure enclave</li>
+                                    <li>Controls TouchID, encryption, boot</li>
+                                    <li>Secure boot with signed system volume</li>
+                                    <li>Hardware encryption key management</li>
+                                </ul>
+                            </div>
+                            <div class="impl-pros-cons">
+                                <div class="pros">
+                                    <h6>✅ Advantages</h6>
+                                    <ul>
+                                        <li>Industry standardization (TPM)</li>
+                                        <li>Vendor independence</li>
+                                        <li>Flexible key management</li>
+                                        <li>Attestation protocols</li>
+                                    </ul>
+                                </div>
+                                <div class="cons">
+                                    <h6>❌ Limitations</h6>
+                                    <ul>
+                                        <li>Additional hardware cost</li>
+                                        <li>Performance overhead</li>
+                                        <li>Complex integration</li>
+                                        <li>Potential bypass vulnerabilities</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="comparison-matrix">
+                        <h4>📊 Implementation Comparison Matrix</h4>
+                        <div class="matrix-table">
+                            <div class="matrix-header">
+                                <div>Aspect</div>
+                                <div>CPU-Integrated</div>
+                                <div>Discrete TPM</div>
+                                <div>Custom Secure Element</div>
+                            </div>
+                            <div class="matrix-row">
+                                <div>Security Level</div>
+                                <div class="rating excellent">Excellent</div>
+                                <div class="rating good">Good</div>
+                                <div class="rating excellent">Excellent</div>
+                            </div>
+                            <div class="matrix-row">
+                                <div>Standardization</div>
+                                <div class="rating fair">Vendor-specific</div>
+                                <div class="rating excellent">TCG Standard</div>
+                                <div class="rating fair">Proprietary</div>
+                            </div>
+                            <div class="matrix-row">
+                                <div>Performance</div>
+                                <div class="rating excellent">Native speed</div>
+                                <div class="rating good">Moderate overhead</div>
+                                <div class="rating good">Optimized</div>
+                            </div>
+                            <div class="matrix-row">
+                                <div>Cost</div>
+                                <div class="rating excellent">Included</div>
+                                <div class="rating good">$5-20</div>
+                                <div class="rating fair">$20-100</div>
+                            </div>
+                            <div class="matrix-row">
+                                <div>Flexibility</div>
+                                <div class="rating fair">Limited</div>
+                                <div class="rating excellent">High</div>
+                                <div class="rating good">Customizable</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="interactive-controls">
+                    <button class="interactive-btn" onclick="exploreTPM()">🔲 Explore TPM 2.0</button>
+                    <button class="interactive-btn" onclick="exploreBootGuard()">🔧 Intel Boot Guard</button>
+                    <button class="interactive-btn info" onclick="compareImplementations()">⚖️ Compare All</button>
+                </div>
+
+                <div id="impl-demo-result" class="simulation-display" style="display: none;">
+                    <div class="simulation-output" id="impl-output"></div>
+                </div>
+            </div>
+
+            <!-- Secure Boot Process -->
+            <div class="interactive-container">
+                <div class="interactive-header">
+                    <h3>3. Secure Boot Chain of Trust</h3>
+                    <p>Step-by-step verification process from power-on to OS launch</p>
+                </div>
+
+                <div class="boot-chain-visualization">
+                    <div class="boot-stages">
+                        <div class="boot-stage" data-stage="power-on">
+                            <div class="stage-icon">⚡</div>
+                            <h4>Power-On Reset</h4>
+                            <div class="stage-details">
+                                <p><strong>Hardware Initialization</strong></p>
+                                <ul>
+                                    <li>CPU reset vector executed</li>
+                                    <li>Hardware RoT activated</li>
+                                    <li>First instruction from ROM</li>
+                                    <li>Security processor starts</li>
+                                </ul>
+                                <div class="measurement">📏 No measurements yet</div>
+                            </div>
+                        </div>
+
+                        <div class="boot-stage" data-stage="sec">
+                            <div class="stage-icon">🔧</div>
+                            <h4>SEC Phase</h4>
+                            <div class="stage-details">
+                                <p><strong>Security Phase</strong></p>
+                                <ul>
+                                    <li>Boot Guard verifies IBB</li>
+                                    <li>Initial Boot Block loaded</li>
+                                    <li>Core hardware initialization</li>
+                                    <li>CPU microcode verification</li>
+                                </ul>
+                                <div class="measurement">📏 PCR[0]: BIOS measurements</div>
+                            </div>
+                        </div>
+
+                        <div class="boot-stage" data-stage="pei">
+                            <div class="stage-icon">🔗</div>
+                            <h4>PEI Phase</h4>
+                            <div class="stage-details">
+                                <p><strong>Pre-EFI Initialization</strong></p>
+                                <ul>
+                                    <li>Memory controller setup</li>
+                                    <li>Platform initialization modules</li>
+                                    <li>Hardware discovery and config</li>
+                                    <li>Security policy enforcement</li>
+                                </ul>
+                                <div class="measurement">📏 PCR[1]: Platform configuration</div>
+                            </div>
+                        </div>
+
+                        <div class="boot-stage" data-stage="dxe">
+                            <div class="stage-icon">⚙️</div>
+                            <h4>DXE Phase</h4>
+                            <div class="stage-details">
+                                <p><strong>Driver Execution Environment</strong></p>
+                                <ul>
+                                    <li>UEFI drivers loaded and verified</li>
+                                    <li>Device initialization</li>
+                                    <li>Security protocols established</li>
+                                    <li>Boot services available</li>
+                                </ul>
+                                <div class="measurement">📏 PCR[2]: Option ROM code</div>
+                            </div>
+                        </div>
+
+                        <div class="boot-stage" data-stage="bds">
+                            <div class="stage-icon">🎯</div>
+                            <h4>BDS Phase</h4>
+                            <div class="stage-details">
+                                <p><strong>Boot Device Selection</strong></p>
+                                <ul>
+                                    <li>Boot option enumeration</li>
+                                    <li>OS loader verification</li>
+                                    <li>Secure Boot database check</li>
+                                    <li>Transition to OS loader</li>
+                                </ul>
+                                <div class="measurement">📏 PCR[4]: Boot manager</div>
+                            </div>
+                        </div>
+
+                        <div class="boot-stage" data-stage="os-boot">
+                            <div class="stage-icon">🖥️</div>
+                            <h4>OS Boot</h4>
+                            <div class="stage-details">
+                                <p><strong>Operating System Load</strong></p>
+                                <ul>
+                                    <li>OS kernel verification</li>
+                                    <li>Driver signature checking</li>
+                                    <li>Runtime security services</li>
+                                    <li>Handoff to OS scheduler</li>
+                                </ul>
+                                <div class="measurement">📏 PCR[8-15]: OS components</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="verification-chain">
+                        <h4>🔗 Verification Chain Details</h4>
+                        <div class="verification-steps">
+                            <div class="verify-step">
+                                <div class="verifier">Hardware RoT</div>
+                                <div class="verify-action">verifies →</div>
+                                <div class="verified">Initial Boot Block</div>
+                                <div class="verify-method">using eFused public key</div>
+                            </div>
+                            <div class="verify-step">
+                                <div class="verifier">Initial Boot Block</div>
+                                <div class="verify-action">verifies →</div>
+                                <div class="verified">UEFI Firmware</div>
+                                <div class="verify-method">using embedded certificates</div>
+                            </div>
+                            <div class="verify-step">
+                                <div class="verifier">UEFI Secure Boot</div>
+                                <div class="verify-action">verifies →</div>
+                                <div class="verified">OS Bootloader</div>
+                                <div class="verify-method">using signature database (db)</div>
+                            </div>
+                            <div class="verify-step">
+                                <div class="verifier">OS Bootloader</div>
+                                <div class="verify-action">verifies →</div>
+                                <div class="verified">OS Kernel</div>
+                                <div class="verify-method">using kernel signing certificate</div>
+                            </div>
+                            <div class="verify-step">
+                                <div class="verifier">OS Kernel</div>
+                                <div class="verify-action">verifies →</div>
+                                <div class="verified">Device Drivers</div>
+                                <div class="verify-method">using driver signing policy</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="interactive-controls">
+                    <button class="interactive-btn" onclick="simulateSecureBoot()">🔄 Simulate Secure Boot</button>
+                    <button class="interactive-btn warning" onclick="simulateBootAttack()">⚠️ Simulate Attack</button>
+                    <button class="interactive-btn info" onclick="explainPCRs()">📏 PCR Measurements</button>
+                </div>
+
+                <div id="boot-demo-result" class="simulation-display" style="display: none;">
+                    <div class="simulation-output" id="boot-output"></div>
+                </div>
+            </div>
+
+            <!-- Remote Attestation -->
+            <div class="interactive-container">
+                <div class="interactive-header">
+                    <h3>4. Remote Attestation Protocols</h3>
+                    <p>Prove platform integrity to remote verifiers without physical access</p>
+                </div>
+
+                <div class="attestation-flow">
+                    <div class="attestation-participants">
+                        <div class="participant attester">
+                            <h4>📟 Attester (Server)</h4>
+                            <div class="participant-details">
+                                <p>System being verified</p>
+                                <ul>
+                                    <li>Contains TPM or equivalent</li>
+                                    <li>Measures boot process</li>
+                                    <li>Stores measurements in PCRs</li>
+                                    <li>Creates signed attestation quotes</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <div class="participant verifier">
+                            <h4>🔍 Verifier (Remote Service)</h4>
+                            <div class="participant-details">
+                                <p>System requesting proof</p>
+                                <ul>
+                                    <li>Sends attestation challenges</li>
+                                    <li>Maintains reference measurements</li>
+                                    <li>Validates attestation quotes</li>
+                                    <li>Makes trust decisions</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="attestation-protocol">
+                        <h4>📡 Attestation Protocol Flow</h4>
+                        <div class="protocol-steps">
+                            <div class="protocol-step">
+                                <div class="step-number">1</div>
+                                <div class="step-description">
+                                    <h5>Challenge Request</h5>
+                                    <p>Verifier → Attester: "Prove your integrity"</p>
+                                    <div class="protocol-data">
+                                        <strong>Includes:</strong> Random nonce, required PCRs, quote format
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="protocol-step">
+                                <div class="step-number">2</div>
+                                <div class="step-description">
+                                    <h5>Measurement Collection</h5>
+                                    <p>Attester: Collect current PCR values</p>
+                                    <div class="protocol-data">
+                                        <strong>PCR Values:</strong> Boot measurements, configuration, runtime state
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="protocol-step">
+                                <div class="step-number">3</div>
+                                <div class="step-description">
+                                    <h5>Quote Generation</h5>
+                                    <p>TPM: Sign measurements + nonce with AIK</p>
+                                    <div class="protocol-data">
+                                        <strong>Signature:</strong> Hardware-backed, non-forgeable proof
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="protocol-step">
+                                <div class="step-number">4</div>
+                                <div class="step-description">
+                                    <h5>Quote Transmission</h5>
+                                    <p>Attester → Verifier: Signed attestation quote</p>
+                                    <div class="protocol-data">
+                                        <strong>Contents:</strong> PCR values, nonce, signature, certificate chain
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="protocol-step">
+                                <div class="step-number">5</div>
+                                <div class="step-description">
+                                    <h5>Verification & Decision</h5>
+                                    <p>Verifier: Validate signature and compare measurements</p>
+                                    <div class="protocol-data">
+                                        <strong>Result:</strong> Allow/Deny access based on trust policy
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="attestation-use-cases">
+                        <h4>🎯 Real-World Attestation Use Cases</h4>
+                        <div class="use-case-grid">
+                            <div class="use-case">
+                                <h5>☁️ Cloud Workload Placement</h5>
+                                <p>Verify datacenter servers before deploying sensitive workloads</p>
+                                <div class="use-case-details">
+                                    <strong>Frequency:</strong> Before each workload deployment<br>
+                                    <strong>Decision:</strong> Choose verified servers only<br>
+                                    <strong>Policy:</strong> Known-good firmware + secure configuration
+                                </div>
+                            </div>
+
+                            <div class="use-case">
+                                <h5>🚗 Connected Vehicle Security</h5>
+                                <p>ECU attestation before safety-critical operations</p>
+                                <div class="use-case-details">
+                                    <strong>Frequency:</strong> Continuous (every 100ms)<br>
+                                    <strong>Decision:</strong> Enable/disable autonomous functions<br>
+                                    <strong>Policy:</strong> Certified ECU firmware only
+                                </div>
+                            </div>
+
+                            <div class="use-case">
+                                <h5>🏭 Industrial IoT</h5>
+                                <p>Manufacturing equipment verification for safety and quality</p>
+                                <div class="use-case-details">
+                                    <strong>Frequency:</strong> Shift changes and alerts<br>
+                                    <strong>Decision:</strong> Production line authorization<br>
+                                    <strong>Policy:</strong> No unauthorized firmware modifications
+                                </div>
+                            </div>
+
+                            <div class="use-case">
+                                <h5>💳 Financial Processing</h5>
+                                <p>Payment terminal attestation before transaction processing</p>
+                                <div class="use-case-details">
+                                    <strong>Frequency:</strong> Per transaction or periodic<br>
+                                    <strong>Decision:</strong> Authorize payment processing<br>
+                                    <strong>Policy:</strong> PCI-compliant configuration required
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="interactive-controls">
+                    <button class="interactive-btn" onclick="simulateAttestation()">📡 Simulate Attestation</button>
+                    <button class="interactive-btn" onclick="simulateAttestationFailure()">❌ Simulation Failure</button>
+                    <button class="interactive-btn info" onclick="explainTPMQuotes()">📋 TPM Quote Format</button>
+                </div>
+
+                <div id="attestation-demo-result" class="simulation-display" style="display: none;">
+                    <div class="simulation-output" id="attestation-output"></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Interactive Simulator Section -->
+    <section id="simulator" class="section">
+        <div class="container">
+            <h2>🎮 Interactive Boot Sequence Simulator</h2>
+            <p class="section-subtitle">Experience the complete secure boot process with real-time decision points</p>
+
+            <div class="simulator-preview">
+                <div class="simulator-features">
+                    <div class="feature-item">
+                        <div class="feature-icon">⚡</div>
+                        <h3>Step-by-Step Boot Process</h3>
+                        <p>Follow each phase of the secure boot chain with detailed explanations</p>
+                    </div>
+                    <div class="feature-item">
+                        <div class="feature-icon">🔍</div>
+                        <h3>Security Decision Points</h3>
+                        <p>Make critical security choices and see the consequences</p>
+                    </div>
+                    <div class="feature-item">
+                        <div class="feature-icon">📊</div>
+                        <h3>PCR Measurement Tracking</h3>
+                        <p>Watch how measurements accumulate in TPM Platform Configuration Registers</p>
+                    </div>
+                    <div class="feature-item">
+                        <div class="feature-icon">⚠️</div>
+                        <h3>Attack Scenario Testing</h3>
+                        <p>Experiment with different attack vectors and security responses</p>
+                    </div>
+                </div>
+
+                <div class="simulator-launch">
+                    <a href="boot-simulator.html" class="btn btn-primary">🚀 Launch Boot Simulator</a>
+                    <p>Full interactive experience with choice-based learning</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Assessment Section -->
+    <section id="assessment" class="section bg-light">
+        <div class="container">
+            <h2>📝 Hardware Root of Trust Assessment</h2>
+            <div class="assessment-intro">
+                <p>Evaluate your understanding of hardware security foundations and trust establishment.</p>
+                <div class="assessment-stats">
+                    <span>15 Questions • ~20 minutes • Passing: 80%</span>
+                </div>
+            </div>
+
+            <div class="assessment-card">
+                <h3>Hardware Security Fundamentals Quiz</h3>
+                <div class="question-preview">
+                    <h4>Sample Question:</h4>
+                    <p><strong>Which component in the secure boot chain provides the immutable trust anchor?</strong></p>
+                    <ul class="preview-options">
+                        <li>A) UEFI firmware signature database</li>
+                        <li>B) TPM Platform Configuration Registers</li>
+                        <li>C) Hardware Root of Trust (eFused keys)</li>
+                        <li>D) Operating system bootloader</li>
+                    </ul>
+                    <div class="correct-answer">
+                        <strong>Correct Answer:</strong> C) Hardware Root of Trust provides the immutable foundation that cannot be modified after manufacturing.
+                    </div>
+                </div>
+                <div class="assessment-actions">
+                    <button class="btn btn-primary" onclick="startAssessment()">Start Assessment</button>
+                    <button class="btn btn-secondary" onclick="showStudyGuide()">Study Guide</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Next Steps -->
+    <section class="section">
+        <div class="container">
+            <h2>🚀 Next Steps</h2>
+            <div class="next-steps">
+                <div class="next-module">
+                    <h3>Ready for Module 2?</h3>
+                    <p>Now that you understand hardware trust foundations, explore how these concepts apply to modern AI accelerators and GPU security.</p>
+                    <a href="../module-2-gpu-security/index.html" class="btn btn-primary">Module 2: GPU & Accelerator Security →</a>
+                </div>
+                <div class="additional-resources">
+                    <h3>📚 Additional Resources</h3>
+                    <ul>
+                        <li><a href="../../reference/quick-reference.html">Hardware Security Commands</a></li>
+                        <li><a href="../../reference/troubleshooting.html">Boot Issues Troubleshooting</a></li>
+                        <li><a href="../../games/detective-mystery.html">Security Detective Game</a></li>
+                        <li><a href="boot-simulator.html">Practice with Boot Simulator</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <script src="../../assets/js/main.js"></script>
+    <script src="../../assets/js/progress-tracker.js"></script>
+    <script src="hardware-rot-demo.js"></script>
+</body>
+</html>
+
+<style>
+/* Module 1 specific styles */
+.trust-problem-demo {
+    background: rgba(255,255,255,0.1);
+    padding: 25px;
+    border-radius: 12px;
+    margin: 20px 0;
+}
+
+.attack-scenarios {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 30px;
+    margin: 30px 0;
+}
+
+.attack-scenario {
+    text-align: center;
+    padding: 20px;
+    border-radius: 10px;
+}
+
+.attack-scenario h4 {
+    margin-bottom: 20px;
+}
+
+.vulnerability-chain, .security-chain {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+}
+
+.vuln-step, .sec-step {
+    background: rgba(255,255,255,0.2);
+    padding: 12px 20px;
+    border-radius: 8px;
+    min-width: 200px;
+    font-weight: 500;
+}
+
+.vuln-step.danger {
+    background: rgba(244, 67, 54, 0.3);
+    color: #ffcdd2;
+}
+
+.sec-step.secure {
+    background: rgba(76, 175, 80, 0.3);
+    color: #c8e6c9;
+}
+
+.vuln-arrow, .sec-arrow {
+    color: #ff5722;
+    font-weight: bold;
+}
+
+.sec-arrow {
+    color: #4caf50;
+}
+
+.vulnerability-note, .security-note {
+    margin-top: 15px;
+    font-style: italic;
+    font-weight: 500;
+}
+
+.vulnerability-note {
+    color: #ff5722;
+}
+
+.security-note {
+    color: #4caf50;
+}
+
+.threat-examples {
+    margin-top: 40px;
+}
+
+.threat-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
+    margin-top: 20px;
+}
+
+.threat-item {
+    background: rgba(0,0,0,0.2);
+    padding: 20px;
+    border-radius: 8px;
+    border-left: 4px solid #ff5722;
+}
+
+.threat-item h5 {
+    color: #ff5722;
+    margin-bottom: 10px;
+}
+
+.threat-item p {
+    margin-bottom: 15px;
+    color: rgba(255,255,255,0.9);
+}
+
+.prevention {
+    display: block;
+    color: #4caf50;
+    font-weight: 500;
+    font-size: 0.9em;
+    padding: 8px 12px;
+    background: rgba(76, 175, 80, 0.2);
+    border-radius: 6px;
+}
+
+.implementation-comparison {
+    background: rgba(255,255,255,0.1);
+    padding: 25px;
+    border-radius: 12px;
+    margin: 20px 0;
+}
+
+.impl-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 30px;
+    margin: 30px 0;
+}
+
+.impl-card {
+    background: rgba(0,0,0,0.2);
+    padding: 25px;
+    border-radius: 10px;
+    border-top: 4px solid;
+}
+
+.impl-card.cpu-integrated {
+    border-top-color: #2196f3;
+}
+
+.impl-card.discrete-chip {
+    border-top-color: #ff9800;
+}
+
+.impl-card h4 {
+    margin-bottom: 20px;
+    color: white;
+}
+
+.impl-details {
+    margin-bottom: 25px;
+}
+
+.impl-details h5 {
+    color: #4caf50;
+    margin: 15px 0 10px 0;
+}
+
+.impl-details ul {
+    list-style-type: disc;
+    margin-left: 20px;
+    color: rgba(255,255,255,0.9);
+}
+
+.impl-details li {
+    margin: 8px 0;
+}
+
+.impl-pros-cons {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+}
+
+.pros, .cons {
+    padding: 15px;
+    border-radius: 8px;
+}
+
+.pros {
+    background: rgba(76, 175, 80, 0.2);
+    border-left: 3px solid #4caf50;
+}
+
+.cons {
+    background: rgba(244, 67, 54, 0.2);
+    border-left: 3px solid #f44336;
+}
+
+.pros h6, .cons h6 {
+    margin: 0 0 10px 0;
+    color: white;
+}
+
+.pros ul, .cons ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.pros li, .cons li {
+    margin: 8px 0;
+    font-size: 0.9em;
+    color: rgba(255,255,255,0.9);
+}
+
+.comparison-matrix {
+    margin-top: 40px;
+}
+
+.matrix-table {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr 1fr;
+    gap: 1px;
+    background: rgba(0,0,0,0.3);
+    border-radius: 8px;
+    overflow: hidden;
+    margin-top: 20px;
+}
+
+.matrix-header {
+    display: contents;
+}
+
+.matrix-header > div {
+    background: rgba(52, 152, 219, 0.3);
+    padding: 15px;
+    font-weight: bold;
+    text-align: center;
+}
+
+.matrix-row {
+    display: contents;
+}
+
+.matrix-row > div {
+    background: rgba(255,255,255,0.1);
+    padding: 12px;
+    text-align: center;
+}
+
+.matrix-row > div:first-child {
+    text-align: left;
+    font-weight: 500;
+}
+
+.rating {
+    padding: 6px 12px;
+    border-radius: 15px;
+    font-size: 0.8em;
+    font-weight: bold;
+}
+
+.rating.excellent {
+    background: rgba(76, 175, 80, 0.3);
+    color: #4caf50;
+}
+
+.rating.good {
+    background: rgba(255, 193, 7, 0.3);
+    color: #ffc107;
+}
+
+.rating.fair {
+    background: rgba(255, 152, 0, 0.3);
+    color: #ff9800;
+}
+
+.boot-chain-visualization {
+    background: rgba(255,255,255,0.1);
+    padding: 25px;
+    border-radius: 12px;
+    margin: 20px 0;
+}
+
+.boot-stages {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
+    margin: 30px 0;
+}
+
+.boot-stage {
+    background: rgba(0,0,0,0.2);
+    padding: 20px;
+    border-radius: 10px;
+    border-left: 4px solid #3498db;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.boot-stage:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+}
+
+.stage-icon {
+    font-size: 2em;
+    margin-bottom: 10px;
+}
+
+.boot-stage h4 {
+    color: white;
+    margin-bottom: 15px;
+}
+
+.stage-details p {
+    font-weight: bold;
+    color: #3498db;
+    margin-bottom: 10px;
+}
+
+.stage-details ul {
+    list-style: none;
+    padding: 0;
+}
+
+.stage-details li {
+    margin: 8px 0;
+    color: rgba(255,255,255,0.9);
+    font-size: 0.9em;
+}
+
+.measurement {
+    background: rgba(76, 175, 80, 0.2);
+    padding: 8px 12px;
+    border-radius: 6px;
+    margin-top: 15px;
+    font-size: 0.85em;
+    color: #4caf50;
+    font-weight: 500;
+}
+
+.verification-chain {
+    margin-top: 40px;
+}
+
+.verification-steps {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    margin-top: 20px;
+}
+
+.verify-step {
+    display: grid;
+    grid-template-columns: 2fr auto 2fr 2fr;
+    gap: 15px;
+    align-items: center;
+    background: rgba(0,0,0,0.2);
+    padding: 15px;
+    border-radius: 8px;
+}
+
+.verifier, .verified {
+    background: rgba(52, 152, 219, 0.2);
+    padding: 10px;
+    border-radius: 6px;
+    text-align: center;
+    font-weight: 500;
+}
+
+.verify-action {
+    color: #4caf50;
+    font-weight: bold;
+    text-align: center;
+}
+
+.verify-method {
+    color: rgba(255,255,255,0.8);
+    font-style: italic;
+    font-size: 0.9em;
+}
+
+.attestation-flow {
+    background: rgba(255,255,255,0.1);
+    padding: 25px;
+    border-radius: 12px;
+    margin: 20px 0;
+}
+
+.attestation-participants {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 30px;
+    margin: 30px 0;
+}
+
+.participant {
+    background: rgba(0,0,0,0.2);
+    padding: 25px;
+    border-radius: 10px;
+    border-top: 4px solid;
+}
+
+.participant.attester {
+    border-top-color: #ff9800;
+}
+
+.participant.verifier {
+    border-top-color: #9c27b0;
+}
+
+.participant h4 {
+    color: white;
+    margin-bottom: 15px;
+}
+
+.participant-details ul {
+    list-style: none;
+    padding: 0;
+}
+
+.participant-details li {
+    margin: 10px 0;
+    color: rgba(255,255,255,0.9);
+    padding: 8px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+}
+
+.attestation-protocol {
+    margin-top: 40px;
+}
+
+.protocol-steps {
+    margin-top: 20px;
+}
+
+.protocol-step {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 20px;
+    align-items: flex-start;
+    margin: 20px 0;
+    padding: 20px;
+    background: rgba(0,0,0,0.2);
+    border-radius: 8px;
+}
+
+.step-number {
+    background: #3498db;
+    color: white;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 1.2em;
+}
+
+.step-description h5 {
+    color: white;
+    margin: 0 0 10px 0;
+}
+
+.step-description p {
+    color: rgba(255,255,255,0.9);
+    margin-bottom: 10px;
+}
+
+.protocol-data {
+    background: rgba(52, 152, 219, 0.2);
+    padding: 10px;
+    border-radius: 6px;
+    font-size: 0.9em;
+    color: rgba(255,255,255,0.9);
+}
+
+.attestation-use-cases {
+    margin-top: 40px;
+}
+
+.use-case-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 20px;
+    margin-top: 20px;
+}
+
+.use-case {
+    background: rgba(0,0,0,0.2);
+    padding: 20px;
+    border-radius: 8px;
+    border-left: 4px solid #4caf50;
+}
+
+.use-case h5 {
+    color: #4caf50;
+    margin-bottom: 10px;
+}
+
+.use-case p {
+    color: rgba(255,255,255,0.9);
+    margin-bottom: 15px;
+}
+
+.use-case-details {
+    font-size: 0.9em;
+    color: rgba(255,255,255,0.8);
+    line-height: 1.6;
+}
+
+.simulator-preview {
+    background: white;
+    border-radius: 15px;
+    padding: 40px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    margin-top: 30px;
+}
+
+.simulator-features {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 30px;
+    margin-bottom: 40px;
+}
+
+.feature-item {
+    text-align: center;
+}
+
+.feature-icon {
+    font-size: 3em;
+    margin-bottom: 15px;
+}
+
+.feature-item h3 {
+    color: #2c3e50;
+    margin-bottom: 15px;
+}
+
+.feature-item p {
+    color: #7f8c8d;
+}
+
+.simulator-launch {
+    text-align: center;
+    padding: 30px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 12px;
+}
+
+.simulator-launch .btn {
+    margin-bottom: 15px;
+}
+
+.simulator-launch p {
+    color: rgba(255,255,255,0.9);
+    margin: 0;
+}
+
+.question-preview .correct-answer {
+    background: rgba(76, 175, 80, 0.1);
+    border-left: 4px solid #4caf50;
+    padding: 15px;
+    margin-top: 20px;
+    border-radius: 6px;
+    color: #2c3e50;
+}
+
+@media (max-width: 768px) {
+    .attack-scenarios,
+    .impl-grid,
+    .attestation-participants {
+        grid-template-columns: 1fr;
+    }
+
+    .matrix-table {
+        grid-template-columns: 2fr 1fr;
+        font-size: 0.9em;
+    }
+
+    .verification-steps .verify-step {
+        grid-template-columns: 1fr;
+        text-align: center;
+    }
+
+    .protocol-step {
+        grid-template-columns: 1fr;
+        text-align: center;
+    }
+
+    .boot-stages {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* ===== CRITICAL TEXT VISIBILITY FIXES ===== */
+/* Force all text in interactive containers to be visible */
+.trust-problem-demo p,
+.trust-problem-demo li,
+.threat-item p,
+.prevention,
+.impl-details p,
+.impl-details li,
+.pros li,
+.cons li,
+.stage-details p,
+.stage-details li,
+.participant-details p,
+.participant-details li,
+.protocol-data,
+.use-case-details,
+.verification-steps p,
+.verify-method,
+.attestation-use-cases p,
+.implementation-comparison p,
+.implementation-comparison li,
+.boot-chain-visualization p,
+.boot-chain-visualization li,
+.attestation-flow p,
+.attestation-flow li {
+    color: rgba(255, 255, 255, 0.95) !important;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.5) !important;
+}
+
+/* Ensure headings are bright white */
+.trust-problem-demo h4,
+.trust-problem-demo h5,
+.threat-examples h4,
+.threat-examples h5,
+.impl-card h4,
+.impl-card h5,
+.boot-stage h4,
+.participant h4,
+.protocol-step h5,
+.use-case h5 {
+    color: #ffffff !important;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.6) !important;
+}
+
+/* Make sure strong text stands out */
+.interactive-container strong,
+.interactive-container b,
+.trust-problem-demo strong,
+.threat-examples strong,
+.implementation-comparison strong,
+.boot-chain-visualization strong,
+.attestation-flow strong {
+    color: #ffffff !important;
+    font-weight: 700 !important;
+    text-shadow: 0 1px 3px rgba(0,0,0,0.7) !important;
+}
+</style>

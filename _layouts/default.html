@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{% if page.title %}{{ page.title }} - {% endif %}{{ site.title }}</title>
+    <meta name="description" content="{% if page.description %}{{ page.description }}{% else %}{{ site.description }}{% endif %}">
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="{{ '/assets/css/main.css' | relative_url }}">
+    <link rel="stylesheet" href="{{ '/assets/css/interactive.css' | relative_url }}">
+
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
+    <!-- Meta tags -->
+    <meta name="author" content="{{ site.author.name }}">
+    <link rel="canonical" href="{{ page.url | absolute_url }}">
+
+    <!-- Open Graph / Social Media -->
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="{% if page.title %}{{ page.title }} - {% endif %}{{ site.title }}">
+    <meta property="og:description" content="{% if page.description %}{{ page.description }}{% else %}{{ site.description }}{% endif %}">
+    <meta property="og:url" content="{{ page.url | absolute_url }}">
+
+    <!-- Jekyll SEO Tag -->
+    {% seo %}
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="{{ '/assets/images/favicon.ico' | relative_url }}">
+</head>
+<body class="bg-gray-900 text-white">
+    <!-- Navigation -->
+    <nav class="bg-gray-800 border-b border-gray-700">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center">
+                    <a href="{{ '/' | relative_url }}" class="text-xl font-bold text-blue-400 hover:text-blue-300">
+                        🛡️ DataCenter Security
+                    </a>
+                </div>
+                <div class="hidden md:block">
+                    <div class="ml-10 flex items-baseline space-x-4">
+                        <a href="{{ '/' | relative_url }}" class="nav-link">Home</a>
+                        <a href="{{ '/modules/module-0-crypto/' | relative_url }}" class="nav-link">Modules</a>
+                        <a href="{{ '/games/' | relative_url }}" class="nav-link">Games</a>
+                        <a href="{{ '/reference/' | relative_url }}" class="nav-link">Reference</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main>
+        {{ content }}
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 border-t border-gray-700 mt-20">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <div class="text-center text-gray-400">
+                <p>&copy; 2024 {{ site.title }}. Educational content for cybersecurity professionals.</p>
+                <p class="mt-2 text-sm">
+                    Built with ❤️ using Jekyll and GitHub Pages
+                </p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- JavaScript -->
+    <script>
+        // Simple progress tracking
+        function updateProgress(moduleId, completed) {
+            localStorage.setItem(`progress_${moduleId}`, completed);
+        }
+
+        function getProgress(moduleId) {
+            return localStorage.getItem(`progress_${moduleId}`) === 'true';
+        }
+
+        // Initialize progress indicators on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            const progressElements = document.querySelectorAll('[data-module-id]');
+            progressElements.forEach(function(element) {
+                const moduleId = element.getAttribute('data-module-id');
+                if (getProgress(moduleId)) {
+                    element.classList.add('completed');
+                }
+            });
+        });
+    </script>
+</body>
+</html>

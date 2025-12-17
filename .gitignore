@@ -1,0 +1,33 @@
+# Jekyll build files
+_site/
+.sass-cache/
+.jekyll-cache/
+.jekyll-metadata
+
+# Ruby/Bundler
+.bundle/
+vendor/
+Gemfile.lock
+
+# Node.js (if using)
+node_modules/
+package-lock.json
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Development
+*.log
+.env
+.env.local
+
+# Temporary files
+tmp/
+temp/
