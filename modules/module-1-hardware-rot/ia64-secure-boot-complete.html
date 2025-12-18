@@ -1,0 +1,658 @@
+---
+layout: default
+title: "IA64 PC Architecture: Complete Secure & Measured Boot Process"
+description: "Deep dive into Intel x64 secure boot from CPU eFuses to file system verification"
+module_id: "module-1-hardware-rot"
+permalink: /modules/module-1-hardware-rot/ia64-secure-boot/
+---
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IA64 Secure Boot: Complete Chain of Trust</title>
+    <link rel="stylesheet" href="../../assets/css/main.css">
+    <link rel="stylesheet" href="../../assets/css/interactive.css">
+    <link rel="stylesheet" href="../../assets/css/demo-enhancements.css">
+    <link rel="stylesheet" href="../../assets/css/hardware-demo.css">
+    <style>
+        .boot-architecture {
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            border-radius: 16px;
+            padding: 2rem;
+            margin: 2rem 0;
+            border: 1px solid #3b82f6;
+        }
+
+        .trust-chain {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            margin: 2rem 0;
+        }
+
+        .trust-level {
+            background: rgba(30, 41, 59, 0.8);
+            border: 1px solid #475569;
+            border-radius: 12px;
+            padding: 1.5rem;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        .trust-level:hover {
+            border-color: #3b82f6;
+            transform: translateX(10px);
+            box-shadow: 0 8px 25px rgba(59, 130, 246, 0.3);
+        }
+
+        .trust-level.cpu-level {
+            border-left: 6px solid #ef4444;
+            background: linear-gradient(135deg, rgba(239, 68, 68, 0.1) 0%, rgba(30, 41, 59, 0.8) 100%);
+        }
+
+        .trust-level.oem-level {
+            border-left: 6px solid #f59e0b;
+            background: linear-gradient(135deg, rgba(245, 158, 11, 0.1) 0%, rgba(30, 41, 59, 0.8) 100%);
+        }
+
+        .trust-level.firmware-level {
+            border-left: 6px solid #8b5cf6;
+            background: linear-gradient(135deg, rgba(139, 92, 246, 0.1) 0%, rgba(30, 41, 59, 0.8) 100%);
+        }
+
+        .trust-level.os-level {
+            border-left: 6px solid #10b981;
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.1) 0%, rgba(30, 41, 59, 0.8) 100%);
+        }
+
+        .trust-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .trust-icon {
+            font-size: 2.5rem;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+        }
+
+        .trust-title {
+            flex: 1;
+        }
+
+        .trust-title h3 {
+            color: #60a5fa;
+            margin: 0 0 0.5rem 0;
+            font-size: 1.4rem;
+        }
+
+        .trust-subtitle {
+            color: #94a3b8;
+            margin: 0;
+            font-style: italic;
+        }
+
+        .key-secrets-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1rem;
+            margin: 1rem 0;
+        }
+
+        .key-secret-card {
+            background: rgba(15, 23, 42, 0.8);
+            border: 1px solid #374151;
+            border-radius: 8px;
+            padding: 1rem;
+            transition: all 0.2s ease;
+        }
+
+        .key-secret-card:hover {
+            border-color: #60a5fa;
+            box-shadow: 0 4px 12px rgba(96, 165, 250, 0.2);
+        }
+
+        .key-secret-card h5 {
+            color: #60a5fa;
+            margin: 0 0 0.75rem 0;
+            font-size: 1rem;
+        }
+
+        .key-details {
+            color: #cbd5e1;
+            font-size: 0.9rem;
+            line-height: 1.5;
+        }
+
+        .key-details .purpose {
+            color: #10b981;
+            font-weight: 500;
+            margin-top: 0.5rem;
+        }
+
+        .verification-flow {
+            background: rgba(15, 23, 42, 0.6);
+            border-radius: 8px;
+            padding: 1rem;
+            margin: 1rem 0;
+            border: 1px dashed #475569;
+        }
+
+        .verification-flow h6 {
+            color: #f59e0b;
+            margin: 0 0 0.5rem 0;
+        }
+
+        .flow-steps {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .flow-step {
+            background: #1f2937;
+            color: #e5e7eb;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            border: 1px solid #374151;
+        }
+
+        .flow-arrow {
+            color: #60a5fa;
+            font-size: 1.2rem;
+        }
+
+        .interactive-section {
+            background: rgba(59, 130, 246, 0.1);
+            border: 2px solid rgba(59, 130, 246, 0.3);
+            border-radius: 12px;
+            padding: 2rem;
+            margin: 2rem 0;
+            text-align: center;
+        }
+
+        .demo-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+            margin: 2rem 0;
+        }
+
+        .attack-scenario {
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            border-radius: 8px;
+            padding: 1rem;
+            margin: 1rem 0;
+        }
+
+        .attack-scenario h6 {
+            color: #ef4444;
+            margin: 0 0 0.5rem 0;
+        }
+
+        .mitigation {
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            border-radius: 8px;
+            padding: 1rem;
+            margin: 0.5rem 0;
+        }
+
+        .mitigation h7 {
+            color: #10b981;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        @media (max-width: 768px) {
+            .trust-level:hover {
+                transform: none;
+            }
+
+            .key-secrets-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .flow-steps {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .flow-arrow {
+                transform: rotate(90deg);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header class="hero">
+            <h1>🔐 IA64 PC Architecture: Complete Secure & Measured Boot</h1>
+            <p>Deep dive into Intel x64 secure boot process from CPU eFuses through file system verification</p>
+
+            <div class="hero-actions">
+                <button onclick="startBootDemo()" class="cta-button">⚡ Interactive Boot Demo</button>
+                <button onclick="showTrustChain()" class="cta-button secondary">🔗 Trust Chain Explorer</button>
+            </div>
+        </header>
+
+        <div class="boot-architecture">
+            <h2>🏗️ Complete Boot Architecture Overview</h2>
+
+            <div class="trust-chain">
+                <!-- CPU/Silicon Level Trust -->
+                <div class="trust-level cpu-level">
+                    <div class="trust-header">
+                        <div class="trust-icon">🔥</div>
+                        <div class="trust-title">
+                            <h3>1. CPU Silicon Root of Trust (RoT)</h3>
+                            <p class="trust-subtitle">Hardware-enforced security foundation burned in silicon</p>
+                        </div>
+                        <button onclick="exploreCPUKeys()" class="demo-button">🔍 Explore Keys</button>
+                    </div>
+
+                    <div class="key-secrets-grid">
+                        <div class="key-secret-card">
+                            <h5>🔥 CPU eFuses (One-Time Programmable)</h5>
+                            <div class="key-details">
+                                <strong>Intel Boot Guard Root Keys (256-bit):</strong><br>
+                                • Burned during CPU manufacturing by Intel<br>
+                                • Immutable hardware root of trust<br>
+                                • Cannot be changed after burning<br>
+                                <div class="purpose">Purpose: Verify first code execution (ACM - Authenticated Code Module)</div>
+                            </div>
+                        </div>
+
+                        <div class="key-secret-card">
+                            <h5>🔐 Microcode Signing Key</h5>
+                            <div class="key-details">
+                                <strong>Intel Microcode Authentication:</strong><br>
+                                • RSA-2048 or ECC-P256 keys<br>
+                                • Verifies CPU microcode updates<br>
+                                • Prevents unauthorized CPU modifications<br>
+                                <div class="purpose">Purpose: Ensure microcode integrity and authenticity</div>
+                            </div>
+                        </div>
+
+                        <div class="key-secret-card">
+                            <h5>🛡️ Hardware Security Features</h5>
+                            <div class="key-details">
+                                <strong>CPU Security Capabilities:</strong><br>
+                                • Intel TXT (Trusted Execution Technology)<br>
+                                • Hardware random number generator<br>
+                                • AES-NI instruction acceleration<br>
+                                <div class="purpose">Purpose: Cryptographic acceleration and secure execution</div>
+                            </div>
+                        </div>
+
+                        <div class="key-secret-card">
+                            <h5>🔒 Fuse-based Configuration</h5>
+                            <div class="key-details">
+                                <strong>Security Policy Fuses:</strong><br>
+                                • Boot Guard enable/disable<br>
+                                • Measured vs Verified boot mode<br>
+                                • Debug interface disable<br>
+                                <div class="purpose">Purpose: Hardware-enforced security policy</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="verification-flow">
+                        <h6>🔄 CPU-Level Verification Flow:</h6>
+                        <div class="flow-steps">
+                            <span class="flow-step">Power On Reset</span>
+                            <span class="flow-arrow">→</span>
+                            <span class="flow-step">Read eFuses</span>
+                            <span class="flow-arrow">→</span>
+                            <span class="flow-step">Load ACM from Flash</span>
+                            <span class="flow-arrow">→</span>
+                            <span class="flow-step">Verify ACM Signature</span>
+                            <span class="flow-arrow">→</span>
+                            <span class="flow-step">Execute ACM</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- OEM Level Trust -->
+                <div class="trust-level oem-level">
+                    <div class="trust-header">
+                        <div class="trust-icon">🏭</div>
+                        <div class="trust-title">
+                            <h3>2. OEM Level Trust (Dell, HP, Lenovo)</h3>
+                            <p class="trust-subtitle">Platform-specific keys and TPM provisioning</p>
+                        </div>
+                        <button onclick="exploreOEMKeys()" class="demo-button">🔍 OEM Keys</button>
+                    </div>
+
+                    <div class="key-secrets-grid">
+                        <div class="key-secret-card">
+                            <h5>🔑 Boot Guard Key Manifest (KM)</h5>
+                            <div class="key-details">
+                                <strong>OEM Platform Key:</strong><br>
+                                • RSA-2048/3072 or ECC-P256/P384<br>
+                                • Signed by Intel's Boot Guard root key<br>
+                                • Unique per platform/model<br>
+                                <div class="purpose">Purpose: Verify Boot Guard Boot Policy Manifest</div>
+                            </div>
+                        </div>
+
+                        <div class="key-secret-card">
+                            <h5>📋 Boot Policy Manifest (BPM)</h5>
+                            <div class="key-details">
+                                <strong>Platform Boot Policy:</strong><br>
+                                • Defines UEFI firmware locations<br>
+                                • Specifies measurement/verification policy<br>
+                                • Contains OEM's UEFI public key hashes<br>
+                                <div class="purpose">Purpose: Configure Boot Guard behavior for platform</div>
+                            </div>
+                        </div>
+
+                        <div class="key-secret-card">
+                            <h5>🔐 TPM Provisioning by OEM</h5>
+                            <div class="key-details">
+                                <strong>TPM 2.0 Keys (Burned by OEM):</strong><br>
+                                • <strong>EK (Endorsement Key):</strong> TPM identity, burned in factory<br>
+                                • <strong>EK Certificate:</strong> TPM manufacturer attestation<br>
+                                • <strong>Platform Certificate:</strong> OEM platform binding<br>
+                                <div class="purpose">Purpose: Establish TPM authenticity and platform binding</div>
+                            </div>
+                        </div>
+
+                        <div class="key-secret-card">
+                            <h5>🏷️ SMBIOS & Asset Tags</h5>
+                            <div class="key-details">
+                                <strong>Platform Identification:</strong><br>
+                                • System UUID and serial numbers<br>
+                                • Asset tag and service tag<br>
+                                • BIOS vendor and version info<br>
+                                <div class="purpose">Purpose: Platform identification and inventory management</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="verification-flow">
+                        <h6>🔄 OEM-Level Verification Flow:</h6>
+                        <div class="flow-steps">
+                            <span class="flow-step">ACM Execution</span>
+                            <span class="flow-arrow">→</span>
+                            <span class="flow-step">Locate KM in Flash</span>
+                            <span class="flow-arrow">→</span>
+                            <span class="flow-step">Verify KM Signature</span>
+                            <span class="flow-arrow">→</span>
+                            <span class="flow-step">Load BPM</span>
+                            <span class="flow-arrow">→</span>
+                            <span class="flow-step">Verify UEFI Firmware</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Firmware Level Trust -->
+                <div class="trust-level firmware-level">
+                    <div class="trust-header">
+                        <div class="trust-icon">⚙️</div>
+                        <div class="trust-title">
+                            <h3>3. UEFI Firmware Level Trust</h3>
+                            <p class="trust-subtitle">Platform initialization and secure boot enforcement</p>
+                        </div>
+                        <button onclick="exploreUEFIKeys()" class="demo-button">🔍 UEFI Keys</button>
+                    </div>
+
+                    <div class="key-secrets-grid">
+                        <div class="key-secret-card">
+                            <h5>🔐 UEFI Secure Boot Keys</h5>
+                            <div class="key-details">
+                                <strong>Platform Key (PK) - Root Authority:</strong><br>
+                                • Single key controlling secure boot<br>
+                                • Usually OEM's root signing key<br>
+                                • Can enable/disable secure boot<br>
+                                <div class="purpose">Purpose: Ultimate control over secure boot configuration</div>
+                            </div>
+                        </div>
+
+                        <div class="key-secret-card">
+                            <h5>🔑 Key Exchange Key (KEK)</h5>
+                            <div class="key-details">
+                                <strong>Signature Database Management:</strong><br>
+                                • Microsoft's KEK (ubiquitous)<br>
+                                • OEM's KEK for platform control<br>
+                                • Can update db/dbx databases<br>
+                                <div class="purpose">Purpose: Manage allowed/forbidden signature databases</div>
+                            </div>
+                        </div>
+
+                        <div class="key-secret-card">
+                            <h5>📊 Signature Databases</h5>
+                            <div class="key-details">
+                                <strong>db (Allowed Signatures):</strong><br>
+                                • Microsoft Windows Production CA<br>
+                                • Microsoft Corporation UEFI CA<br>
+                                • OEM-specific certificates<br>
+                                <strong>dbx (Forbidden Signatures):</strong><br>
+                                • Revoked certificates and hashes<br>
+                                <div class="purpose">Purpose: Control which bootloaders can execute</div>
+                            </div>
+                        </div>
+
+                        <div class="key-secret-card">
+                            <h5>🛡️ Measured Boot (TPM PCRs)</h5>
+                            <div class="key-details">
+                                <strong>UEFI Measurements:</strong><br>
+                                • PCR[0]: BIOS/UEFI code measurement<br>
+                                • PCR[1]: BIOS/UEFI configuration<br>
+                                • PCR[2]: Option ROM code<br>
+                                • PCR[3]: Option ROM configuration<br>
+                                <div class="purpose">Purpose: Create tamper-evident boot log</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="verification-flow">
+                        <h6>🔄 UEFI Verification Flow:</h6>
+                        <div class="flow-steps">
+                            <span class="flow-step">UEFI Initialization</span>
+                            <span class="flow-arrow">→</span>
+                            <span class="flow-step">Check Secure Boot Status</span>
+                            <span class="flow-arrow">→</span>
+                            <span class="flow-step">Load Bootloader</span>
+                            <span class="flow-arrow">→</span>
+                            <span class="flow-step">Verify vs db/dbx</span>
+                            <span class="flow-arrow">→</span>
+                            <span class="flow-step">Execute if Valid</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- OS Level Trust -->
+                <div class="trust-level os-level">
+                    <div class="trust-header">
+                        <div class="trust-icon">🖥️</div>
+                        <div class="trust-title">
+                            <h3>4. Operating System Level Trust</h3>
+                            <p class="trust-subtitle">Kernel, drivers, and file system verification</p>
+                        </div>
+                        <button onclick="exploreOSKeys()" class="demo-button">🔍 OS Keys</button>
+                    </div>
+
+                    <div class="key-secrets-grid">
+                        <div class="key-secret-card">
+                            <h5>🥾 Bootloader Verification</h5>
+                            <div class="key-details">
+                                <strong>Windows Boot Manager (bootmgr.efi):</strong><br>
+                                • Signed by Microsoft Windows Production CA<br>
+                                • Verified by UEFI secure boot<br>
+                                • Measures boot components to TPM<br>
+                                <div class="purpose">Purpose: Secure transition from UEFI to OS kernel</div>
+                            </div>
+                        </div>
+
+                        <div class="key-secret-card">
+                            <h5>🔐 OS Kernel Verification</h5>
+                            <div class="key-details">
+                                <strong>Kernel Code Signing:</strong><br>
+                                • Windows: Microsoft kernel signing<br>
+                                • Linux: Distribution-specific keys<br>
+                                • Measured boot extends to PCR[8-15]<br>
+                                <div class="purpose">Purpose: Ensure kernel integrity and authenticity</div>
+                            </div>
+                        </div>
+
+                        <div class="key-secret-card">
+                            <h5>🚗 Driver Signing</h5>
+                            <div class="key-details">
+                                <strong>Kernel Mode Code Signing (KMCS):</strong><br>
+                                • Windows Hardware Certification<br>
+                                • Extended Validation (EV) certificates<br>
+                                • Driver signature enforcement<br>
+                                <div class="purpose">Purpose: Prevent malicious kernel-mode code execution</div>
+                            </div>
+                        </div>
+
+                        <div class="key-secret-card">
+                            <h5>💾 File System Integrity</h5>
+                            <div class="key-details">
+                                <strong>BitLocker Drive Encryption:</strong><br>
+                                • TPM-sealed encryption keys<br>
+                                • Boot measurement verification<br>
+                                • File system authentication<br>
+                                <div class="purpose">Purpose: Protect data at rest with hardware binding</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="verification-flow">
+                        <h6>🔄 OS-Level Verification Flow:</h6>
+                        <div class="flow-steps">
+                            <span class="flow-step">Bootloader Execution</span>
+                            <span class="flow-arrow">→</span>
+                            <span class="flow-step">Verify Kernel Signature</span>
+                            <span class="flow-arrow">→</span>
+                            <span class="flow-step">Load Kernel</span>
+                            <span class="flow-arrow">→</span>
+                            <span class="flow-step">Verify Driver Signatures</span>
+                            <span class="flow-arrow">→</span>
+                            <span class="flow-step">Unlock Encrypted FS</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SMM Security Deep Dive -->
+        <div class="boot-architecture">
+            <h2>🔒 System Management Mode (SMM) Security</h2>
+
+            <div class="key-secrets-grid">
+                <div class="key-secret-card">
+                    <h5>🛡️ SMM Isolation</h5>
+                    <div class="key-details">
+                        <strong>System Management RAM (SMRAM):</strong><br>
+                        • CPU-enforced memory protection<br>
+                        • Accessible only in SMM<br>
+                        • Hardware-locked during runtime<br>
+                        <div class="purpose">Purpose: Protect critical firmware code from OS</div>
+                    </div>
+                </div>
+
+                <div class="key-secret-card">
+                    <h5>🔐 SMI Handler Security</h5>
+                    <div class="key-details">
+                        <strong>System Management Interrupt Handlers:</strong><br>
+                        • Power management functions<br>
+                        • Hardware configuration access<br>
+                        • Platform security enforcement<br>
+                        <div class="purpose">Purpose: Secure platform management below OS level</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="attack-scenario">
+                <h6>⚠️ SMM Attack Vectors:</h6>
+                <p><strong>SMM Rootkits:</strong> Malicious code in SMM can persist across reboots and remain undetectable by OS-level security tools.</p>
+
+                <div class="mitigation">
+                    <h7>🛡️ Mitigations:</h7>
+                    <p>• SMRAM locking mechanisms • SMI handler input validation • UEFI security assessment</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Interactive Demo Section -->
+        <div class="interactive-section">
+            <h2>🎮 Interactive Demonstrations</h2>
+            <p>Explore each level of the boot chain with hands-on simulations</p>
+
+            <div class="demo-grid">
+                <button onclick="simulateBootGuard()" class="demo-button">🛡️ Boot Guard Simulation</button>
+                <button onclick="exploreTPMPCRs()" class="demo-button">📊 TPM PCR Explorer</button>
+                <button onclick="secureBootValidation()" class="demo-button">✅ Secure Boot Validation</button>
+                <button onclick="attackScenarios()" class="demo-button">⚔️ Attack Scenarios</button>
+            </div>
+
+            <div id="interactive-demo-result" class="demo-result" style="display: none;">
+                <!-- Interactive demo results appear here -->
+            </div>
+        </div>
+
+        <!-- Key Takeaways -->
+        <div class="boot-architecture">
+            <h2>🎯 Key Security Principles</h2>
+
+            <div class="key-secrets-grid">
+                <div class="key-secret-card">
+                    <h5>🔗 Chain of Trust</h5>
+                    <div class="key-details">
+                        Each component verifies the next before execution, creating an unbroken chain from hardware to application level.
+                    </div>
+                </div>
+
+                <div class="key-secret-card">
+                    <h5>📏 Measured Boot</h5>
+                    <div class="key-details">
+                        All boot components are measured into TPM PCRs, enabling remote attestation and tamper detection.
+                    </div>
+                </div>
+
+                <div class="key-secret-card">
+                    <h5>🔐 Hardware Root of Trust</h5>
+                    <div class="key-details">
+                        Security foundation begins in immutable hardware (CPU eFuses), not software that can be modified.
+                    </div>
+                </div>
+
+                <div class="key-secret-card">
+                    <h5>🛡️ Defense in Depth</h5>
+                    <div class="key-details">
+                        Multiple verification layers ensure that compromise of one component doesn't defeat entire security model.
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="demo-actions">
+            <button onclick="startCompleteBootDemo()" class="cta-button">🚀 Complete Boot Simulation</button>
+            <button onclick="window.location.href='../'" class="cta-button secondary">↩️ Back to Module 1</button>
+        </div>
+    </div>
+
+    <script src="ia64-boot-demo.js"></script>
+    <script>
+        // Initialize page
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('IA64 Secure Boot educational page loaded');
+            updateProgress('ia64-secure-boot', true);
+        });
+    </script>
+</body>
+</html>

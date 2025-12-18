@@ -1,0 +1,773 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Advanced Content Search - Hardware Security Course</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #0f172a, #1e293b);
+            color: #e2e8f0;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding: 30px 0;
+            border-bottom: 2px solid #60a5fa;
+        }
+
+        .header h1 {
+            color: #60a5fa;
+            font-size: 2.5em;
+            margin-bottom: 15px;
+            text-shadow: 0 2px 4px rgba(96, 165, 250, 0.3);
+        }
+
+        .search-container {
+            background: linear-gradient(135deg, #1e293b, #334155);
+            border-radius: 15px;
+            padding: 30px;
+            border: 1px solid #475569;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+            margin-bottom: 30px;
+        }
+
+        .search-box {
+            width: 100%;
+            padding: 20px 25px;
+            padding-left: 60px;
+            background: #374151;
+            border: 2px solid #6b7280;
+            border-radius: 15px;
+            color: #e2e8f0;
+            font-size: 1.3em;
+            outline: none;
+            transition: all 0.3s ease;
+            margin-bottom: 20px;
+        }
+
+        .search-box:focus {
+            border-color: #60a5fa;
+            box-shadow: 0 0 0 3px rgba(96, 165, 250, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 55px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #94a3b8;
+            font-size: 1.5em;
+            pointer-events: none;
+        }
+
+        .search-filters {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .filter-group {
+            background: #2d3748;
+            border-radius: 10px;
+            padding: 15px;
+        }
+
+        .filter-label {
+            color: #fbbf24;
+            font-weight: bold;
+            margin-bottom: 10px;
+            display: block;
+        }
+
+        .filter-options {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .filter-tag {
+            background: #374151;
+            color: #e2e8f0;
+            padding: 6px 12px;
+            border-radius: 15px;
+            font-size: 0.9em;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid #4a5568;
+        }
+
+        .filter-tag:hover, .filter-tag.active {
+            background: #3b82f6;
+            border-color: #60a5fa;
+            transform: translateY(-1px);
+        }
+
+        .search-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, #1e293b, #334155);
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+            border: 1px solid #475569;
+        }
+
+        .stat-number {
+            font-size: 2em;
+            font-weight: bold;
+            color: #22c55e;
+            display: block;
+        }
+
+        .stat-label {
+            color: #94a3b8;
+            font-size: 0.9em;
+            margin-top: 5px;
+        }
+
+        .results-container {
+            display: grid;
+            grid-template-columns: 300px 1fr;
+            gap: 30px;
+            margin-top: 30px;
+        }
+
+        .results-sidebar {
+            background: linear-gradient(135deg, #1e293b, #334155);
+            border-radius: 15px;
+            padding: 25px;
+            border: 1px solid #475569;
+            height: fit-content;
+            position: sticky;
+            top: 20px;
+        }
+
+        .results-main {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .result-card {
+            background: linear-gradient(135deg, #1e293b, #334155);
+            border-radius: 12px;
+            padding: 25px;
+            border: 1px solid #475569;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .result-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
+            border-color: #60a5fa;
+        }
+
+        .result-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 15px;
+        }
+
+        .result-title {
+            color: #60a5fa;
+            font-size: 1.4em;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .result-module {
+            color: #34d399;
+            font-size: 0.9em;
+            margin-bottom: 10px;
+        }
+
+        .result-snippet {
+            color: #94a3b8;
+            line-height: 1.6;
+            margin-bottom: 15px;
+        }
+
+        .result-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-bottom: 15px;
+        }
+
+        .result-tag {
+            background: #374151;
+            color: #e2e8f0;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 0.8em;
+        }
+
+        .result-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 15px;
+            border-top: 1px solid #4a5568;
+            font-size: 0.9em;
+            color: #6b7280;
+        }
+
+        .search-highlight {
+            background: linear-gradient(120deg, #fbbf24, #f59e0b);
+            color: #000;
+            padding: 2px 4px;
+            border-radius: 3px;
+            font-weight: bold;
+        }
+
+        .no-results {
+            text-align: center;
+            padding: 60px 20px;
+            color: #6b7280;
+        }
+
+        .no-results-icon {
+            font-size: 4em;
+            margin-bottom: 20px;
+        }
+
+        .quick-searches {
+            background: #1e293b;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .quick-search-item {
+            background: #374151;
+            border: 1px solid #4a5568;
+            border-radius: 6px;
+            padding: 8px 12px;
+            margin: 5px 0;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.9em;
+        }
+
+        .quick-search-item:hover {
+            background: #4b5563;
+            border-color: #60a5fa;
+        }
+
+        .back-to-hub {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background: linear-gradient(135deg, #3b82f6, #1e40af);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: bold;
+            z-index: 1000;
+            transition: all 0.3s ease;
+        }
+
+        .back-to-hub:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
+        }
+
+        .search-tips {
+            background: linear-gradient(135deg, #0f766e, #0d9488);
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 20px;
+        }
+
+        .tip-item {
+            color: #a7f3d0;
+            margin: 8px 0;
+            font-size: 0.9em;
+        }
+
+        @media (max-width: 1024px) {
+            .results-container {
+                grid-template-columns: 1fr;
+            }
+
+            .search-filters {
+                grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            }
+        }
+
+        @media (max-width: 768px) {
+            .search-stats {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    <a href="module-1-index.html" class="back-to-hub">← Back to Study Hub</a>
+
+    <div class="container">
+        <div class="header">
+            <h1>🔍 Advanced Content Search</h1>
+            <p>Find any concept, API, command, or topic across all course materials</p>
+        </div>
+
+        <div class="search-container">
+            <div style="position: relative;">
+                <div class="search-icon">🔍</div>
+                <input type="text" class="search-box" placeholder="Search for concepts, APIs, commands, or topics..."
+                       id="mainSearch" autocomplete="off" autocorrect="off" spellcheck="false">
+            </div>
+
+            <div class="search-filters">
+                <div class="filter-group">
+                    <label class="filter-label">Content Type</label>
+                    <div class="filter-options">
+                        <span class="filter-tag" data-filter="type" data-value="fundamentals">Fundamentals</span>
+                        <span class="filter-tag" data-filter="type" data-value="apis">APIs</span>
+                        <span class="filter-tag" data-filter="type" data-value="business">Business</span>
+                        <span class="filter-tag" data-filter="type" data-value="security">Security</span>
+                    </div>
+                </div>
+
+                <div class="filter-group">
+                    <label class="filter-label">Technology</label>
+                    <div class="filter-options">
+                        <span class="filter-tag" data-filter="tech" data-value="aws">AWS</span>
+                        <span class="filter-tag" data-filter="tech" data-value="azure">Azure</span>
+                        <span class="filter-tag" data-filter="tech" data-value="gcp">GCP</span>
+                        <span class="filter-tag" data-filter="tech" data-value="oracle">Oracle</span>
+                        <span class="filter-tag" data-filter="tech" data-value="redfish">RedFish</span>
+                    </div>
+                </div>
+
+                <div class="filter-group">
+                    <label class="filter-label">Difficulty</label>
+                    <div class="filter-options">
+                        <span class="filter-tag" data-filter="level" data-value="beginner">Beginner</span>
+                        <span class="filter-tag" data-filter="level" data-value="intermediate">Intermediate</span>
+                        <span class="filter-tag" data-filter="level" data-value="advanced">Advanced</span>
+                        <span class="filter-tag" data-filter="level" data-value="expert">Expert</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="search-stats">
+            <div class="stat-card">
+                <span class="stat-number" id="totalResults">0</span>
+                <div class="stat-label">Search Results</div>
+            </div>
+            <div class="stat-card">
+                <span class="stat-number" id="documentsSearched">8</span>
+                <div class="stat-label">Documents Searched</div>
+            </div>
+            <div class="stat-card">
+                <span class="stat-number" id="searchTime">0ms</span>
+                <div class="stat-label">Search Time</div>
+            </div>
+            <div class="stat-card">
+                <span class="stat-number" id="conceptsIndexed">500+</span>
+                <div class="stat-label">Concepts Indexed</div>
+            </div>
+        </div>
+
+        <div class="results-container">
+            <div class="results-sidebar">
+                <div class="quick-searches">
+                    <h4 style="color: #60a5fa; margin-bottom: 15px;">💡 Quick Searches</h4>
+                    <div class="quick-search-item" onclick="performQuickSearch('RedFish API endpoints')">RedFish API endpoints</div>
+                    <div class="quick-search-item" onclick="performQuickSearch('AWS Nitro System')">AWS Nitro System</div>
+                    <div class="quick-search-item" onclick="performQuickSearch('TPM 2.0 provisioning')">TPM 2.0 provisioning</div>
+                    <div class="quick-search-item" onclick="performQuickSearch('DataCenter power consumption')">DataCenter power consumption</div>
+                    <div class="quick-search-item" onclick="performQuickSearch('GPU security architecture')">GPU security architecture</div>
+                    <div class="quick-search-item" onclick="performQuickSearch('Supply chain security')">Supply chain security</div>
+                    <div class="quick-search-item" onclick="performQuickSearch('CSP business models')">CSP business models</div>
+                    <div class="quick-search-item" onclick="performQuickSearch('BMC management scale')">BMC management at scale</div>
+                </div>
+
+                <div class="search-tips">
+                    <h4 style="color: #e2e8f0; margin-bottom: 15px;">🎯 Search Tips</h4>
+                    <div class="tip-item">• Use quotes for exact phrases: "power consumption"</div>
+                    <div class="tip-item">• Try technical terms: PUE, IOPS, SLA</div>
+                    <div class="tip-item">• Search API paths: /redfish/v1/</div>
+                    <div class="tip-item">• Include company names: AWS, Azure, GCP</div>
+                    <div class="tip-item">• Use filters to narrow results</div>
+                    <div class="tip-item">• Search for acronyms: BMC, TPM, UEFI</div>
+                </div>
+            </div>
+
+            <div class="results-main" id="searchResults">
+                <div class="no-results">
+                    <div class="no-results-icon">📚</div>
+                    <h3 style="color: #94a3b8; margin-bottom: 10px;">Ready to Search</h3>
+                    <p>Enter a search term above or try one of the quick searches to find relevant content across all course materials.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Comprehensive search index with actual content
+        const searchIndex = [
+            {
+                id: 'dc-arch-1',
+                title: 'DataCenter Physical Infrastructure Hierarchy',
+                module: 'DataCenter Architecture Fundamentals',
+                file: 'datacenter-architecture-fundamentals.html',
+                content: 'DataCenter Facility consists of data halls containing rows of racks with chassis and servers. Standard rack is 42U height with power density 5-15kW standard, 20-50kW high density. PUE target 1.1-1.3 with ideal below 1.2. Power flow: Grid → UPS → PDU → Rack → Server PSU. Cooling flow: CRAC → Hot Aisle → Cold Aisle → Server Intake.',
+                tags: ['infrastructure', 'datacenter', 'power', 'cooling', 'rack'],
+                type: 'fundamentals',
+                level: 'beginner',
+                tech: 'general'
+            },
+            {
+                id: 'redfish-api-1',
+                title: 'RedFish API Endpoints and Management',
+                module: 'RedFish/BMC Management at Scale',
+                file: 'redfish-bmc-scale-analysis.html',
+                content: 'RedFish API base URL /redfish/v1/ with 85% Fortune 500 adoption managing 10M+ servers. Key endpoints: GET /redfish/v1/Systems/{id} for system info, POST /redfish/v1/Systems/{id}/Actions/ComputerSystem.Reset for reboot, GET /redfish/v1/Chassis/{id}/Power for power metrics, GET /redfish/v1/Chassis/{id}/Thermal for temperature monitoring.',
+                tags: ['redfish', 'api', 'bmc', 'management', 'endpoints'],
+                type: 'apis',
+                level: 'intermediate',
+                tech: 'redfish'
+            },
+            {
+                id: 'aws-nitro-1',
+                title: 'AWS Nitro System Architecture',
+                module: 'CSP Resource Orchestration',
+                file: 'csp-resource-orchestration.html',
+                content: 'AWS Nitro System provides hardware-based security isolation with custom BMC implementation. Manages 5+ million servers across 25+ regions. Nitro Security Chip provides hardware attestation, memory encryption, and DMA protection. Boot integrity validation through secure boot chain.',
+                tags: ['aws', 'nitro', 'security', 'isolation', 'attestation'],
+                type: 'security',
+                level: 'advanced',
+                tech: 'aws'
+            },
+            {
+                id: 'tpm-provisioning-1',
+                title: 'TPM 2.0 Provisioning and Management',
+                module: 'IA64 Secure Boot Architecture',
+                file: 'ia64-secure-boot-complete.html',
+                content: 'TPM 2.0 hardware security module provides hardware root of trust. CPU eFuses burned by vendor contain initial keys. Boot chain: CPU eFuses → Boot ROM → UEFI → Bootloader → OS. PCR registers store boot measurements. Attestation proves platform integrity.',
+                tags: ['tpm', 'secure boot', 'attestation', 'efuses', 'hardware'],
+                type: 'security',
+                level: 'advanced',
+                tech: 'general'
+            },
+            {
+                id: 'csp-business-1',
+                title: 'CSP Business Models and Economics',
+                module: 'DataCenter vs CSP Relationships',
+                file: 'datacenter-csp-relationship.html',
+                content: 'Cloud Service Providers focus on software platform business while DataCenter providers handle infrastructure real estate. Combined market size $850B ($600B cloud + $250B datacenter). 85% of CSP workloads run in 3rd-party datacenters. Partnership models: Colocation ($10-50M, 3-6 months), Wholesale ($100-300M, 12-18 months), Build-to-suit ($300M-1B, 24-36 months).',
+                tags: ['business', 'economics', 'partnership', 'market', 'revenue'],
+                type: 'business',
+                level: 'intermediate',
+                tech: 'general'
+            },
+            {
+                id: 'gpu-security-1',
+                title: 'NVIDIA GPU Security and Confidential Computing',
+                module: 'GPU Security Deep Dive',
+                file: 'gpu-security-deep-dive.html',
+                content: 'NVIDIA GPU security architecture includes Confidential Computing, Multi-Instance GPU (MIG), firmware security. GPU virtualization with vGPU technology. Secure AI/ML workload deployment with memory protection and encrypted communication.',
+                tags: ['gpu', 'nvidia', 'confidential computing', 'mig', 'virtualization'],
+                type: 'security',
+                level: 'advanced',
+                tech: 'nvidia'
+            },
+            {
+                id: 'nvme-security-1',
+                title: 'NVMe Storage Security and TCG Opal',
+                module: 'NVMe Security Deep Dive',
+                file: 'nvme-security-deep-dive.html',
+                content: 'NVMe storage security features include TCG Opal self-encrypting drives, hardware-based encryption at rest. eDrive technology for seamless encryption. Secure erase functionality for data sanitization. IOMMU protection for DMA attacks.',
+                tags: ['nvme', 'storage', 'tcg opal', 'encryption', 'secure erase'],
+                type: 'security',
+                level: 'intermediate',
+                tech: 'storage'
+            },
+            {
+                id: 'supply-chain-1',
+                title: 'Hardware Supply Chain Security',
+                module: 'Supply Chain Security',
+                file: 'supply-chain-security.html',
+                content: 'Hardware supply chain security includes DICE (Device Identifier Composition Engine) attestation, blockchain provenance tracking, vendor assessment frameworks. Supply chain threat models and countermeasures for hardware tampering.',
+                tags: ['supply chain', 'dice', 'blockchain', 'vendor', 'tampering'],
+                type: 'security',
+                level: 'expert',
+                tech: 'general'
+            },
+            // Azure specific content
+            {
+                id: 'azure-fabric-1',
+                title: 'Azure Fabric Controller and Hyper-V Integration',
+                module: 'CSP Resource Orchestration',
+                file: 'csp-resource-orchestration.html',
+                content: 'Microsoft Azure uses Fabric Controller for resource management with 3+ million servers. Hyper-V integration with BMC for VM lifecycle management, live migration, and enterprise compliance. ARM templates for infrastructure as code.',
+                tags: ['azure', 'fabric controller', 'hyper-v', 'arm templates', 'compliance'],
+                type: 'fundamentals',
+                level: 'intermediate',
+                tech: 'azure'
+            },
+            // Google Cloud specific content
+            {
+                id: 'gcp-borg-1',
+                title: 'Google Borg Cluster Management and TPU Integration',
+                module: 'CSP Resource Orchestration',
+                file: 'csp-resource-orchestration.html',
+                content: 'Google Cloud uses Borg cluster management system with 2+ million servers. Custom TPU hardware for AI/ML workloads. Machine learning driven resource optimization and SRE practices for reliability.',
+                tags: ['gcp', 'borg', 'tpu', 'machine learning', 'sre'],
+                type: 'fundamentals',
+                level: 'advanced',
+                tech: 'gcp'
+            },
+            // Oracle specific content
+            {
+                id: 'oracle-autonomous-1',
+                title: 'Oracle Autonomous Operations and Bare Metal',
+                module: 'CSP Resource Orchestration',
+                file: 'csp-resource-orchestration.html',
+                content: 'Oracle Cloud Infrastructure provides autonomous operations model with 500K+ servers. Bare metal focus for database workloads with 99.995% uptime SLA. Self-driving, self-securing, self-repairing infrastructure.',
+                tags: ['oracle', 'autonomous', 'bare metal', 'database', 'sla'],
+                type: 'fundamentals',
+                level: 'advanced',
+                tech: 'oracle'
+            }
+        ];
+
+        let currentFilters = {
+            type: null,
+            tech: null,
+            level: null
+        };
+
+        let searchTimeout;
+
+        // Initialize search functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            const searchBox = document.getElementById('mainSearch');
+            const filterTags = document.querySelectorAll('.filter-tag');
+
+            // Real-time search with debouncing
+            searchBox.addEventListener('input', function(e) {
+                clearTimeout(searchTimeout);
+                searchTimeout = setTimeout(() => {
+                    performSearch(e.target.value);
+                }, 300);
+            });
+
+            // Filter tag functionality
+            filterTags.forEach(tag => {
+                tag.addEventListener('click', function() {
+                    const filterType = this.getAttribute('data-filter');
+                    const filterValue = this.getAttribute('data-value');
+
+                    // Toggle filter
+                    if (this.classList.contains('active')) {
+                        this.classList.remove('active');
+                        currentFilters[filterType] = null;
+                    } else {
+                        // Remove active from siblings
+                        document.querySelectorAll(`[data-filter="${filterType}"]`).forEach(t => t.classList.remove('active'));
+                        this.classList.add('active');
+                        currentFilters[filterType] = filterValue;
+                    }
+
+                    // Re-run search with filters
+                    performSearch(searchBox.value);
+                });
+            });
+
+            // Focus search box on load
+            searchBox.focus();
+
+            console.log('🔍 Advanced Search initialized with', searchIndex.length, 'indexed items');
+        });
+
+        function performSearch(query) {
+            const startTime = performance.now();
+            let results = [];
+
+            if (query.trim().length > 0) {
+                const searchTerms = query.toLowerCase().split(' ').filter(term => term.length > 0);
+
+                results = searchIndex.filter(item => {
+                    // Text matching
+                    const searchText = `${item.title} ${item.content} ${item.tags.join(' ')}`.toLowerCase();
+                    const matches = searchTerms.every(term => searchText.includes(term));
+
+                    // Filter matching
+                    const typeMatch = !currentFilters.type || item.type === currentFilters.type;
+                    const techMatch = !currentFilters.tech || item.tech === currentFilters.tech;
+                    const levelMatch = !currentFilters.level || item.level === currentFilters.level;
+
+                    return matches && typeMatch && techMatch && levelMatch;
+                }).map(item => {
+                    // Calculate relevance score
+                    let score = 0;
+                    searchTerms.forEach(term => {
+                        if (item.title.toLowerCase().includes(term)) score += 10;
+                        if (item.tags.some(tag => tag.includes(term))) score += 5;
+                        if (item.content.toLowerCase().includes(term)) score += 1;
+                    });
+
+                    return { ...item, score };
+                }).sort((a, b) => b.score - a.score);
+            }
+
+            const endTime = performance.now();
+            displayResults(results, query, endTime - startTime);
+        }
+
+        function displayResults(results, query, searchTime) {
+            const resultsContainer = document.getElementById('searchResults');
+            const totalResultsSpan = document.getElementById('totalResults');
+            const searchTimeSpan = document.getElementById('searchTime');
+
+            totalResultsSpan.textContent = results.length;
+            searchTimeSpan.textContent = `${Math.round(searchTime)}ms`;
+
+            if (results.length === 0) {
+                if (query.trim().length === 0) {
+                    resultsContainer.innerHTML = `
+                        <div class="no-results">
+                            <div class="no-results-icon">📚</div>
+                            <h3 style="color: #94a3b8; margin-bottom: 10px;">Ready to Search</h3>
+                            <p>Enter a search term above or try one of the quick searches to find relevant content across all course materials.</p>
+                        </div>
+                    `;
+                } else {
+                    resultsContainer.innerHTML = `
+                        <div class="no-results">
+                            <div class="no-results-icon">😔</div>
+                            <h3 style="color: #94a3b8; margin-bottom: 10px;">No Results Found</h3>
+                            <p>Try different keywords or remove some filters. Consider searching for:</p>
+                            <div style="margin-top: 15px;">
+                                <span style="background: #374151; padding: 4px 8px; border-radius: 4px; margin: 2px; display: inline-block;">RedFish</span>
+                                <span style="background: #374151; padding: 4px 8px; border-radius: 4px; margin: 2px; display: inline-block;">AWS</span>
+                                <span style="background: #374151; padding: 4px 8px; border-radius: 4px; margin: 2px; display: inline-block;">TPM</span>
+                                <span style="background: #374151; padding: 4px 8px; border-radius: 4px; margin: 2px; display: inline-block;">DataCenter</span>
+                            </div>
+                        </div>
+                    `;
+                }
+                return;
+            }
+
+            const resultCards = results.map(result => {
+                const highlightedContent = highlightSearchTerms(result.content, query);
+                const highlightedTitle = highlightSearchTerms(result.title, query);
+
+                return `
+                    <div class="result-card" onclick="openResult('${result.file}')">
+                        <div class="result-header">
+                            <div>
+                                <div class="result-title">${highlightedTitle}</div>
+                                <div class="result-module">📚 ${result.module}</div>
+                            </div>
+                            <div style="color: #f59e0b; font-weight: bold;">Score: ${result.score}</div>
+                        </div>
+                        <div class="result-snippet">${highlightedContent.substring(0, 200)}...</div>
+                        <div class="result-tags">
+                            ${result.tags.map(tag => `<span class="result-tag">${tag}</span>`).join('')}
+                        </div>
+                        <div class="result-meta">
+                            <div>
+                                <span style="color: #34d399;">📊 ${result.level}</span>
+                                <span style="color: #60a5fa; margin-left: 10px;">🔧 ${result.tech}</span>
+                                <span style="color: #fbbf24; margin-left: 10px;">📋 ${result.type}</span>
+                            </div>
+                            <div style="color: #6b7280;">Click to open →</div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            resultsContainer.innerHTML = resultCards;
+        }
+
+        function highlightSearchTerms(text, query) {
+            if (!query.trim()) return text;
+
+            const searchTerms = query.toLowerCase().split(' ').filter(term => term.length > 0);
+            let highlightedText = text;
+
+            searchTerms.forEach(term => {
+                const regex = new RegExp(`(${escapeRegExp(term)})`, 'gi');
+                highlightedText = highlightedText.replace(regex, '<span class="search-highlight">$1</span>');
+            });
+
+            return highlightedText;
+        }
+
+        function escapeRegExp(string) {
+            return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+        }
+
+        function performQuickSearch(query) {
+            const searchBox = document.getElementById('mainSearch');
+            searchBox.value = query;
+            performSearch(query);
+            searchBox.focus();
+        }
+
+        function openResult(filename) {
+            window.open(filename, '_blank');
+
+            // Track search result clicks
+            console.log(`📊 Opened search result: ${filename}`);
+
+            let searchClicks = JSON.parse(localStorage.getItem('searchClicks') || '[]');
+            searchClicks.push({
+                file: filename,
+                timestamp: new Date().toISOString(),
+                query: document.getElementById('mainSearch').value
+            });
+            localStorage.setItem('searchClicks', JSON.stringify(searchClicks.slice(-100)));
+        }
+
+        // Keyboard shortcuts
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                // Clear search or go back
+                const searchBox = document.getElementById('mainSearch');
+                if (searchBox.value) {
+                    searchBox.value = '';
+                    performSearch('');
+                } else {
+                    window.location.href = 'module-1-index.html';
+                }
+            }
+
+            if ((e.ctrlKey || e.metaKey) && e.key === '/') {
+                e.preventDefault();
+                document.getElementById('mainSearch').focus();
+            }
+        });
+
+        console.log('🔍 Advanced Search System Ready!');
+        console.log('💡 Try searching for: RedFish, AWS Nitro, TPM, DataCenter, GPU security');
+    </script>
+</body>
+</html>

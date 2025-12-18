@@ -1,0 +1,779 @@
+---
+layout: default
+title: "Threat Modeling: DataCenter Multi-Tenant Security"
+description: "Comprehensive threat analysis for secure boot, multi-tenant resource allocation, and workload isolation"
+module_id: "module-1-hardware-rot"
+permalink: /modules/module-1-hardware-rot/threat-modeling-datacenter/
+---
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Threat Modeling: DataCenter Security Workflows</title>
+    <link rel="stylesheet" href="../../assets/css/main.css">
+    <link rel="stylesheet" href="../../assets/css/interactive.css">
+    <link rel="stylesheet" href="../../assets/css/demo-enhancements.css">
+    <link rel="stylesheet" href="../../assets/css/hardware-demo.css">
+    <style>
+        .threat-model {
+            background: linear-gradient(135deg, #7f1d1d 0%, #991b1b 100%);
+            border-radius: 16px;
+            padding: 2rem;
+            margin: 2rem 0;
+            border: 1px solid #ef4444;
+        }
+
+        .workflow-section {
+            background: rgba(15, 23, 42, 0.9);
+            border: 1px solid #475569;
+            border-radius: 12px;
+            padding: 2rem;
+            margin: 2rem 0;
+            transition: all 0.3s ease;
+        }
+
+        .workflow-section:hover {
+            border-color: #ef4444;
+            box-shadow: 0 8px 25px rgba(239, 68, 68, 0.2);
+        }
+
+        .threat-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            margin: 2rem 0;
+        }
+
+        .threat-category {
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            border-radius: 12px;
+            padding: 1.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .threat-category:hover {
+            border-color: #ef4444;
+            transform: translateY(-4px);
+            box-shadow: 0 8px 25px rgba(239, 68, 68, 0.3);
+        }
+
+        .threat-title {
+            color: #ef4444;
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .threat-scenarios {
+            margin: 1rem 0;
+        }
+
+        .threat-scenario {
+            background: rgba(15, 23, 42, 0.8);
+            border-left: 4px solid #ef4444;
+            border-radius: 6px;
+            padding: 1rem;
+            margin: 0.75rem 0;
+        }
+
+        .scenario-header {
+            color: #fca5a5;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .scenario-details {
+            color: #e5e7eb;
+            font-size: 0.9rem;
+            line-height: 1.5;
+        }
+
+        .mitigation {
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            border-radius: 8px;
+            padding: 1rem;
+            margin: 1rem 0;
+        }
+
+        .mitigation-title {
+            color: #10b981;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .attack-tree {
+            background: rgba(15, 23, 42, 0.8);
+            border: 1px solid #374151;
+            border-radius: 12px;
+            padding: 2rem;
+            margin: 2rem 0;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.9rem;
+        }
+
+        .attack-node {
+            margin: 0.5rem 0;
+            padding: 0.5rem;
+            border-left: 3px solid #ef4444;
+            padding-left: 1rem;
+            position: relative;
+        }
+
+        .attack-node.root {
+            border-left-color: #dc2626;
+            color: #fca5a5;
+            font-weight: 600;
+        }
+
+        .attack-node.branch {
+            border-left-color: #f59e0b;
+            color: #fbbf24;
+            margin-left: 2rem;
+        }
+
+        .attack-node.leaf {
+            border-left-color: #10b981;
+            color: #6ee7b7;
+            margin-left: 4rem;
+        }
+
+        .multi-tenant-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+
+        .tenant-isolation {
+            background: linear-gradient(135deg, #1e40af 0%, #3730a3 100%);
+            border-radius: 12px;
+            padding: 1.5rem;
+            color: white;
+            transition: all 0.3s ease;
+        }
+
+        .tenant-isolation:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 25px rgba(30, 64, 175, 0.4);
+        }
+
+        .isolation-layer {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            padding: 1rem;
+            margin: 1rem 0;
+        }
+
+        .resource-allocation {
+            background: rgba(59, 130, 246, 0.1);
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            border-radius: 8px;
+            padding: 1rem;
+            margin: 1rem 0;
+        }
+
+        .allocation-flow {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin: 1rem 0;
+            flex-wrap: wrap;
+        }
+
+        .flow-step {
+            background: #1f2937;
+            border: 1px solid #374151;
+            border-radius: 20px;
+            padding: 0.5rem 1rem;
+            font-size: 0.8rem;
+            color: #e5e7eb;
+            transition: all 0.2s ease;
+        }
+
+        .flow-step:hover {
+            border-color: #60a5fa;
+            background: #1e40af;
+        }
+
+        .flow-arrow {
+            color: #60a5fa;
+            font-size: 1.2rem;
+        }
+
+        .security-controls {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+            margin: 1.5rem 0;
+        }
+
+        .control-item {
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            border-radius: 8px;
+            padding: 1rem;
+            transition: all 0.2s ease;
+        }
+
+        .control-item:hover {
+            border-color: #10b981;
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.2);
+        }
+
+        .control-title {
+            color: #10b981;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .vpn-architecture {
+            background: rgba(139, 92, 246, 0.1);
+            border: 1px solid rgba(139, 92, 246, 0.3);
+            border-radius: 12px;
+            padding: 2rem;
+            margin: 2rem 0;
+        }
+
+        .network-diagram {
+            display: grid;
+            grid-template-columns: 1fr 2fr 1fr;
+            gap: 2rem;
+            align-items: center;
+            margin: 2rem 0;
+        }
+
+        .network-zone {
+            background: rgba(15, 23, 42, 0.8);
+            border: 2px solid #8b5cf6;
+            border-radius: 12px;
+            padding: 1.5rem;
+            text-align: center;
+        }
+
+        .network-connection {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #8b5cf6;
+            font-size: 2rem;
+        }
+
+        @media (max-width: 768px) {
+            .threat-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .multi-tenant-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .network-diagram {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+
+            .allocation-flow {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .flow-arrow {
+                transform: rotate(90deg);
+                align-self: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header class="hero">
+            <h1>⚔️ Threat Modeling: DataCenter Security Workflows</h1>
+            <p>Comprehensive threat analysis for secure boot, multi-tenant deployments, and workload isolation</p>
+
+            <div class="hero-actions">
+                <button onclick="exploreBootThreats()" class="cta-button">🥾 Boot Threats</button>
+                <button onclick="exploreMultiTenantThreats()" class="cta-button secondary">🏢 Multi-Tenant Threats</button>
+            </div>
+        </header>
+
+        <!-- Secure Boot Threat Model -->
+        <div class="threat-model">
+            <h2>🥾 Secure/Measured Boot Threat Model</h2>
+            <p class="section-intro">Comprehensive analysis of threats targeting the boot process from power-on to OS handoff</p>
+
+            <div class="workflow-section">
+                <h3>🎯 Boot Process Attack Surface</h3>
+
+                <div class="threat-grid">
+                    <div class="threat-category">
+                        <div class="threat-title">
+                            <span>🔥</span> Hardware-Level Threats
+                        </div>
+
+                        <div class="threat-scenarios">
+                            <div class="threat-scenario">
+                                <div class="scenario-header">Supply Chain Compromise</div>
+                                <div class="scenario-details">
+                                    <strong>Attack:</strong> Malicious hardware implants inserted during manufacturing<br>
+                                    <strong>Impact:</strong> Backdoor access, data exfiltration, persistent control<br>
+                                    <strong>Likelihood:</strong> Low (nation-state actors)
+                                </div>
+                            </div>
+
+                            <div class="threat-scenario">
+                                <div class="scenario-header">Hardware Tampering</div>
+                                <div class="scenario-details">
+                                    <strong>Attack:</strong> Physical modification of SPI flash, BMC access<br>
+                                    <strong>Impact:</strong> Firmware replacement, secure boot bypass<br>
+                                    <strong>Likelihood:</strong> Medium (physical access required)
+                                </div>
+                            </div>
+
+                            <div class="threat-scenario">
+                                <div class="scenario-header">eFuse Manipulation</div>
+                                <div class="scenario-details">
+                                    <strong>Attack:</strong> Advanced techniques to modify CPU eFuses<br>
+                                    <strong>Impact:</strong> Bypass Boot Guard, disable security features<br>
+                                    <strong>Likelihood:</strong> Very Low (state-level capabilities)
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mitigation">
+                            <div class="mitigation-title">🛡️ Hardware Mitigations</div>
+                            • Hardware security modules (HSMs)<br>
+                            • Tamper detection and response<br>
+                            • Supply chain attestation<br>
+                            • Physical security controls
+                        </div>
+                    </div>
+
+                    <div class="threat-category">
+                        <div class="threat-title">
+                            <span>⚙️</span> Firmware-Level Threats
+                        </div>
+
+                        <div class="threat-scenarios">
+                            <div class="threat-scenario">
+                                <div class="scenario-header">UEFI Bootkit</div>
+                                <div class="scenario-details">
+                                    <strong>Attack:</strong> Malicious UEFI modules persisting across reboots<br>
+                                    <strong>Impact:</strong> OS compromise, persistent backdoor<br>
+                                    <strong>Likelihood:</strong> Medium (sophisticated attackers)
+                                </div>
+                            </div>
+
+                            <div class="threat-scenario">
+                                <div class="scenario-header">Secure Boot Bypass</div>
+                                <div class="scenario-details">
+                                    <strong>Attack:</strong> Exploitation of signature verification flaws<br>
+                                    <strong>Impact:</strong> Unsigned bootloader execution<br>
+                                    <strong>Likelihood:</strong> Medium (CVE history)
+                                </div>
+                            </div>
+
+                            <div class="threat-scenario">
+                                <div class="scenario-header">SMM Rootkit</div>
+                                <div class="scenario-details">
+                                    <strong>Attack:</strong> Malicious System Management Mode code<br>
+                                    <strong>Impact:</strong> Hypervisor-level compromise, stealth persistence<br>
+                                    <strong>Likelihood:</strong> Low (requires firmware vulnerability)
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mitigation">
+                            <div class="mitigation-title">🛡️ Firmware Mitigations</div>
+                            • Measured boot with TPM attestation<br>
+                            • UEFI secure boot enforcement<br>
+                            • SMI handler hardening<br>
+                            • Regular firmware updates
+                        </div>
+                    </div>
+                </div>
+
+                <div class="attack-tree">
+                    <h4>🌳 Boot Process Attack Tree</h4>
+                    <div class="attack-node root">Goal: Compromise System Boot Process</div>
+                    <div class="attack-node branch">└─ Bypass Hardware Root of Trust</div>
+                    <div class="attack-node leaf">   ├─ Physical SPI Flash Modification</div>
+                    <div class="attack-node leaf">   ├─ BMC Compromise for Flash Access</div>
+                    <div class="attack-node leaf">   └─ Supply Chain Insertion</div>
+                    <div class="attack-node branch">└─ Exploit Boot Guard Vulnerabilities</div>
+                    <div class="attack-node leaf">   ├─ ACM Signature Bypass</div>
+                    <div class="attack-node leaf">   ├─ Key Manifest Tampering</div>
+                    <div class="attack-node leaf">   └─ Boot Policy Modification</div>
+                    <div class="attack-node branch">└─ UEFI Firmware Compromise</div>
+                    <div class="attack-node leaf">   ├─ Secure Boot Database Modification</div>
+                    <div class="attack-node leaf">   ├─ DXE Driver Injection</div>
+                    <div class="attack-node leaf">   └─ SMM Code Injection</div>
+                    <div class="attack-node branch">└─ OS Bootloader Attack</div>
+                    <div class="attack-node leaf">   ├─ Bootloader Signature Bypass</div>
+                    <div class="attack-node leaf">   ├─ Configuration Tampering</div>
+                    <div class="attack-node leaf">   └─ Kernel Parameter Injection</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Multi-Tenant DataCenter Threat Model -->
+        <div class="threat-model">
+            <h2>🏢 Multi-Tenant DataCenter Security Model</h2>
+            <p class="section-intro">Comprehensive security architecture for customer workload isolation and resource allocation</p>
+
+            <div class="workflow-section">
+                <h3>🏗️ Multi-Tenant Architecture Overview</h3>
+
+                <div class="multi-tenant-grid">
+                    <div class="tenant-isolation">
+                        <h4>🔒 Compute Isolation</h4>
+                        <div class="isolation-layer">
+                            <strong>Hardware Level:</strong><br>
+                            • Intel VT-x / AMD-V virtualization<br>
+                            • IOMMU for device isolation<br>
+                            • CPU cache partitioning<br>
+                            • Memory encryption (TME/SME)
+                        </div>
+                        <div class="isolation-layer">
+                            <strong>Hypervisor Level:</strong><br>
+                            • Type-1 hypervisor (ESXi, Hyper-V, KVM)<br>
+                            • VM memory isolation<br>
+                            • CPU scheduling isolation<br>
+                            • Interrupt handling separation
+                        </div>
+                    </div>
+
+                    <div class="tenant-isolation">
+                        <h4>🌐 Network Isolation</h4>
+                        <div class="isolation-layer">
+                            <strong>Layer 2 Isolation:</strong><br>
+                            • VLAN segmentation<br>
+                            • VxLAN overlay networks<br>
+                            • SR-IOV for hardware isolation<br>
+                            • MAC address filtering
+                        </div>
+                        <div class="isolation-layer">
+                            <strong>Layer 3+ Isolation:</strong><br>
+                            • VPC (Virtual Private Cloud)<br>
+                            • Software-defined networking<br>
+                            • Firewall rules per tenant<br>
+                            • NAT gateway isolation
+                        </div>
+                    </div>
+
+                    <div class="tenant-isolation">
+                        <h4>💾 Storage Isolation</h4>
+                        <div class="isolation-layer">
+                            <strong>Block Storage:</strong><br>
+                            • LUN masking and zoning<br>
+                            • Volume-level encryption<br>
+                            • Access control per tenant<br>
+                            • Secure multipath I/O
+                        </div>
+                        <div class="isolation-layer">
+                            <strong>Object Storage:</strong><br>
+                            • Bucket-level policies<br>
+                            • IAM integration<br>
+                            • Data encryption at rest<br>
+                            • Audit logging per tenant
+                        </div>
+                    </div>
+
+                    <div class="tenant-isolation">
+                        <h4>🎮 GPU Isolation</h4>
+                        <div class="isolation-layer">
+                            <strong>GPU Partitioning:</strong><br>
+                            • NVIDIA MIG (Multi-Instance GPU)<br>
+                            • SR-IOV for GPU virtualization<br>
+                            • Memory partition isolation<br>
+                            • Compute engine separation
+                        </div>
+                        <div class="isolation-layer">
+                            <strong>Security Features:</strong><br>
+                            • GPU memory encryption<br>
+                            • Secure boot for GPU firmware<br>
+                            • Attestation for GPU state<br>
+                            • Confidential computing support
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="workflow-section">
+                <h3>🎯 Resource Allocation Workflow</h3>
+
+                <div class="resource-allocation">
+                    <h4>📋 Customer Resource Request Process</h4>
+
+                    <div class="allocation-flow">
+                        <div class="flow-step">Customer Portal</div>
+                        <div class="flow-arrow">→</div>
+                        <div class="flow-step">Resource Validation</div>
+                        <div class="flow-arrow">→</div>
+                        <div class="flow-step">Capacity Planning</div>
+                        <div class="flow-arrow">→</div>
+                        <div class="flow-step">Security Assessment</div>
+                        <div class="flow-arrow">→</div>
+                        <div class="flow-step">Resource Allocation</div>
+                        <div class="flow-arrow">→</div>
+                        <div class="flow-step">Deployment</div>
+                    </div>
+
+                    <div class="security-controls">
+                        <div class="control-item">
+                            <div class="control-title">🔍 Request Validation</div>
+                            <div class="control-details">
+                                • Customer identity verification<br>
+                                • Resource limit enforcement<br>
+                                • Compliance requirement check<br>
+                                • Anti-fraud detection
+                            </div>
+                        </div>
+
+                        <div class="control-item">
+                            <div class="control-title">🏗️ Capacity Management</div>
+                            <div class="control-details">
+                                • Resource availability check<br>
+                                • Performance isolation validation<br>
+                                • Conflict detection<br>
+                                • SLA requirement verification
+                            </div>
+                        </div>
+
+                        <div class="control-item">
+                            <div class="control-title">🛡️ Security Assessment</div>
+                            <div class="control-details">
+                                • Tenant isolation verification<br>
+                                • Compliance requirement mapping<br>
+                                • Risk assessment scoring<br>
+                                • Security control selection
+                            </div>
+                        </div>
+
+                        <div class="control-item">
+                            <div class="control-title">⚡ Automated Deployment</div>
+                            <div class="control-details">
+                                • Infrastructure as Code (IaC)<br>
+                                • Configuration management<br>
+                                • Security policy application<br>
+                                • Monitoring setup
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="workflow-section">
+                <h3>🌐 VPN/VPC Secure Deployment Architecture</h3>
+
+                <div class="vpn-architecture">
+                    <h4>🔒 Network Security Architecture</h4>
+
+                    <div class="network-diagram">
+                        <div class="network-zone">
+                            <h5>Customer Premises</h5>
+                            <div class="zone-details">
+                                • Corporate Network<br>
+                                • VPN Client<br>
+                                • Identity Provider<br>
+                                • Security Policies
+                            </div>
+                        </div>
+
+                        <div class="network-connection">
+                            🔒 ← VPN/MPLS → 🔒
+                        </div>
+
+                        <div class="network-zone">
+                            <h5>DataCenter VPC</h5>
+                            <div class="zone-details">
+                                • Virtual Private Gateway<br>
+                                • Customer Subnet<br>
+                                • Isolated Resources<br>
+                                • Private DNS
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="security-controls">
+                        <div class="control-item">
+                            <div class="control-title">🛡️ VPN Security Controls</div>
+                            <div class="control-details">
+                                <strong>Authentication:</strong><br>
+                                • Multi-factor authentication<br>
+                                • Certificate-based authentication<br>
+                                • RADIUS/LDAP integration<br>
+                                <strong>Encryption:</strong><br>
+                                • IPSec with AES-256<br>
+                                • Perfect Forward Secrecy<br>
+                                • Regular key rotation
+                            </div>
+                        </div>
+
+                        <div class="control-item">
+                            <div class="control-title">🌐 VPC Security Controls</div>
+                            <div class="control-details">
+                                <strong>Network Isolation:</strong><br>
+                                • Private subnets<br>
+                                • Security groups<br>
+                                • Network ACLs<br>
+                                <strong>Access Control:</strong><br>
+                                • IAM policies<br>
+                                • Resource-based policies<br>
+                                • Cross-account access controls
+                            </div>
+                        </div>
+
+                        <div class="control-item">
+                            <div class="control-title">📊 Monitoring & Logging</div>
+                            <div class="control-details">
+                                <strong>Network Monitoring:</strong><br>
+                                • VPC Flow Logs<br>
+                                • VPN connection logs<br>
+                                • DNS query logging<br>
+                                <strong>Security Monitoring:</strong><br>
+                                • Intrusion detection<br>
+                                • Anomaly detection<br>
+                                • Threat intelligence integration
+                            </div>
+                        </div>
+
+                        <div class="control-item">
+                            <div class="control-title">🔄 Automated Response</div>
+                            <div class="control-details">
+                                <strong>Incident Response:</strong><br>
+                                • Automated blocking<br>
+                                • Traffic analysis<br>
+                                • Forensic data collection<br>
+                                <strong>Compliance:</strong><br>
+                                • Policy enforcement<br>
+                                • Audit trail generation<br>
+                                • Regulatory reporting
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="workflow-section">
+                <h3>⚠️ Multi-Tenant Security Threats</h3>
+
+                <div class="threat-grid">
+                    <div class="threat-category">
+                        <div class="threat-title">
+                            <span>🏃‍♂️</span> Tenant Escape Attacks
+                        </div>
+
+                        <div class="threat-scenarios">
+                            <div class="threat-scenario">
+                                <div class="scenario-header">Hypervisor Escape</div>
+                                <div class="scenario-details">
+                                    <strong>Attack:</strong> VM breakout to access host or other VMs<br>
+                                    <strong>Impact:</strong> Cross-tenant data access, privilege escalation<br>
+                                    <strong>Mitigation:</strong> Hypervisor hardening, regular patching
+                                </div>
+                            </div>
+
+                            <div class="threat-scenario">
+                                <div class="scenario-header">Container Escape</div>
+                                <div class="scenario-details">
+                                    <strong>Attack:</strong> Container breakout to host namespace<br>
+                                    <strong>Impact:</strong> Host compromise, lateral movement<br>
+                                    <strong>Mitigation:</strong> Runtime security, kernel hardening
+                                </div>
+                            </div>
+
+                            <div class="threat-scenario">
+                                <div class="scenario-header">Network Isolation Bypass</div>
+                                <div class="scenario-details">
+                                    <strong>Attack:</strong> VLAN hopping, network misconfigurations<br>
+                                    <strong>Impact:</strong> Cross-tenant network access<br>
+                                    <strong>Mitigation:</strong> Micro-segmentation, SDN controls
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="threat-category">
+                        <div class="threat-title">
+                            <span>📊</span> Resource Exhaustion Attacks
+                        </div>
+
+                        <div class="threat-scenarios">
+                            <div class="threat-scenario">
+                                <div class="scenario-header">Noisy Neighbor</div>
+                                <div class="scenario-details">
+                                    <strong>Attack:</strong> Resource monopolization affecting other tenants<br>
+                                    <strong>Impact:</strong> Performance degradation, SLA violations<br>
+                                    <strong>Mitigation:</strong> Resource quotas, QoS enforcement
+                                </div>
+                            </div>
+
+                            <div class="threat-scenario">
+                                <div class="scenario-header">Side-Channel Attacks</div>
+                                <div class="scenario-details">
+                                    <strong>Attack:</strong> Timing, cache, electromagnetic side channels<br>
+                                    <strong>Impact:</strong> Cryptographic key extraction<br>
+                                    <strong>Mitigation:</strong> Hardware isolation, crypto hardening
+                                </div>
+                            </div>
+
+                            <div class="threat-scenario">
+                                <div class="scenario-header">Storage Interference</div>
+                                <div class="scenario-details">
+                                    <strong>Attack:</strong> I/O intensive workloads affecting storage performance<br>
+                                    <strong>Impact:</strong> Cross-tenant performance impact<br>
+                                    <strong>Mitigation:</strong> I/O throttling, dedicated storage tiers
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Interactive Threat Modeling -->
+        <div class="interactive-section">
+            <h2>🎮 Interactive Threat Modeling</h2>
+            <p>Explore security threats and mitigations through hands-on simulations</p>
+
+            <div class="demo-grid">
+                <button onclick="simulateBootAttack()" class="demo-button">⚔️ Boot Attack Simulation</button>
+                <button onclick="exploreTenantIsolation()" class="demo-button">🔒 Isolation Testing</button>
+                <button onclick="analyzeResourceAllocation()" class="demo-button">📊 Resource Analysis</button>
+                <button onclick="testNetworkSecurity()" class="demo-button">🌐 Network Security</button>
+            </div>
+
+            <div id="threat-demo-result" class="demo-result" style="display: none;">
+                <!-- Interactive demo results appear here -->
+            </div>
+        </div>
+
+        <div class="demo-actions">
+            <button onclick="startThreatAssessment()" class="cta-button">🎯 Complete Threat Assessment</button>
+            <button onclick="window.location.href='../'" class="cta-button secondary">↩️ Back to Module 1</button>
+        </div>
+    </div>
+
+    <script src="threat-modeling-demo.js"></script>
+    <script>
+        // Initialize page
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('Threat Modeling educational page loaded');
+            updateProgress('threat-modeling', true);
+        });
+
+        // Progress tracking
+        function updateProgress(demoId, completed) {
+            localStorage.setItem(`hw_security_progress_${demoId}`, completed);
+            console.log(`Progress updated: ${demoId} = ${completed}`);
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,618 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DataCenter Architecture Fundamentals - Racks, Chassis & Resource Management</title>
+    <link rel="stylesheet" href="../../assets/css/styles.css">
+    <link rel="stylesheet" href="../../assets/css/demo-enhancements.css">
+    <style>
+        .datacenter-tier { background: linear-gradient(135deg, #1f2937 0%, #111827 100%); }
+        .architecture-tier { background: linear-gradient(135deg, #0f766e 0%, #0d9488 100%); }
+        .dc-component { border-left: 4px solid #1f2937; background: #f9fafb; }
+        .rack-layout { background: #ecfdf5; border: 2px solid #059669; }
+        .dc-demo { background: #f8fafc; border: 1px solid #e2e8f0; }
+        .csp-pattern { background: #fef3c7; border-left: 3px solid #f59e0b; }
+        .fault-tolerance { background: #ddd6fe; border: 2px solid #8b5cf6; }
+    </style>
+</head>
+
+<body>
+    <header class="demo-header">
+        <nav>
+            <a href="../../index.html">🏠 Course Home</a>
+            <a href="../module-0-crypto/index.html">📖 Module 0</a>
+            <a href="index.html">🔧 Module 1</a>
+        </nav>
+        <h1>🏢 DataCenter Architecture Fundamentals</h1>
+        <p>Racks, Chassis, Resource Management & CSP Patterns</p>
+    </header>
+
+    <main class="demo-container">
+        <!-- DataCenter Physical Architecture -->
+        <section class="demo-section">
+            <h2 class="section-title datacenter-tier">🏗️ DataCenter Physical Architecture</h2>
+
+            <div class="dc-component">
+                <h3>🏢 DataCenter Hierarchy & Layout</h3>
+                <div class="dc-demo">
+                    <h4>Physical Infrastructure Layers</h4>
+                    <pre class="code-block">
+# DataCenter Physical Hierarchy
+
+┌─────────────────────────────────────────────────────────────┐
+│                    DataCenter Facility                     │
+│  Location: US-East-1 (Northern Virginia)                   │
+│  Size: 750,000 sq ft, 150MW power capacity                 │
+└─────────────────────┬───────────────────────────────────────┘
+                      │
+┌─────────────────────▼───────────────────────────────────────┐
+│                     Data Halls                              │
+│  • Hall A: Compute (40 MW)    • Hall B: Storage (30 MW)   │
+│  • Hall C: Network (20 MW)    • Hall D: AI/ML (60 MW)     │
+└─────────────────────┬───────────────────────────────────────┘
+                      │
+┌─────────────────────▼───────────────────────────────────────┐
+│                   Rack Rows                                │
+│  Row 1-10: General Compute    Row 11-15: GPU Clusters      │
+│  Row 16-20: Storage Arrays    Row 21-25: Network Spine     │
+└─────────────────────┬───────────────────────────────────────┘
+                      │
+┌─────────────────────▼───────────────────────────────────────┐
+│              Individual Racks (42U)                        │
+│  • 20-25 kW power per rack   • Redundant power feeds      │
+│  • Hot/Cold aisle design     • Liquid cooling capable     │
+└─────────────────────┬───────────────────────────────────────┘
+                      │
+┌─────────────────────▼───────────────────────────────────────┐
+│                Server Chassis                              │
+│  • 1U: Dense compute servers  • 2U: GPU training nodes    │
+│  • 4U: Storage servers       • 10U: Network switches      │
+└─────────────────────────────────────────────────────────────┘
+
+# Key Design Principles:
+• Fault Isolation: Hardware failures contained within zones
+• Scalability: Modular expansion (add racks/rows/halls)
+• Efficiency: Power/cooling optimization (PUE < 1.3)
+• Redundancy: N+1 power, 2N cooling, diverse network paths
+                    </pre>
+
+                    <h4>Rack-Level Resource Composition</h4>
+                    <ul>
+                        <li><strong>Compute Racks:</strong> 20-40 dual-socket servers (80-160 CPU cores per rack)</li>
+                        <li><strong>GPU Racks:</strong> 4-8 high-density GPU nodes (32-64 GPUs per rack)</li>
+                        <li><strong>Storage Racks:</strong> 200-400TB raw capacity (NVMe/SSD arrays)</li>
+                        <li><strong>Network Racks:</strong> Spine/leaf switches with 100G/400G ports</li>
+                        <li><strong>Power Distribution:</strong> 208V 3-phase, redundant PDUs per rack</li>
+                        <li><strong>Cooling Infrastructure:</strong> In-row cooling, liquid cooling loops</li>
+                    </ul>
+                </div>
+
+                <h3>🔧 Server Chassis Architecture</h3>
+                <div class="rack-layout">
+                    <h4>Standard Server Form Factors</h4>
+                    <pre class="code-block">
+# 1U Compute Server (Dense CPU-focused)
+┌─────────────────────────────────────────────────────────┐
+│ 2x Intel Xeon 8480+ (56 cores)  │ 512GB DDR5 │ 2x PSU │
+│ 2x 25GbE NICs │ 2x NVMe SSD    │ BMC       │ Serial │
+└─────────────────────────────────────────────────────────┘
+Use Case: Web servers, microservices, general compute
+
+# 2U AI/ML Training Server (GPU-focused)
+┌─────────────────────────────────────────────────────────┐
+│ 2x AMD EPYC 9654 (96 cores)     │ 1TB DDR5  │ 2x PSU  │
+│ 8x NVIDIA H100 SXM5 (NVLink)   │ 200G IB   │ BMC     │
+│ 4x NVMe SSD │ Liquid Cooling    │ GPU Mgmt  │ Serial  │
+└─────────────────────────────────────────────────────────┘
+Use Case: Large language model training, deep learning
+
+# 4U Storage Server (Capacity-focused)
+┌─────────────────────────────────────────────────────────┐
+│ 2x Intel Xeon 4410Y (24 cores)  │ 256GB DDR5│ 2x PSU  │
+│ 36x NVMe SSD (15.36TB each)     │ 100GbE    │ BMC     │
+│ HW RAID │ Dual Controllers      │ Expanders │ Serial  │
+└─────────────────────────────────────────────────────────┘
+Use Case: Distributed storage, object storage, databases
+
+# Network Switch (10U Spine Switch)
+┌─────────────────────────────────────────────────────────┐
+│ 64x 400GbE QSFP-DD ports       │ Redundant │ 2x PSU   │
+│ Broadcom Tomahawk 5 ASIC       │ Mgmt CPU   │ BMC     │
+│ 25.6 Tbps switching capacity   │ Telemetry  │ Console │
+└─────────────────────────────────────────────────────────┘
+Use Case: Spine layer switching, east-west traffic
+                    </pre>
+
+                    <h4>Chassis Management & Monitoring</h4>
+                    <pre class="code-block">
+# BMC (Baseboard Management Controller) Functions
+Primary Functions:
+• Out-of-band management (independent of OS)
+• Power control (remote power on/off/reset)
+• Hardware monitoring (temperatures, fans, power)
+• Console redirection (serial over LAN)
+• Virtual media mounting (remote OS installation)
+• Firmware updates (BIOS, BMC, peripheral firmware)
+
+# RedFish API Integration
+GET /redfish/v1/Systems/1
+{
+  "Id": "1",
+  "Name": "Compute Server 1",
+  "SystemType": "Physical",
+  "Manufacturer": "Dell Inc.",
+  "Model": "PowerEdge R750",
+  "ProcessorSummary": {
+    "Count": 2,
+    "Model": "Intel Xeon Gold 6338"
+  },
+  "MemorySummary": {
+    "TotalSystemMemoryGiB": 512
+  },
+  "PowerState": "On",
+  "IndicatorLED": "Off",
+  "Boot": {
+    "BootSourceOverrideEnabled": "Disabled"
+  }
+}
+
+# Chassis-Level Resource Discovery
+curl -X GET https://bmc.rack47.dc1.company.com/redfish/v1/Chassis/1 \
+  -H "Authorization: Basic $(echo -n admin:password | base64)"
+
+Response shows:
+• Physical location and asset tags
+• Power and thermal status
+• Network adapter configuration
+• Storage controller status
+• PCIe device enumeration
+                    </pre>
+                </div>
+            </div>
+        </section>
+
+        <!-- CSP Resource Composition Patterns -->
+        <section class="demo-section">
+            <h2 class="section-title architecture-tier">☁️ CSP Resource Composition Patterns</h2>
+
+            <div class="dc-component">
+                <h3>🎯 Major CSP Architecture Patterns</h3>
+
+                <div class="csp-pattern">
+                    <h4>AWS Architecture Pattern</h4>
+                    <pre class="code-block">
+# AWS Nitro System Architecture
+┌─────────────────────────────────────────────────────────────┐
+│                   AWS Nitro System                          │
+│                                                             │
+│  ┌─────────────┐  ┌─────────────┐  ┌─────────────────────┐ │
+│  │ Nitro Card  │  │ Nitro Card  │  │   Nitro Controller │ │
+│  │ (VPC)       │  │ (EBS)       │  │   (Instance Mgmt)   │ │
+│  │             │  │             │  │                     │ │
+│  └─────────────┘  └─────────────┘  └─────────────────────┘ │
+│          │                │                    │           │
+│  ┌───────▼────────────────▼────────────────────▼─────────┐ │
+│  │              Nitro Hypervisor                        │ │
+│  │        (Hardware-accelerated virtualization)         │ │
+│  └───────────────────────────────────────────────────────┘ │
+│          │                                                │
+│  ┌───────▼──────────────────────────────────────────────┐ │
+│  │                Server Hardware                        │ │
+│  │  CPU: Custom Graviton or Intel/AMD                   │ │
+│  │  Memory: DDR4/DDR5 up to 24TB                       │ │
+│  │  Storage: Local NVMe + Nitro EBS offload            │ │
+│  │  Network: 400Gbps with SR-IOV                       │ │
+│  └───────────────────────────────────────────────────────┘ │
+└─────────────────────────────────────────────────────────────┘
+
+# Resource Composition Example: EC2 c7g.16xlarge
+Physical Hardware Allocation:
+- CPU Cores: 64 vCPUs (AWS Graviton3 processor)
+- Memory: 128 GiB (dedicated allocation)
+- Network: Up to 50 Gbps (hardware accelerated)
+- Storage: EBS-optimized up to 40 Gbps
+- Isolation: Hardware-level via Nitro security chip
+
+Instance Provisioning Workflow:
+1. Placement Engine → Select optimal hardware based on:
+   - CPU/memory requirements
+   - Network proximity to other resources
+   - Availability zone constraints
+   - Hardware health and utilization
+
+2. Nitro Hypervisor → Configure isolated execution environment
+3. Nitro Cards → Provision dedicated network/storage paths
+4. Instance Boot → Load customer AMI with hardware isolation
+                    </pre>
+
+                    <h4>Azure Architecture Pattern</h4>
+                    <pre class="code-block">
+# Azure Host Guardian Service (HGS) + Hyper-V Architecture
+┌─────────────────────────────────────────────────────────────┐
+│                Microsoft Azure Architecture                 │
+│                                                             │
+│  ┌─────────────────┐  ┌─────────────────┐                 │
+│  │      Hyper-V     │  │   Host Guardian │                 │
+│  │   Hypervisor     │  │    Service      │                 │
+│  │                  │  │    (HGS)        │                 │
+│  └─────────────────┘  └─────────────────┘                 │
+│          │                      │                          │
+│  ┌───────▼──────────────────────▼────────────────────────┐ │
+│  │              Windows Server Host OS                   │ │
+│  │         (Nano Server or Server Core)                  │ │
+│  └───────────────────────────────────────────────────────┘ │
+│          │                                                │
+│  ┌───────▼──────────────────────────────────────────────┐ │
+│  │                Physical Hardware                      │ │
+│  │  CPU: Intel/AMD with virtualization extensions       │ │
+│  │  TPM: 2.0 for measured boot and attestation         │ │
+│  │  Network: Mellanox/Broadcom 100G+ NICs              │ │
+│  │  Storage: NVMe with Azure Storage offload            │ │
+│  └───────────────────────────────────────────────────────┘ │
+└─────────────────────────────────────────────────────────────┘
+
+# Resource Composition Example: Azure HBv4 (HPC workloads)
+Physical Hardware Allocation:
+- CPU: AMD EPYC 9V33X (352 cores, specialized for HPC)
+- Memory: 1.4 TB DDR5 (for memory-intensive workloads)
+- Network: 400 Gb/s InfiniBand (low-latency MPI)
+- Storage: Local NVMe + Premium SSD remote storage
+- Isolation: Hyper-V + HGS attestation
+
+Fabric Controller Resource Allocation:
+1. Goal State Engine → Determine optimal placement
+2. Resource Health Monitor → Exclude failed hardware
+3. Network Controller → Configure SDN and load balancing
+4. Hyper-V Host → Create isolated VM with dedicated resources
+5. Guest OS Boot → Windows/Linux with Azure Agent integration
+                    </pre>
+
+                    <h4>Google Cloud Architecture Pattern</h4>
+                    <pre class="code-block">
+# Google Borg/Kubernetes Architecture (GKE/GCE)
+┌─────────────────────────────────────────────────────────────┐
+│              Google Cloud Platform                         │
+│                                                             │
+│  ┌─────────────────┐  ┌─────────────────┐                 │
+│  │     Borg        │  │   Kubernetes    │                 │
+│  │   Scheduler     │  │   (GKE Node)    │                 │
+│  │                 │  │                 │                 │
+│  └─────────────────┘  └─────────────────┘                 │
+│          │                      │                          │
+│  ┌───────▼──────────────────────▼────────────────────────┐ │
+│  │                 gLinux OS                              │ │
+│  │        (Google's custom Linux distribution)           │ │
+│  └───────────────────────────────────────────────────────┘ │
+│          │                                                │
+│  ┌───────▼──────────────────────────────────────────────┐ │
+│  │               Custom Hardware                         │ │
+│  │  CPU: Custom Tensor Processing Units (TPUs)          │ │
+│  │  CPU: Intel/AMD for general compute                  │ │
+│  │  Network: Custom Jupiter network fabric              │ │
+│  │  Storage: Colossus distributed file system           │ │
+│  └───────────────────────────────────────────────────────┘ │
+└─────────────────────────────────────────────────────────────┘
+
+# Resource Composition Example: GCE n2-highmem-128
+Physical Hardware Allocation:
+- CPU: Intel Cascade Lake (up to 128 vCPUs)
+- Memory: 864 GB (optimized for memory-intensive apps)
+- Network: Up to 100 Gbps with gVNIC acceleration
+- Storage: Persistent disks with up to 2.4 GB/s throughput
+- Isolation: Custom KVM hypervisor + hardware isolation
+
+Google Borg Resource Management:
+1. Borg Master → Global cluster scheduling decisions
+2. Borglet Agent → Local resource management and monitoring
+3. Resource Quotas → Fair share allocation across tenants
+4. Preemption → Higher priority jobs can preempt lower priority
+5. Live Migration → Move workloads for maintenance/optimization
+                    </pre>
+
+                    <h4>Oracle Cloud Infrastructure (OCI) Pattern</h4>
+                    <pre class="code-block">
+# OCI Bare Metal + Virtualized Architecture
+┌─────────────────────────────────────────────────────────────┐
+│            Oracle Cloud Infrastructure                     │
+│                                                             │
+│  ┌─────────────────┐  ┌─────────────────┐                 │
+│  │   Bare Metal    │  │   VM Instance   │                 │
+│  │   Instance      │  │   (KVM-based)   │                 │
+│  │                 │  │                 │                 │
+│  └─────────────────┘  └─────────────────┘                 │
+│          │                      │                          │
+│  ┌───────▼──────────────────────▼────────────────────────┐ │
+│  │            Oracle Linux / Custom Kernel               │ │
+│  │         (Unbreakable Enterprise Kernel)               │ │
+│  └───────────────────────────────────────────────────────┘ │
+│          │                                                │
+│  ┌───────▼──────────────────────────────────────────────┐ │
+│  │              Enterprise Hardware                      │ │
+│  │  CPU: Intel Xeon/AMD EPYC (enterprise grade)        │ │
+│  │  Memory: Large memory configurations (up to 2TB)     │ │
+│  │  Network: RDMA-capable 100G+ networking              │ │
+│  │  Storage: NVMe with guaranteed IOPS performance      │ │
+│  └───────────────────────────────────────────────────────┘ │
+└─────────────────────────────────────────────────────────────┘
+
+# Resource Composition Example: OCI BM.Standard3.64 (Bare Metal)
+Direct Hardware Access:
+- CPU: 2x Intel Xeon Platinum 8358 (64 cores, 2.6 GHz)
+- Memory: 1 TB DDR4 (direct access, no virtualization overhead)
+- Network: Dual 25 Gbps with RDMA capability
+- Storage: 6.4 TB Local NVMe + Block Volume attachments
+- Isolation: Physical isolation (entire server dedicated)
+
+OCI Control Plane Resource Allocation:
+1. Compute Service → Physical server assignment and provisioning
+2. Networking Service → VCN and subnet configuration
+3. Storage Service → Block volume attachment and performance SLA
+4. Identity Service → Access control and audit logging
+5. Monitoring → Hardware-level telemetry and alerting
+                    </pre>
+                </div>
+            </div>
+        </section>
+
+        <!-- Fault Tolerance & Redundancy -->
+        <section class="demo-section">
+            <h2 class="section-title">🔄 Fault Tolerance & Resource Redundancy</h2>
+
+            <div class="fault-tolerance">
+                <h3>💪 Multi-Level Redundancy Design</h3>
+
+                <div class="dc-demo">
+                    <h4>Hardware Redundancy Layers</h4>
+                    <pre class="code-block">
+# Fault Tolerance Hierarchy
+
+┌─────────────────────────────────────────────────────────────┐
+│                Geographic Redundancy                        │
+│  Multiple Regions: us-east-1, us-west-2, eu-west-1        │
+│  Disaster Recovery: Cross-region replication               │
+│  Latency: 50-150ms inter-region                           │
+└─────────────────────┬───────────────────────────────────────┘
+                      │
+┌─────────────────────▼───────────────────────────────────────┐
+│              Availability Zone Redundancy                  │
+│  AZ-A: Independent power/cooling  │  AZ-B: Separate facility│
+│  Network: Diverse fiber paths     │  SLA: 99.99% uptime    │
+└─────────────────────┬───────────────────────────────────────┘
+                      │
+┌─────────────────────▼───────────────────────────────────────┐
+│                Rack-Level Redundancy                       │
+│  Power: N+1 UPS + dual utility feeds                      │
+│  Network: Dual ToR switches with diverse uplinks          │
+│  Cooling: Redundant CRAC units per row                    │
+└─────────────────────┬───────────────────────────────────────┘
+                      │
+┌─────────────────────▼───────────────────────────────────────┐
+│               Server-Level Redundancy                      │
+│  PSU: Dual power supplies (A+B power feeds)               │
+│  Storage: RAID configurations + hot spares                │
+│  Network: Dual NICs with link aggregation                 │
+│  Memory: ECC with SDDC (chipkill protection)              │
+└─────────────────────────────────────────────────────────────┘
+
+# Component MTBF (Mean Time Between Failures)
+Server Components MTBF:
+- CPU: 100,000+ hours (11+ years)
+- Memory: 1,000,000+ hours (114+ years per DIMM)
+- Storage (NVMe): 1,500,000+ hours (171+ years)
+- Power Supply: 300,000+ hours (34+ years)
+- Network Interface: 500,000+ hours (57+ years)
+
+Datacenter Infrastructure MTBF:
+- UPS System: 87,600 hours (10 years)
+- Cooling System: 43,800 hours (5 years)
+- Network Switch: 700,000 hours (80 years)
+- Power Distribution: 1,000,000+ hours (114+ years)
+                    </pre>
+
+                    <h4>Automated Fault Detection & Response</h4>
+                    <pre class="code-block">
+# Fault Detection Mechanisms
+
+Hardware Monitoring (BMC/RedFish):
+• Temperature sensors: CPU, memory, ambient
+• Power monitoring: Input voltage, current draw, efficiency
+• Fan speed monitoring: RPM, failure detection
+• Storage health: SMART data, wear leveling, bad sectors
+• Network interface: Link state, error counters, throughput
+
+Software Monitoring (OS/Hypervisor):
+• Process health: Application responsiveness, memory leaks
+• Kernel panics: System crashes, hardware exceptions
+• Network connectivity: Ping, traceroute, bandwidth tests
+• Storage performance: IOPS, latency, queue depth
+
+# Automated Response Actions
+Fault Response Workflow:
+1. Detection → Hardware sensor or software health check fails
+2. Validation → Confirm fault through multiple monitoring sources
+3. Classification → Determine fault severity (critical/warning/info)
+4. Isolation → Remove faulty component from service rotation
+5. Notification → Alert operations team and update service status
+6. Recovery → Activate redundant resources or migrate workloads
+7. Replacement → Schedule maintenance for hardware replacement
+
+Example Fault Response Script:
+#!/bin/bash
+# Automated server fault response
+
+FAILED_SERVER="$1"
+FAULT_TYPE="$2"
+
+case $FAULT_TYPE in
+    "memory_error")
+        # Isolate server and migrate VMs
+        echo "Memory fault detected on $FAILED_SERVER"
+        kubectl cordon $FAILED_SERVER
+        kubectl drain $FAILED_SERVER --ignore-daemonsets
+        ;;
+    "network_failure")
+        # Activate backup network paths
+        echo "Network fault on $FAILED_SERVER"
+        # Update load balancer to remove server
+        aws elbv2 deregister-targets --target-group-arn $TG_ARN \
+            --targets Id=$FAILED_SERVER
+        ;;
+    "storage_degradation")
+        # Begin data migration to healthy storage
+        echo "Storage degradation on $FAILED_SERVER"
+        # Trigger RAID rebuild or data replication
+        mdadm --manage /dev/md0 --remove /dev/sdb1
+        ;;
+esac
+                    </pre>
+                </div>
+
+                <h3>⚡ Live Migration & Workload Mobility</h3>
+                <div class="dc-demo">
+                    <h4>VM/Container Live Migration Patterns</h4>
+                    <pre class="code-block">
+# Live Migration Technologies by CSP
+
+AWS Live Migration (Nitro):
+• Maintenance Events: Automatic VM migration during host maintenance
+• Instance Rebalancing: Move instances for optimal resource utilization
+• Availability Zone Mobility: Cross-AZ migration for disaster recovery
+• Process: Memory pre-copy → Stop & copy → Resume on target host
+
+Migration Workflow:
+1. Pre-migration → Copy memory pages while VM continues running
+2. Final Stop & Copy → Brief pause (10-100ms) to copy final state
+3. Network Redirection → Update network routing to new host
+4. Storage Continuation → Shared storage accessible from new host
+5. Cleanup → Remove VM state from source host
+
+Azure Live Migration (Hyper-V):
+• Planned Maintenance: Zero-downtime host updates
+• Memory Preservation: Live migration maintains all VM memory state
+• Storage Migration: Can migrate storage and compute independently
+• Network Continuity: MAC address preservation for network identity
+
+migration_script.ps1:
+Move-VM -VMName "WebServer01" -DestinationHost "HyperVHost02" `
+        -DestinationStoragePath "\\SharedStorage\VMs\" `
+        -IncludeStorage -AsJob
+
+Google Cloud Live Migration:
+• Transparent to Guest: No configuration changes required in VM
+• Automatic Scheduling: Triggered by maintenance or failures
+• Memory Bandwidth Optimization: Compressed memory transfer
+• GPU Migration: Experimental support for GPU workload migration
+
+gcloud compute instances move $INSTANCE_NAME \
+    --destination-zone=us-central1-b \
+    --async
+
+Oracle Cloud Live Migration:
+• Bare Metal Support: Live migration even for dedicated servers
+• Database Optimization: Special handling for Oracle Database workloads
+• RDMA Preservation: Maintain high-performance network connections
+• Enterprise Features: Integration with enterprise management tools
+                    </pre>
+
+                    <h4>Cluster-Level Resource Management</h4>
+                    <pre class="code-block">
+# Kubernetes Resource Management Patterns
+
+Resource Allocation Strategy:
+apiVersion: v1
+kind: Node
+metadata:
+  name: worker-node-gpu-01
+  labels:
+    node-type: gpu-compute
+    hardware-gen: h100
+    zone: us-east-1a
+spec:
+  capacity:
+    cpu: "128"           # 2x64-core processors
+    memory: "1024Gi"     # 1TB system memory
+    nvidia.com/gpu: "8"  # 8x H100 GPUs
+    ephemeral-storage: "7680Gi"  # 7.5TB local NVMe
+  allocatable:
+    cpu: "126"           # Reserve 2 cores for system
+    memory: "1000Gi"     # Reserve 24GB for system
+    nvidia.com/gpu: "8"
+    ephemeral-storage: "7168Gi"
+
+Pod Resource Scheduling:
+apiVersion: v1
+kind: Pod
+metadata:
+  name: ai-training-job
+spec:
+  nodeSelector:
+    hardware-gen: h100
+  containers:
+  - name: pytorch-trainer
+    resources:
+      requests:
+        cpu: "32"
+        memory: "256Gi"
+        nvidia.com/gpu: "4"
+      limits:
+        cpu: "64"
+        memory: "512Gi"
+        nvidia.com/gpu: "4"
+  affinity:
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+        - matchExpressions:
+          - key: zone
+            operator: In
+            values: ["us-east-1a", "us-east-1b"]
+    podAntiAffinity:
+      preferredDuringSchedulingIgnoredDuringExecution:
+      - weight: 100
+        podAffinityTerm:
+          labelSelector:
+            matchLabels:
+              app: ai-training
+          topologyKey: kubernetes.io/hostname
+                    </pre>
+                </div>
+            </div>
+        </section>
+
+        <!-- Interactive DataCenter Demo -->
+        <section class="demo-section">
+            <h2 class="section-title">🎮 Interactive DataCenter Architecture Demo</h2>
+
+            <div class="demo-controls">
+                <button onclick="visualizeDataCenterLayout()" class="demo-button">
+                    🏢 DataCenter Layout
+                </button>
+                <button onclick="demonstrateResourceProvisioning()" class="demo-button">
+                    ⚙️ Resource Provisioning
+                </button>
+                <button onclick="simulateFaultTolerance()" class="demo-button">
+                    🔄 Fault Tolerance
+                </button>
+                <button onclick="showCSPComparison()" class="demo-button">
+                    ☁️ CSP Comparison
+                </button>
+            </div>
+
+            <div id="datacenter-demo-output" class="demo-output">
+                <p>Click any button above to explore datacenter architecture, resource provisioning, and fault tolerance mechanisms.</p>
+            </div>
+        </section>
+    </main>
+
+    <footer class="demo-footer">
+        <div class="footer-nav">
+            <a href="supply-chain-security.html">← Supply Chain Security</a>
+            <a href="csp-resource-orchestration.html">CSP Orchestration →</a>
+        </div>
+        <p>&copy; 2024 DataCenter Hardware Security Course. Educational content for masters-level study.</p>
+    </footer>
+
+    <script src="datacenter-architecture-demo.js"></script>
+</body>
+</html>

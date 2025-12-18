@@ -1,0 +1,1031 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hardware Supply Chain Security - Attestation & Provenance</title>
+    <link rel="stylesheet" href="../../assets/css/styles.css">
+    <link rel="stylesheet" href="../../assets/css/demo-enhancements.css">
+    <style>
+        .supply-chain-tier { background: linear-gradient(135deg, #dc2626 0%, #991b1b 100%); }
+        .attestation-tier { background: linear-gradient(135deg, #059669 0%, #047857 100%); }
+        .supply-component { border-left: 4px solid #dc2626; background: #fef2f2; }
+        .provenance-layer { background: #f0fdf4; border: 2px solid #059669; }
+        .supply-demo { background: #f8fafc; border: 1px solid #e2e8f0; }
+        .threat-alert { background: #fee2e2; border-left: 3px solid #dc2626; }
+        .mitigation-success { background: #f0fdf4; border-left: 3px solid #16a34a; }
+        .vendor-security { background: #fffbeb; border: 2px solid #f59e0b; }
+    </style>
+</head>
+
+<body>
+    <header class="demo-header">
+        <nav>
+            <a href="../../index.html">🏠 Course Home</a>
+            <a href="../module-0-crypto/index.html">📖 Module 0</a>
+            <a href="index.html">🔧 Module 1</a>
+        </nav>
+        <h1>🔗 Hardware Supply Chain Security</h1>
+        <p>Attestation, Provenance & Vendor Trust</p>
+    </header>
+
+    <main class="demo-container">
+        <!-- Supply Chain Security Overview -->
+        <section class="demo-section">
+            <h2 class="section-title supply-chain-tier">🌐 Supply Chain Security Framework</h2>
+
+            <div class="supply-component">
+                <h3>🏗️ Hardware Supply Chain Threat Model</h3>
+                <div class="supply-demo">
+                    <h4>Supply Chain Attack Vectors</h4>
+                    <ul>
+                        <li><strong>Manufacturing Compromise:</strong> Hardware implants, backdoors, or trojans inserted during production</li>
+                        <li><strong>Firmware Tampering:</strong> Malicious firmware modification during assembly or shipping</li>
+                        <li><strong>Component Substitution:</strong> Counterfeit or substandard components replacing legitimate ones</li>
+                        <li><strong>Logistics Interdiction:</strong> Hardware modification during transportation or storage</li>
+                        <li><strong>Vendor Compromise:</strong> Compromise of supplier systems or development environments</li>
+                        <li><strong>Third-Party Risk:</strong> Security vulnerabilities in sub-component suppliers</li>
+                    </ul>
+
+                    <h4>Datacenter Hardware Supply Chain Map</h4>
+                    <pre class="code-block">
+# Hardware Supply Chain Dependencies
+
+┌─────────────────────────────────────────────────────────────┐
+│                      Chip Fabrication                       │
+│  • TSMC (Taiwan)      • Samsung (South Korea)             │
+│  • Intel (USA)        • GlobalFoundries (USA/Germany)     │
+│  Security Concerns: State-level threats, industrial espionage
+└─────────────────────┬───────────────────────────────────────┘
+                      ↓ Silicon → Design Houses
+┌─────────────────────▼───────────────────────────────────────┐
+│                   Component Design                          │
+│  • NVIDIA (GPU)      • Intel (CPU)      • AMD (CPU/GPU)   │
+│  • Broadcom (NICs)   • Samsung (Memory) • Micron (Storage) │
+│  Security Concerns: IP theft, backdoor insertion
+└─────────────────────┬───────────────────────────────────────┘
+                      ↓ Components → System Integration
+┌─────────────────────▼───────────────────────────────────────┐
+│                System Assembly (OEMs)                      │
+│  • Dell Technologies  • HPE        • Supermicro           │
+│  • Lenovo            • Cisco       • Pure Storage          │
+│  Security Concerns: Assembly tampering, configuration drift
+└─────────────────────┬───────────────────────────────────────┘
+                      ↓ Systems → Distribution
+┌─────────────────────▼───────────────────────────────────────┐
+│            Logistics & Distribution                         │
+│  • Direct from OEM   • Channel Partners • Cloud Providers │
+│  Security Concerns: Interdiction attacks, counterfeit insertion
+└─────────────────────┬───────────────────────────────────────┘
+                      ↓ Delivery → Deployment
+┌─────────────────────▼───────────────────────────────────────┐
+│                Datacenter Deployment                       │
+│  • On-premises      • Colocation      • Cloud (AWS/Azure) │
+│  Security Concerns: Insider threats, physical compromise
+└─────────────────────────────────────────────────────────────┘
+
+# Risk Assessment by Stage:
+Manufacturing:     🔴 CRITICAL (Nation-state level threats)
+Component Design:  🟠 HIGH (IP theft, backdoor insertion)
+System Assembly:   🟡 MEDIUM (Quality control, configuration)
+Distribution:      🟡 MEDIUM (Physical interdiction)
+Deployment:        🟢 LOW (Controlled environment)
+                    </pre>
+                </div>
+
+                <h3>🔍 Hardware Attestation Mechanisms</h3>
+                <div class="provenance-layer">
+                    <h4>Device Identity & Attestation</h4>
+                    <ul>
+                        <li><strong>Hardware Root of Trust:</strong> Immutable device identity burned into silicon</li>
+                        <li><strong>Device Certificates:</strong> X.509 certificates linked to hardware identity</li>
+                        <li><strong>Firmware Measurements:</strong> Cryptographic hashes of firmware components</li>
+                        <li><strong>Component Provenance:</strong> Supply chain tracking and verification</li>
+                        <li><strong>Runtime Attestation:</strong> Continuous verification of system integrity</li>
+                    </ul>
+
+                    <h4>DICE (Device Identifier Composition Engine)</h4>
+                    <pre class="code-block">
+# DICE Identity Derivation Process
+
+1. Hardware Root of Trust (UDS - Unique Device Secret)
+   UDS = Hardware-derived 256-bit entropy (fused at manufacture)
+
+2. Compound Device Identifier (CDI) Derivation
+   CDI_0 = KDF(UDS, Firmware_0_Hash, Config_0)
+   CDI_1 = KDF(CDI_0, Firmware_1_Hash, Config_1)
+   CDI_n = KDF(CDI_{n-1}, Firmware_n_Hash, Config_n)
+
+3. Attestation Key Generation
+   Attestation_Private_Key = CDI_final
+   Attestation_Public_Key = derive_public(Attestation_Private_Key)
+
+4. Certificate Generation
+   Device_Certificate = sign(Attestation_Public_Key, Manufacturer_CA_Key)
+
+# DICE Implementation Example (Rust)
+use sha2::{Sha256, Digest};
+use hkdf::Hkdf;
+
+struct DiceIdentity {
+    uds: [u8; 32],           // Unique Device Secret
+    current_cdi: [u8; 32],   // Current Compound Device Identifier
+    layer_count: u8,
+}
+
+impl DiceIdentity {
+    fn derive_next_layer(&mut self, firmware_hash: &[u8], config: &[u8]) {
+        let hk = Hkdf::<Sha256>::new(Some(&self.current_cdi), firmware_hash);
+        let mut next_cdi = [0u8; 32];
+        hk.expand(config, &mut next_cdi).expect("HKDF expand failed");
+
+        self.current_cdi = next_cdi;
+        self.layer_count += 1;
+    }
+
+    fn generate_attestation_key(&self) -> [u8; 32] {
+        self.current_cdi
+    }
+}
+
+# Usage in datacenter hardware verification
+fn verify_device_chain(device_cert: &Certificate, expected_measurements: &[Measurement]) -> bool {
+    // 1. Verify certificate chain to manufacturer root CA
+    // 2. Extract device public key from certificate
+    // 3. Verify each layer measurement in the DICE chain
+    // 4. Compare against expected/golden measurements
+    true // Implementation details omitted for brevity
+}
+                    </pre>
+                </div>
+            </div>
+        </section>
+
+        <!-- Vendor Security Assessment -->
+        <section class="demo-section">
+            <h2 class="section-title">🏢 Vendor Security Assessment & Management</h2>
+
+            <div class="vendor-security">
+                <h3>📋 Vendor Security Evaluation Framework</h3>
+
+                <div class="supply-demo">
+                    <h4>Tier 1 Vendor Assessment (Critical Components)</h4>
+                    <ul>
+                        <li><strong>Security Certifications:</strong> ISO 27001, SOC 2 Type II, Common Criteria</li>
+                        <li><strong>Supply Chain Controls:</strong> Sub-supplier security requirements and audits</li>
+                        <li><strong>Manufacturing Security:</strong> Facility security, personnel screening, process controls</li>
+                        <li><strong>Incident Response:</strong> Breach notification procedures, forensic capabilities</li>
+                        <li><strong>Product Security:</strong> Secure development lifecycle, vulnerability management</li>
+                        <li><strong>Transparency:</strong> Security documentation, audit access, compliance reporting</li>
+                    </ul>
+
+                    <h4>Vendor Risk Assessment Matrix</h4>
+                    <pre class="code-block">
+# Vendor Risk Scoring Framework
+
+Security Domain Weights:
+- Manufacturing Security:    25% (Physical security, personnel screening)
+- Product Security:         20% (Secure development, vulnerability mgmt)
+- Supply Chain Controls:    20% (Sub-supplier management, provenance)
+- Certifications:          15% (ISO 27001, SOC 2, Common Criteria)
+- Incident Response:        10% (Breach procedures, forensics)
+- Transparency:            10% (Documentation, audit cooperation)
+
+Risk Calculation:
+Total_Risk_Score = Σ(Domain_Score × Domain_Weight)
+
+Risk Levels:
+90-100: ✅ TRUSTED    (Preferred vendor, minimal oversight)
+80-89:  🟢 LOW        (Approved vendor, standard oversight)
+70-79:  🟡 MEDIUM     (Conditional approval, enhanced monitoring)
+60-69:  🟠 HIGH       (Requires risk mitigation measures)
+<60:    🔴 CRITICAL   (Not approved for critical components)
+
+# Example Vendor Assessments:
+
+NVIDIA Corporation:
+- Manufacturing Security: 92/100 (Secure fabs, personnel screening)
+- Product Security: 88/100 (Secure dev lifecycle, bug bounty)
+- Supply Chain: 85/100 (TSMC partnership, component tracking)
+- Certifications: 95/100 (ISO 27001, Common Criteria EAL4+)
+- Incident Response: 90/100 (Rapid response, forensic capabilities)
+- Transparency: 87/100 (Good documentation, limited audit access)
+Total Score: 89.25 → LOW RISK ✅
+
+Supermicro Corporation:
+- Manufacturing Security: 75/100 (Improved after 2018 incidents)
+- Product Security: 70/100 (Enhanced QA processes)
+- Supply Chain: 65/100 (Complex supply chain, limited visibility)
+- Certifications: 80/100 (ISO 27001, working on additional certs)
+- Incident Response: 78/100 (Improved processes, transparency)
+- Transparency: 72/100 (Better documentation, audit cooperation)
+Total Score: 73.25 → MEDIUM RISK 🟡
+                    </pre>
+                </div>
+
+                <h3>🔒 Secure Procurement Processes</h3>
+                <div class="mitigation-success">
+                    <h4>Hardware Security Requirements</h4>
+                    <ul>
+                        <li><strong>Hardware Root of Trust:</strong> All components must include verifiable HRoT</li>
+                        <li><strong>Secure Boot:</strong> Cryptographic verification of firmware integrity</li>
+                        <li><strong>Attestation Support:</strong> Remote attestation capabilities required</li>
+                        <li><strong>Firmware Signing:</strong> All firmware must be cryptographically signed</li>
+                        <li><strong>Supply Chain Visibility:</strong> Complete BOM traceability required</li>
+                        <li><strong>Security Documentation:</strong> Threat models, security architecture docs</li>
+                    </ul>
+
+                    <h4>Procurement Security Checklist</h4>
+                    <pre class="code-block">
+# Hardware Procurement Security Checklist
+
+Pre-Purchase Assessment:
+□ Vendor security assessment completed (score ≥70)
+□ Component security requirements specified in RFP
+□ Supply chain risk assessment performed
+□ Alternative suppliers identified (supply chain diversity)
+□ Security certifications verified (ISO 27001, Common Criteria)
+□ Incident response capabilities evaluated
+
+Purchase Order Security Terms:
+□ Hardware Root of Trust requirement specified
+□ Firmware signing and verification requirements
+□ Component traceability and provenance documentation
+□ Security vulnerability disclosure timeline (≤30 days)
+□ Secure packaging and shipping requirements
+□ Right to security audit included in contract
+
+Delivery & Acceptance:
+□ Tamper-evident packaging inspection
+□ Physical inspection for signs of modification
+□ Firmware verification against known-good hashes
+□ Hardware attestation and identity verification
+□ Component-level security testing performed
+□ Supply chain documentation review
+
+Ongoing Management:
+□ Vendor security monitoring (quarterly reviews)
+□ Vulnerability management process established
+□ Incident response procedures documented
+□ Supply chain threat intelligence integration
+□ Contract review and renewal security assessment
+
+# Example Security Requirements Template
+SECURITY_REQUIREMENTS = {
+    "hardware_security": {
+        "root_of_trust": "REQUIRED",
+        "secure_boot": "REQUIRED",
+        "attestation": "REQUIRED",
+        "tamper_detection": "PREFERRED"
+    },
+    "firmware_security": {
+        "code_signing": "REQUIRED",
+        "secure_update": "REQUIRED",
+        "rollback_protection": "REQUIRED",
+        "integrity_monitoring": "PREFERRED"
+    },
+    "supply_chain": {
+        "component_traceability": "REQUIRED",
+        "bom_transparency": "REQUIRED",
+        "sub_supplier_assessment": "REQUIRED",
+        "manufacturing_security": "REQUIRED"
+    },
+    "compliance": {
+        "fips_140_2": "REQUIRED",
+        "common_criteria": "PREFERRED",
+        "iso_27001": "REQUIRED"
+    }
+}
+                    </pre>
+                </div>
+            </div>
+        </section>
+
+        <!-- Component Provenance & Tracking -->
+        <section class="demo-section">
+            <h2 class="section-title attestation-tier">🔗 Component Provenance & Blockchain Tracking</h2>
+
+            <div class="supply-component">
+                <h3>📦 Hardware Provenance Tracking</h3>
+
+                <div class="provenance-layer">
+                    <h4>Blockchain-Based Component Tracking</h4>
+                    <ul>
+                        <li><strong>Immutable Records:</strong> Tamper-proof record of component lifecycle</li>
+                        <li><strong>Multi-Party Consensus:</strong> Manufacturer, distributor, and customer verification</li>
+                        <li><strong>Real-Time Tracking:</strong> Live updates on component status and location</li>
+                        <li><strong>Cryptographic Proofs:</strong> Digital signatures for each supply chain event</li>
+                        <li><strong>Smart Contracts:</strong> Automated compliance and security policy enforcement</li>
+                    </ul>
+
+                    <h4>Supply Chain Smart Contract Example</h4>
+                    <pre class="code-block">
+// Solidity Smart Contract for Hardware Provenance
+pragma solidity ^0.8.0;
+
+contract HardwareProvenance {
+    struct Component {
+        string componentId;          // Unique component identifier
+        string manufacturer;         // Component manufacturer
+        string model;               // Component model/part number
+        uint256 manufactureDate;    // Manufacturing timestamp
+        bytes32 firmwareHash;       // Hash of factory firmware
+        string securityCertification; // Security cert (FIPS, CC, etc.)
+        address currentOwner;       // Current owner/custodian
+        ComponentStatus status;     // Current status
+        bytes signature;            // Manufacturer signature
+    }
+
+    enum ComponentStatus {
+        MANUFACTURED,    // Component produced
+        TESTED,         // Security testing completed
+        SHIPPED,        // In transit
+        DELIVERED,      // Received by customer
+        INSTALLED,      // Deployed in production
+        DECOMMISSIONED  // End of lifecycle
+    }
+
+    mapping(string => Component) public components;
+    mapping(string => bytes32[]) public componentHistory;
+
+    event ComponentRegistered(string componentId, string manufacturer);
+    event ComponentTransferred(string componentId, address from, address to);
+    event StatusChanged(string componentId, ComponentStatus newStatus);
+    event SecurityEvent(string componentId, string eventType, bytes32 evidence);
+
+    modifier onlyAuthorized(string memory componentId) {
+        require(
+            msg.sender == components[componentId].currentOwner ||
+            isManufacturer(msg.sender),
+            "Not authorized"
+        );
+        _;
+    }
+
+    function registerComponent(
+        string memory componentId,
+        string memory manufacturer,
+        string memory model,
+        bytes32 firmwareHash,
+        string memory securityCert,
+        bytes memory signature
+    ) external {
+        require(bytes(componentId).length > 0, "Invalid component ID");
+        require(components[componentId].manufactureDate == 0, "Component already registered");
+
+        components[componentId] = Component({
+            componentId: componentId,
+            manufacturer: manufacturer,
+            model: model,
+            manufactureDate: block.timestamp,
+            firmwareHash: firmwareHash,
+            securityCertification: securityCert,
+            currentOwner: msg.sender,
+            status: ComponentStatus.MANUFACTURED,
+            signature: signature
+        });
+
+        componentHistory[componentId].push(keccak256(abi.encodePacked(
+            componentId, manufacturer, model, block.timestamp
+        )));
+
+        emit ComponentRegistered(componentId, manufacturer);
+    }
+
+    function transferComponent(
+        string memory componentId,
+        address newOwner
+    ) external onlyAuthorized(componentId) {
+        address previousOwner = components[componentId].currentOwner;
+        components[componentId].currentOwner = newOwner;
+
+        componentHistory[componentId].push(keccak256(abi.encodePacked(
+            componentId, "TRANSFER", previousOwner, newOwner, block.timestamp
+        )));
+
+        emit ComponentTransferred(componentId, previousOwner, newOwner);
+    }
+
+    function updateStatus(
+        string memory componentId,
+        ComponentStatus newStatus
+    ) external onlyAuthorized(componentId) {
+        ComponentStatus oldStatus = components[componentId].status;
+        components[componentId].status = newStatus;
+
+        componentHistory[componentId].push(keccak256(abi.encodePacked(
+            componentId, "STATUS_CHANGE", uint(oldStatus), uint(newStatus), block.timestamp
+        )));
+
+        emit StatusChanged(componentId, newStatus);
+    }
+
+    function reportSecurityEvent(
+        string memory componentId,
+        string memory eventType,
+        bytes32 evidence
+    ) external onlyAuthorized(componentId) {
+        componentHistory[componentId].push(keccak256(abi.encodePacked(
+            componentId, "SECURITY_EVENT", eventType, evidence, block.timestamp
+        )));
+
+        emit SecurityEvent(componentId, eventType, evidence);
+    }
+
+    function verifyProvenance(
+        string memory componentId
+    ) external view returns (bool) {
+        Component memory comp = components[componentId];
+
+        // Verify component exists and has valid data
+        require(comp.manufactureDate > 0, "Component not found");
+
+        // Verify manufacturer signature
+        bytes32 messageHash = keccak256(abi.encodePacked(
+            componentId, comp.manufacturer, comp.model, comp.firmwareHash
+        ));
+
+        // Additional verification logic here...
+        return true;
+    }
+
+    function getComponentHistory(
+        string memory componentId
+    ) external view returns (bytes32[] memory) {
+        return componentHistory[componentId];
+    }
+}
+
+# Integration with enterprise systems
+import web3
+from web3 import Web3
+import json
+
+class HardwareProvenanceTracker:
+    def __init__(self, contract_address, private_key):
+        self.w3 = Web3(Web3.HTTPProvider('https://mainnet.infura.io/v3/YOUR_PROJECT_ID'))
+        self.contract = self.w3.eth.contract(
+            address=contract_address,
+            abi=self.get_contract_abi()
+        )
+        self.account = self.w3.eth.account.from_key(private_key)
+
+    def register_component(self, component_data):
+        """Register new component in blockchain"""
+        transaction = self.contract.functions.registerComponent(
+            component_data['component_id'],
+            component_data['manufacturer'],
+            component_data['model'],
+            component_data['firmware_hash'],
+            component_data['security_cert'],
+            component_data['signature']
+        ).build_transaction({
+            'from': self.account.address,
+            'nonce': self.w3.eth.get_transaction_count(self.account.address),
+            'gas': 500000,
+            'gasPrice': self.w3.eth.gas_price
+        })
+
+        signed_txn = self.account.sign_transaction(transaction)
+        tx_hash = self.w3.eth.send_raw_transaction(signed_txn.rawTransaction)
+        return tx_hash.hex()
+
+    def verify_component_provenance(self, component_id):
+        """Verify component authenticity and history"""
+        try:
+            component = self.contract.functions.components(component_id).call()
+            history = self.contract.functions.getComponentHistory(component_id).call()
+
+            return {
+                'verified': True,
+                'component': component,
+                'history_entries': len(history),
+                'current_owner': component[6],  # currentOwner field
+                'status': component[7]  # status field
+            }
+        except Exception as e:
+            return {'verified': False, 'error': str(e)}
+                    </pre>
+                </div>
+
+                <h3>🔍 Anti-Counterfeiting Technologies</h3>
+                <div class="mitigation-success">
+                    <h4>Physical Anti-Counterfeiting Features</h4>
+                    <ul>
+                        <li><strong>Physical Unclonable Functions (PUFs):</strong> Unique silicon fingerprints</li>
+                        <li><strong>Holographic Labels:</strong> Tamper-evident optical security features</li>
+                        <li><strong>Microsized Markings:</strong> Laser-etched security markings</li>
+                        <li><strong>Chemical Markers:</strong> Special inks and coatings for authentication</li>
+                        <li><strong>RFID/NFC Tags:</strong> Encrypted identification and tracking</li>
+                    </ul>
+
+                    <h4>Digital Authentication Methods</h4>
+                    <pre class="code-block">
+# PUF-based Component Authentication
+
+class PhysicalUnclonableFunction:
+    """
+    Physical Unclonable Function implementation for hardware authentication
+    Uses SRAM startup patterns or ring oscillator frequencies
+    """
+
+    def __init__(self, challenge_bits=128, response_bits=128):
+        self.challenge_bits = challenge_bits
+        self.response_bits = response_bits
+        self.enrolled_crps = {}  # Challenge-Response Pairs
+
+    def enroll_device(self, device_id, num_crps=1000):
+        """Enroll device by collecting Challenge-Response Pairs"""
+        crp_database = {}
+
+        for i in range(num_crps):
+            # Generate random challenge
+            challenge = os.urandom(self.challenge_bits // 8)
+
+            # Get response from hardware PUF (simulation)
+            response = self.simulate_puf_response(challenge)
+
+            # Apply error correction (BCH codes, fuzzy extractors)
+            stable_response = self.apply_error_correction(response)
+
+            # Store in database
+            crp_database[challenge.hex()] = stable_response.hex()
+
+        self.enrolled_crps[device_id] = crp_database
+        return len(crp_database)
+
+    def authenticate_device(self, device_id, challenge, observed_response):
+        """Authenticate device using challenge-response"""
+        if device_id not in self.enrolled_crps:
+            return False, "Device not enrolled"
+
+        challenge_hex = challenge.hex()
+        if challenge_hex not in self.enrolled_crps[device_id]:
+            return False, "Challenge not found in database"
+
+        expected_response = self.enrolled_crps[device_id][challenge_hex]
+        corrected_response = self.apply_error_correction(observed_response)
+
+        # Compare with fuzzy matching (allow for measurement noise)
+        similarity = self.hamming_distance(
+            bytes.fromhex(expected_response),
+            corrected_response
+        )
+
+        # Accept if similarity is within threshold (e.g., <10% error rate)
+        threshold = self.response_bits * 0.1
+        authenticated = similarity <= threshold
+
+        return authenticated, f"Similarity: {similarity}/{self.response_bits}"
+
+    def simulate_puf_response(self, challenge):
+        """Simulate PUF response (replace with actual hardware interface)"""
+        import hashlib
+        import secrets
+
+        # Simulate hardware-dependent response with some noise
+        base_response = hashlib.sha256(challenge + b"hardware_secret").digest()
+        noise = secrets.randbits(self.response_bits // 16)  # Add some noise
+
+        return base_response[:self.response_bits // 8]
+
+    def apply_error_correction(self, response):
+        """Apply error correction to stabilize PUF responses"""
+        # Simplified error correction (real implementation would use BCH/Reed-Solomon)
+        import hashlib
+        return hashlib.sha256(response).digest()[:self.response_bits // 8]
+
+    def hamming_distance(self, bytes1, bytes2):
+        """Calculate Hamming distance between two byte arrays"""
+        distance = 0
+        for b1, b2 in zip(bytes1, bytes2):
+            distance += bin(b1 ^ b2).count('1')
+        return distance
+
+# Example usage in hardware verification
+def verify_hardware_authenticity(component):
+    """Comprehensive hardware authenticity verification"""
+
+    # 1. Physical inspection results
+    physical_checks = {
+        'holographic_label': check_holographic_label(component),
+        'microsized_marking': verify_laser_etching(component),
+        'package_integrity': inspect_package_integrity(component),
+        'weight_dimensions': verify_physical_dimensions(component)
+    }
+
+    # 2. PUF-based authentication
+    puf = PhysicalUnclonableFunction()
+    challenge = os.urandom(16)
+    response = component.get_puf_response(challenge)
+    puf_auth, puf_details = puf.authenticate_device(component.id, challenge, response)
+
+    # 3. Digital certificate verification
+    cert_valid = verify_manufacturer_certificate(component.certificate)
+
+    # 4. Blockchain provenance check
+    provenance_tracker = HardwareProvenanceTracker(CONTRACT_ADDRESS, PRIVATE_KEY)
+    provenance = provenance_tracker.verify_component_provenance(component.id)
+
+    # Overall assessment
+    authenticity_score = calculate_authenticity_score({
+        'physical_checks': physical_checks,
+        'puf_authentication': puf_auth,
+        'certificate_valid': cert_valid,
+        'provenance_verified': provenance['verified']
+    })
+
+    return {
+        'authentic': authenticity_score >= 0.8,
+        'confidence': authenticity_score,
+        'details': {
+            'physical': physical_checks,
+            'puf': puf_details,
+            'certificate': cert_valid,
+            'provenance': provenance
+        }
+    }
+                    </pre>
+                </div>
+            </div>
+        </section>
+
+        <!-- Supply Chain Incident Response -->
+        <section class="demo-section">
+            <h2 class="section-title">🚨 Supply Chain Incident Response</h2>
+
+            <div class="supply-component">
+                <h3>⚠️ Supply Chain Security Incidents</h3>
+
+                <div class="threat-alert">
+                    <h4>Historical Supply Chain Attacks (Lessons Learned)</h4>
+                    <ul>
+                        <li><strong>SolarWinds (2020):</strong> Software supply chain compromise affecting 18,000+ customers</li>
+                        <li><strong>Supermicro Bloomberg Report (2018):</strong> Alleged hardware implants in server motherboards</li>
+                        <li><strong>CCleaner (2017):</strong> Compromised software update mechanism</li>
+                        <li><strong>NotPetya (2017):</strong> Supply chain attack via Ukrainian accounting software</li>
+                        <li><strong>Target Breach (2013):</strong> HVAC vendor compromise leading to POS system access</li>
+                    </ul>
+
+                    <h4>Incident Classification Framework</h4>
+                    <pre class="code-block">
+# Supply Chain Incident Classification
+
+SEVERITY_LEVELS = {
+    "CRITICAL": {
+        "description": "Confirmed hardware implant or backdoor in production systems",
+        "response_time": "< 2 hours",
+        "escalation": "C-level executives, board notification",
+        "actions": [
+            "Immediate isolation of affected systems",
+            "Forensic imaging and analysis",
+            "Law enforcement notification",
+            "Customer/stakeholder communication",
+            "Emergency procurement of replacement hardware"
+        ]
+    },
+    "HIGH": {
+        "description": "Suspected tampering or counterfeit components detected",
+        "response_time": "< 4 hours",
+        "escalation": "Security leadership, procurement team",
+        "actions": [
+            "Quarantine suspect components",
+            "Enhanced inspection procedures",
+            "Vendor security review",
+            "Supply chain audit",
+            "Risk assessment update"
+        ]
+    },
+    "MEDIUM": {
+        "description": "Vendor security incident or certification lapse",
+        "response_time": "< 24 hours",
+        "escalation": "Security operations, vendor management",
+        "actions": [
+            "Vendor notification and response requirements",
+            "Enhanced monitoring of vendor deliverables",
+            "Review of security controls",
+            "Contract compliance review"
+        ]
+    },
+    "LOW": {
+        "description": "Minor supply chain policy violation or documentation gap",
+        "response_time": "< 72 hours",
+        "escalation": "Operations team, compliance",
+        "actions": [
+            "Documentation update",
+            "Process improvement",
+            "Training and awareness"
+        ]
+    }
+}
+
+# Incident Response Workflow
+def handle_supply_chain_incident(incident_type, severity, affected_components):
+    """Supply chain incident response orchestration"""
+
+    incident_id = generate_incident_id()
+
+    # 1. Initial Assessment and Classification
+    classification = classify_incident(incident_type, severity, affected_components)
+
+    # 2. Immediate Response Actions
+    immediate_actions = execute_immediate_response(classification)
+
+    # 3. Stakeholder Notification
+    notifications = notify_stakeholders(classification, affected_components)
+
+    # 4. Forensic Investigation
+    if classification['severity'] in ['CRITICAL', 'HIGH']:
+        forensic_results = initiate_forensic_investigation(affected_components)
+
+    # 5. Containment and Mitigation
+    containment_actions = implement_containment(affected_components)
+
+    # 6. Recovery and Restoration
+    if classification['severity'] == 'CRITICAL':
+        recovery_plan = execute_emergency_recovery(affected_components)
+
+    # 7. Lessons Learned and Process Improvement
+    lessons_learned = conduct_post_incident_review(incident_id)
+
+    return {
+        'incident_id': incident_id,
+        'classification': classification,
+        'actions_taken': immediate_actions + containment_actions,
+        'stakeholders_notified': notifications,
+        'recovery_status': recovery_plan if 'recovery_plan' in locals() else None,
+        'lessons_learned': lessons_learned
+    }
+
+# Example: Suspected Hardware Implant Response
+incident_response = handle_supply_chain_incident(
+    incident_type="hardware_tampering",
+    severity="CRITICAL",
+    affected_components=["server_motherboard_lot_X12345", "nic_cards_model_ABC"]
+)
+                    </pre>
+                </div>
+
+                <h3>🔧 Automated Supply Chain Monitoring</h3>
+                <div class="mitigation-success">
+                    <h4>Continuous Supply Chain Security Monitoring</h4>
+                    <ul>
+                        <li><strong>Vendor Threat Intelligence:</strong> Real-time monitoring of vendor security incidents</li>
+                        <li><strong>Component Integrity Scanning:</strong> Automated verification of hardware components</li>
+                        <li><strong>Supply Chain Analytics:</strong> AI-based anomaly detection in procurement patterns</li>
+                        <li><strong>Compliance Monitoring:</strong> Continuous assessment of vendor security posture</li>
+                        <li><strong>Threat Feed Integration:</strong> Integration with commercial and government threat feeds</li>
+                    </ul>
+
+                    <h4>Supply Chain Security Orchestration</h4>
+                    <pre class="code-block">
+#!/usr/bin/env python3
+# Supply Chain Security Automation Platform
+
+import asyncio
+import json
+import requests
+from datetime import datetime, timedelta
+from typing import Dict, List, Any
+
+class SupplyChainSecurityOrchestrator:
+    """Automated supply chain security monitoring and response"""
+
+    def __init__(self, config_file):
+        self.config = self.load_config(config_file)
+        self.vendor_db = self.load_vendor_database()
+        self.component_inventory = self.load_component_inventory()
+        self.threat_feeds = self.initialize_threat_feeds()
+
+    async def continuous_monitoring(self):
+        """Main monitoring loop"""
+        while True:
+            try:
+                # Parallel execution of monitoring tasks
+                monitoring_tasks = [
+                    self.monitor_vendor_threats(),
+                    self.scan_component_integrity(),
+                    self.analyze_procurement_anomalies(),
+                    self.check_vendor_compliance(),
+                    self.update_risk_assessments()
+                ]
+
+                results = await asyncio.gather(*monitoring_tasks, return_exceptions=True)
+
+                # Process results and trigger actions
+                await self.process_monitoring_results(results)
+
+                # Wait before next monitoring cycle
+                await asyncio.sleep(self.config['monitoring_interval'])
+
+            except Exception as e:
+                self.log_error(f"Monitoring cycle error: {e}")
+                await asyncio.sleep(300)  # Wait 5 minutes on error
+
+    async def monitor_vendor_threats(self):
+        """Monitor threat intelligence for vendor-related risks"""
+        vendor_threats = []
+
+        for vendor in self.vendor_db:
+            # Check multiple threat intelligence sources
+            for feed in self.threat_feeds:
+                threats = await feed.check_vendor_threats(vendor['name'])
+                if threats:
+                    vendor_threats.extend(threats)
+
+        return {'type': 'vendor_threats', 'data': vendor_threats}
+
+    async def scan_component_integrity(self):
+        """Automated component integrity verification"""
+        integrity_issues = []
+
+        for component in self.component_inventory:
+            # Verify hardware attestation
+            attestation_valid = await self.verify_component_attestation(component)
+
+            # Check firmware signatures
+            firmware_valid = await self.verify_firmware_signatures(component)
+
+            # Physical inspection (if automated systems available)
+            physical_check = await self.automated_physical_inspection(component)
+
+            if not all([attestation_valid, firmware_valid, physical_check]):
+                integrity_issues.append({
+                    'component_id': component['id'],
+                    'issues': {
+                        'attestation': attestation_valid,
+                        'firmware': firmware_valid,
+                        'physical': physical_check
+                    }
+                })
+
+        return {'type': 'integrity_issues', 'data': integrity_issues}
+
+    async def analyze_procurement_anomalies(self):
+        """AI-based procurement pattern analysis"""
+        import numpy as np
+        from sklearn.ensemble import IsolationForest
+
+        # Collect procurement data features
+        procurement_data = self.collect_procurement_features()
+
+        # Train isolation forest model
+        model = IsolationForest(contamination=0.1, random_state=42)
+        anomalies = model.fit_predict(procurement_data)
+
+        # Identify anomalous transactions
+        anomalous_transactions = []
+        for i, is_anomaly in enumerate(anomalies):
+            if is_anomaly == -1:  # Anomaly detected
+                anomalous_transactions.append({
+                    'transaction_id': procurement_data[i]['transaction_id'],
+                    'anomaly_score': model.decision_function([procurement_data[i]])[0],
+                    'features': procurement_data[i]
+                })
+
+        return {'type': 'procurement_anomalies', 'data': anomalous_transactions}
+
+    async def check_vendor_compliance(self):
+        """Automated vendor compliance monitoring"""
+        compliance_issues = []
+
+        for vendor in self.vendor_db:
+            # Check certificate expiration
+            cert_status = await self.check_vendor_certificates(vendor)
+
+            # Verify security audit status
+            audit_status = await self.check_security_audits(vendor)
+
+            # Monitor vendor security incidents
+            incident_status = await self.check_vendor_incidents(vendor)
+
+            vendor_score = self.calculate_vendor_risk_score(
+                cert_status, audit_status, incident_status
+            )
+
+            if vendor_score < self.config['minimum_vendor_score']:
+                compliance_issues.append({
+                    'vendor_name': vendor['name'],
+                    'score': vendor_score,
+                    'issues': {
+                        'certificates': cert_status,
+                        'audits': audit_status,
+                        'incidents': incident_status
+                    }
+                })
+
+        return {'type': 'compliance_issues', 'data': compliance_issues}
+
+    async def process_monitoring_results(self, results):
+        """Process monitoring results and trigger appropriate responses"""
+        for result in results:
+            if isinstance(result, Exception):
+                self.log_error(f"Monitoring task failed: {result}")
+                continue
+
+            result_type = result['type']
+            data = result['data']
+
+            if result_type == 'vendor_threats' and data:
+                await self.handle_vendor_threats(data)
+
+            elif result_type == 'integrity_issues' and data:
+                await self.handle_integrity_issues(data)
+
+            elif result_type == 'procurement_anomalies' and data:
+                await self.handle_procurement_anomalies(data)
+
+            elif result_type == 'compliance_issues' and data:
+                await self.handle_compliance_issues(data)
+
+    async def handle_vendor_threats(self, threats):
+        """Respond to vendor threat intelligence"""
+        for threat in threats:
+            if threat['severity'] == 'critical':
+                # Immediate escalation
+                await self.send_critical_alert(threat)
+
+                # Trigger vendor security review
+                await self.initiate_vendor_review(threat['vendor'])
+
+                # Consider supply chain diversification
+                await self.evaluate_alternative_suppliers(threat['vendor'])
+
+    async def handle_integrity_issues(self, issues):
+        """Respond to component integrity issues"""
+        for issue in issues:
+            component_id = issue['component_id']
+
+            # Quarantine component
+            await self.quarantine_component(component_id)
+
+            # Trigger detailed forensic analysis
+            await self.initiate_forensic_analysis(component_id, issue['issues'])
+
+            # Notify security operations team
+            await self.notify_security_team(f"Component integrity issue: {component_id}")
+
+# Configuration example
+supply_chain_config = {
+    "monitoring_interval": 3600,  # 1 hour
+    "minimum_vendor_score": 75,
+    "threat_feeds": [
+        "commercial_feed_1",
+        "commercial_feed_2",
+        "government_feed_1"
+    ],
+    "alert_thresholds": {
+        "critical": {"response_time": 7200, "escalation_level": "executive"},
+        "high": {"response_time": 14400, "escalation_level": "management"},
+        "medium": {"response_time": 86400, "escalation_level": "operations"}
+    }
+}
+
+# Main execution
+async def main():
+    orchestrator = SupplyChainSecurityOrchestrator('supply_chain_config.json')
+    await orchestrator.continuous_monitoring()
+
+if __name__ == "__main__":
+    asyncio.run(main())
+                    </pre>
+                </div>
+            </div>
+        </section>
+
+        <!-- Interactive Supply Chain Demo -->
+        <section class="demo-section">
+            <h2 class="section-title">🎮 Interactive Supply Chain Security Demo</h2>
+
+            <div class="demo-controls">
+                <button onclick="demonstrateBlockchainProvenance()" class="demo-button">
+                    🔗 Blockchain Provenance
+                </button>
+                <button onclick="simulateSupplyChainAttack()" class="demo-button">
+                    ⚠️ Supply Chain Attack
+                </button>
+                <button onclick="showVendorAssessment()" class="demo-button">
+                    🏢 Vendor Risk Assessment
+                </button>
+                <button onclick="auditSupplyChainCompliance()" class="demo-button">
+                    📋 Compliance Audit
+                </button>
+            </div>
+
+            <div id="supply-chain-demo-output" class="demo-output">
+                <p>Click any button above to explore supply chain security features, attack simulations, and vendor assessment tools.</p>
+            </div>
+        </section>
+    </main>
+
+    <footer class="demo-footer">
+        <div class="footer-nav">
+            <a href="gpu-security-deep-dive.html">← GPU Security</a>
+            <a href="index.html">Module 1 Home →</a>
+        </div>
+        <p>&copy; 2024 DataCenter Hardware Security Course. Educational content for masters-level study.</p>
+    </footer>
+
+    <script src="supply-chain-security-demo.js"></script>
+</body>
+</html>

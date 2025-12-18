@@ -1,0 +1,634 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hardware Security Quick Reference Cheat Sheet</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.4;
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #0f172a, #1e293b);
+            color: #e2e8f0;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 20px 0;
+            border-bottom: 2px solid #60a5fa;
+        }
+
+        .header h1 {
+            color: #60a5fa;
+            font-size: 2.2em;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            color: #94a3b8;
+            font-size: 1.1em;
+        }
+
+        .cheat-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .cheat-card {
+            background: linear-gradient(135deg, #1e293b, #334155);
+            border-radius: 12px;
+            padding: 20px;
+            border: 1px solid #475569;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .cheat-card h3 {
+            color: #34d399;
+            font-size: 1.3em;
+            margin-bottom: 15px;
+            padding-bottom: 8px;
+            border-bottom: 2px solid #34d399;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .quick-facts {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .quick-facts li {
+            background: #2d3748;
+            margin: 8px 0;
+            padding: 10px;
+            border-radius: 6px;
+            border-left: 3px solid #60a5fa;
+            font-size: 0.9em;
+        }
+
+        .fact-label {
+            color: #fbbf24;
+            font-weight: bold;
+        }
+
+        .fact-value {
+            color: #e2e8f0;
+            margin-left: 8px;
+        }
+
+        .command-block {
+            background: #1a202c;
+            border: 1px solid #4a5568;
+            border-radius: 6px;
+            padding: 12px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.85em;
+            margin: 8px 0;
+            overflow-x: auto;
+        }
+
+        .api-endpoint {
+            background: #064e3b;
+            color: #34d399;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.8em;
+        }
+
+        .status-good { color: #22c55e; }
+        .status-warning { color: #f59e0b; }
+        .status-critical { color: #ef4444; }
+
+        .architecture-diagram {
+            background: #1e293b;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 15px 0;
+            border: 1px solid #4a5568;
+        }
+
+        .diagram-text {
+            font-family: 'Courier New', monospace;
+            font-size: 0.75em;
+            line-height: 1.2;
+            color: #94a3b8;
+            white-space: pre;
+        }
+
+        .key-concepts {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin: 15px 0;
+        }
+
+        .concept-item {
+            background: #374151;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 0.85em;
+        }
+
+        .concept-term {
+            color: #60a5fa;
+            font-weight: bold;
+        }
+
+        .concept-def {
+            color: #94a3b8;
+            margin-top: 3px;
+        }
+
+        .metric-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin: 15px 0;
+        }
+
+        .metric-item {
+            background: #374151;
+            padding: 10px;
+            border-radius: 6px;
+            text-align: center;
+        }
+
+        .metric-number {
+            color: #22c55e;
+            font-size: 1.4em;
+            font-weight: bold;
+            display: block;
+        }
+
+        .metric-label {
+            color: #94a3b8;
+            font-size: 0.8em;
+            margin-top: 3px;
+        }
+
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+            font-size: 0.85em;
+        }
+
+        .comparison-table th,
+        .comparison-table td {
+            padding: 8px 10px;
+            border: 1px solid #4a5568;
+            text-align: left;
+        }
+
+        .comparison-table th {
+            background: #374151;
+            color: #60a5fa;
+            font-weight: bold;
+        }
+
+        .comparison-table td {
+            background: #2d3748;
+        }
+
+        .emergency-section {
+            background: linear-gradient(135deg, #7f1d1d, #991b1b);
+            border: 2px solid #dc2626;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 30px 0;
+        }
+
+        .emergency-section h3 {
+            color: #fca5a5;
+            margin-bottom: 15px;
+        }
+
+        .printable {
+            background: white;
+            color: black;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+        }
+
+        @media print {
+            body { background: white; color: black; }
+            .cheat-card { break-inside: avoid; margin-bottom: 20px; }
+            .no-print { display: none; }
+        }
+
+        .search-highlight {
+            background-color: #fbbf24;
+            color: #000;
+            padding: 2px 4px;
+            border-radius: 3px;
+        }
+
+        .floating-search {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #374151;
+            border: 2px solid #6b7280;
+            border-radius: 25px;
+            padding: 10px 20px;
+            color: #e2e8f0;
+            z-index: 1000;
+        }
+
+        .back-to-hub {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background: linear-gradient(135deg, #3b82f6, #1e40af);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: bold;
+            z-index: 1000;
+            transition: all 0.3s ease;
+        }
+
+        .back-to-hub:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
+        }
+    </style>
+</head>
+<body>
+    <a href="module-1-index.html" class="back-to-hub no-print">← Back to Study Hub</a>
+    <input type="text" class="floating-search no-print" placeholder="🔍 Quick search..." id="quickSearch">
+
+    <div class="container">
+        <div class="header">
+            <h1>🚀 Hardware Security Quick Reference</h1>
+            <p>Essential facts, commands, and concepts for instant recall</p>
+        </div>
+
+        <div class="cheat-grid">
+            <!-- DataCenter Architecture Quick Facts -->
+            <div class="cheat-card">
+                <h3>🏗️ DataCenter Architecture</h3>
+                <ul class="quick-facts">
+                    <li><span class="fact-label">Hierarchy:</span><span class="fact-value">Facility → Hall → Row → Rack → Chassis → Server</span></li>
+                    <li><span class="fact-label">Standard Rack:</span><span class="fact-value">42U height, 19" width, 600-1000mm depth</span></li>
+                    <li><span class="fact-label">Power Density:</span><span class="fact-value">5-15kW per rack (standard), 20-50kW (high density)</span></li>
+                    <li><span class="fact-label">Cooling:</span><span class="fact-value">PUE target: 1.1-1.3 (ideal: <1.2)</span></li>
+                    <li><span class="fact-label">Redundancy:</span><span class="fact-value">N+1 (power), 2N (critical systems)</span></li>
+                </ul>
+
+                <div class="architecture-diagram">
+                    <div class="diagram-text">DataCenter Power Flow:
+Grid → UPS → PDU → Rack → Server PSU → Components
+
+Cooling Flow:
+CRAC → Hot Aisle → Cold Aisle → Server Intake → Exhaust</div>
+                </div>
+            </div>
+
+            <!-- CSP Market Overview -->
+            <div class="cheat-card">
+                <h3>☁️ CSP Market Overview</h3>
+                <div class="metric-grid">
+                    <div class="metric-item">
+                        <span class="metric-number">$600B</span>
+                        <div class="metric-label">Cloud Market</div>
+                    </div>
+                    <div class="metric-item">
+                        <span class="metric-number">$250B</span>
+                        <div class="metric-label">DataCenter Market</div>
+                    </div>
+                    <div class="metric-item">
+                        <span class="metric-number">85%</span>
+                        <div class="metric-label">CSP uses 3rd-party DCs</div>
+                    </div>
+                </div>
+
+                <table class="comparison-table">
+                    <tr>
+                        <th>CSP</th>
+                        <th>Strategy</th>
+                        <th>Focus</th>
+                    </tr>
+                    <tr>
+                        <td>AWS</td>
+                        <td>Hybrid (60% owned)</td>
+                        <td>Scale + Security</td>
+                    </tr>
+                    <tr>
+                        <td>Azure</td>
+                        <td>Enterprise partnerships</td>
+                        <td>Compliance</td>
+                    </tr>
+                    <tr>
+                        <td>GCP</td>
+                        <td>Custom builds</td>
+                        <td>AI/ML + Sustainability</td>
+                    </tr>
+                    <tr>
+                        <td>Oracle</td>
+                        <td>Bare metal focus</td>
+                        <td>Database performance</td>
+                    </tr>
+                </table>
+            </div>
+
+            <!-- RedFish API Quick Reference -->
+            <div class="cheat-card">
+                <h3>🔧 RedFish API Essentials</h3>
+                <ul class="quick-facts">
+                    <li><span class="fact-label">Adoption:</span><span class="fact-value">85% Fortune 500, 10M+ servers</span></li>
+                    <li><span class="fact-label">Base URL:</span><span class="fact-value">/redfish/v1/</span></li>
+                    <li><span class="fact-label">Authentication:</span><span class="fact-value">Basic Auth, Session-based, OAuth</span></li>
+                    <li><span class="fact-label">Format:</span><span class="fact-value">JSON, OData v4</span></li>
+                </ul>
+
+                <h4 style="color: #fbbf24; margin: 15px 0 10px 0;">Key Endpoints:</h4>
+                <div class="command-block">
+GET <span class="api-endpoint">/redfish/v1/Systems/{id}</span>           # System info
+POST <span class="api-endpoint">/redfish/v1/Systems/{id}/Actions/ComputerSystem.Reset</span>
+GET <span class="api-endpoint">/redfish/v1/Chassis/{id}/Power</span>     # Power metrics
+GET <span class="api-endpoint">/redfish/v1/Chassis/{id}/Thermal</span>   # Temperature
+GET <span class="api-endpoint">/redfish/v1/Managers/bmc</span>           # BMC status
+                </div>
+
+                <h4 style="color: #fbbf24; margin: 15px 0 10px 0;">Common Reset Types:</h4>
+                <div class="key-concepts">
+                    <div class="concept-item">
+                        <div class="concept-term">On</div>
+                        <div class="concept-def">Power on system</div>
+                    </div>
+                    <div class="concept-item">
+                        <div class="concept-term">ForceOff</div>
+                        <div class="concept-def">Immediate shutdown</div>
+                    </div>
+                    <div class="concept-item">
+                        <div class="concept-term">GracefulShutdown</div>
+                        <div class="concept-def">Clean shutdown</div>
+                    </div>
+                    <div class="concept-item">
+                        <div class="concept-term">ForceRestart</div>
+                        <div class="concept-def">Hard reboot</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Security Fundamentals -->
+            <div class="cheat-card">
+                <h3>🔒 Hardware Security Fundamentals</h3>
+
+                <h4 style="color: #fbbf24; margin: 15px 0 10px 0;">Boot Chain Trust:</h4>
+                <div class="architecture-diagram">
+                    <div class="diagram-text">CPU eFuses → Boot ROM → UEFI → Bootloader → OS → Applications
+
+Each stage verifies the next using cryptographic signatures</div>
+                </div>
+
+                <ul class="quick-facts">
+                    <li><span class="fact-label">TPM 2.0:</span><span class="fact-value">Hardware security module on motherboard</span></li>
+                    <li><span class="fact-label">Intel BootGuard:</span><span class="fact-value">CPU-based boot verification</span></li>
+                    <li><span class="fact-label">UEFI Secure Boot:</span><span class="fact-value">OS loader signature verification</span></li>
+                    <li><span class="fact-label">PCR (Platform Config):</span><span class="fact-value">24 registers storing boot measurements</span></li>
+                    <li><span class="fact-label">Attestation:</span><span class="fact-value">Proof of platform integrity</span></li>
+                </ul>
+
+                <h4 style="color: #fbbf24; margin: 15px 0 10px 0;">Key Algorithms:</h4>
+                <div class="key-concepts">
+                    <div class="concept-item">
+                        <div class="concept-term">RSA-2048</div>
+                        <div class="concept-def">Digital signatures</div>
+                    </div>
+                    <div class="concept-item">
+                        <div class="concept-term">SHA-256</div>
+                        <div class="concept-def">Hash measurements</div>
+                    </div>
+                    <div class="concept-item">
+                        <div class="concept-term">AES-256</div>
+                        <div class="concept-def">Symmetric encryption</div>
+                    </div>
+                    <div class="concept-item">
+                        <div class="concept-term">HMAC</div>
+                        <div class="concept-def">Message authentication</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Business Model Quick Facts -->
+            <div class="cheat-card">
+                <h3>💼 DataCenter vs CSP Business Models</h3>
+
+                <table class="comparison-table">
+                    <tr>
+                        <th>Aspect</th>
+                        <th>DataCenter Provider</th>
+                        <th>Cloud Service Provider</th>
+                    </tr>
+                    <tr>
+                        <td><strong>Business</strong></td>
+                        <td>Infrastructure real estate</td>
+                        <td>Software services</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Revenue</strong></td>
+                        <td>Space + Power + Connectivity</td>
+                        <td>Usage-based billing</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Assets</strong></td>
+                        <td>Buildings, power, cooling</td>
+                        <td>Software, servers</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Customers</strong></td>
+                        <td>CSPs + Enterprises</td>
+                        <td>End users + Businesses</td>
+                    </tr>
+                </table>
+
+                <h4 style="color: #fbbf24; margin: 15px 0 10px 0;">Partnership Models:</h4>
+                <ul class="quick-facts">
+                    <li><span class="fact-label">Colocation:</span><span class="fact-value">$10-50M investment, 3-6 months</span></li>
+                    <li><span class="fact-label">Wholesale:</span><span class="fact-value">$100-300M investment, 12-18 months</span></li>
+                    <li><span class="fact-label">Build-to-Suit:</span><span class="fact-value">$300M-1B investment, 24-36 months</span></li>
+                </ul>
+            </div>
+
+            <!-- Performance Metrics -->
+            <div class="cheat-card">
+                <h3>📊 Key Performance Metrics</h3>
+
+                <h4 style="color: #fbbf24; margin: 15px 0 10px 0;">DataCenter Efficiency:</h4>
+                <ul class="quick-facts">
+                    <li><span class="fact-label">PUE (Power Usage):</span><span class="fact-value">1.1-1.3 (target: <1.2)</span></li>
+                    <li><span class="fact-label">Uptime Tier 4:</span><span class="fact-value">99.995% (26 min downtime/year)</span></li>
+                    <li><span class="fact-label">Cooling Efficiency:</span><span class="fact-value">Cold aisle: 18-24°C, Hot: 35-45°C</span></li>
+                    <li><span class="fact-label">Power Density:</span><span class="fact-value">Standard: 5-15kW/rack, HPC: 20-50kW/rack</span></li>
+                </ul>
+
+                <h4 style="color: #fbbf24; margin: 15px 0 10px 0;">CSP Scale Metrics:</h4>
+                <div class="metric-grid">
+                    <div class="metric-item">
+                        <span class="metric-number">5M+</span>
+                        <div class="metric-label">AWS Servers</div>
+                    </div>
+                    <div class="metric-item">
+                        <span class="metric-number">3M+</span>
+                        <div class="metric-label">Azure Servers</div>
+                    </div>
+                    <div class="metric-item">
+                        <span class="metric-number">2M+</span>
+                        <div class="metric-label">GCP Servers</div>
+                    </div>
+                    <div class="metric-item">
+                        <span class="metric-number">500K+</span>
+                        <div class="metric-label">Oracle Servers</div>
+                    </div>
+                    <div class="metric-item">
+                        <span class="metric-number">99.99%</span>
+                        <div class="metric-label">Service SLAs</div>
+                    </div>
+                    <div class="metric-item">
+                        <span class="metric-number">90%</span>
+                        <div class="metric-label">Automation Level</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Troubleshooting Quick Reference -->
+            <div class="cheat-card">
+                <h3>🔧 Troubleshooting Quick Guide</h3>
+
+                <h4 style="color: #fbbf24; margin: 15px 0 10px 0;">Common RedFish Issues:</h4>
+                <ul class="quick-facts">
+                    <li><span class="fact-label">401 Unauthorized:</span><span class="fact-value">Check credentials, session timeout</span></li>
+                    <li><span class="fact-label">404 Not Found:</span><span class="fact-value">Verify endpoint URL, BMC firmware</span></li>
+                    <li><span class="fact-label">503 Service Unavailable:</span><span class="fact-value">BMC overloaded or rebooting</span></li>
+                    <li><span class="fact-label">SSL/TLS Errors:</span><span class="fact-value">Certificate issues, use -k for curl</span></li>
+                </ul>
+
+                <h4 style="color: #fbbf24; margin: 15px 0 10px 0;">Hardware Status Checks:</h4>
+                <div class="command-block">
+# Check system health
+curl -k -u admin:pass https://bmc-ip/redfish/v1/Systems/1
+
+# Monitor power consumption
+curl -k -u admin:pass https://bmc-ip/redfish/v1/Chassis/1/Power
+
+# Check temperature sensors
+curl -k -u admin:pass https://bmc-ip/redfish/v1/Chassis/1/Thermal
+
+# View event logs
+curl -k -u admin:pass https://bmc-ip/redfish/v1/Managers/bmc/LogServices/EventLog/Entries
+                </div>
+            </div>
+
+            <!-- Industry Standards -->
+            <div class="cheat-card">
+                <h3>📋 Industry Standards & Compliance</h3>
+
+                <h4 style="color: #fbbf24; margin: 15px 0 10px 0;">Security Standards:</h4>
+                <ul class="quick-facts">
+                    <li><span class="fact-label">SOC 2 Type II:</span><span class="fact-value">Security, Availability, Confidentiality</span></li>
+                    <li><span class="fact-label">ISO 27001:</span><span class="fact-value">Information Security Management</span></li>
+                    <li><span class="fact-label">PCI-DSS:</span><span class="fact-value">Payment Card Industry Data Security</span></li>
+                    <li><span class="fact-label">FedRAMP:</span><span class="fact-value">Federal Risk Authorization Management</span></li>
+                    <li><span class="fact-label">HIPAA:</span><span class="fact-value">Health Insurance Portability</span></li>
+                </ul>
+
+                <h4 style="color: #fbbf24; margin: 15px 0 10px 0;">Technical Standards:</h4>
+                <ul class="quick-facts">
+                    <li><span class="fact-label">DMTF RedFish:</span><span class="fact-value">Hardware management APIs</span></li>
+                    <li><span class="fact-label">TCG TPM 2.0:</span><span class="fact-value">Trusted Platform Module</span></li>
+                    <li><span class="fact-label">UEFI 2.8+:</span><span class="fact-value">Unified Extensible Firmware Interface</span></li>
+                    <li><span class="fact-label">NIST SP 800-147:</span><span class="fact-value">BIOS Protection Guidelines</span></li>
+                    <li><span class="fact-label">TCG DICE:</span><span class="fact-value">Device Identifier Composition Engine</span></li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Emergency Reference Section -->
+        <div class="emergency-section">
+            <h3>🚨 Emergency Quick Reference</h3>
+            <div class="cheat-grid">
+                <div>
+                    <h4>Critical Commands:</h4>
+                    <div class="command-block">
+# Emergency server reboot
+curl -k -X POST -u admin:pass \
+  https://bmc-ip/redfish/v1/Systems/1/Actions/ComputerSystem.Reset \
+  -d '{"ResetType":"ForceRestart"}'
+
+# Check system status
+curl -k -u admin:pass https://bmc-ip/redfish/v1/Systems/1 | grep -E "(PowerState|Health)"
+                    </div>
+                </div>
+                <div>
+                    <h4>Status Indicators:</h4>
+                    <ul class="quick-facts">
+                        <li><span class="status-good">●</span> <span class="fact-value">OK/Enabled - System healthy</span></li>
+                        <li><span class="status-warning">●</span> <span class="fact-value">Warning - Requires attention</span></li>
+                        <li><span class="status-critical">●</span> <span class="fact-value">Critical - Immediate action needed</span></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Print Version -->
+        <div class="printable">
+            <h3>📄 Print-Friendly Summary</h3>
+            <p><strong>DataCenter Hierarchy:</strong> Facility → Hall → Row → Rack → Chassis → Server</p>
+            <p><strong>CSP Market:</strong> $600B Cloud + $250B DataCenter = $850B total</p>
+            <p><strong>RedFish Base:</strong> /redfish/v1/ (85% adoption, 10M+ servers)</p>
+            <p><strong>Boot Chain:</strong> CPU eFuses → ROM → UEFI → Bootloader → OS</p>
+            <p><strong>Key Standards:</strong> TPM 2.0, UEFI 2.8+, RedFish 1.x, SOC 2, ISO 27001</p>
+        </div>
+    </div>
+
+    <script>
+        // Quick search functionality
+        document.getElementById('quickSearch').addEventListener('input', function(e) {
+            const searchTerm = e.target.value.toLowerCase();
+            const textElements = document.querySelectorAll('.fact-value, .concept-def, .diagram-text, td, li');
+
+            textElements.forEach(element => {
+                const originalText = element.getAttribute('data-original') || element.textContent;
+                if (!element.getAttribute('data-original')) {
+                    element.setAttribute('data-original', originalText);
+                }
+
+                if (searchTerm && originalText.toLowerCase().includes(searchTerm)) {
+                    const regex = new RegExp(`(${searchTerm})`, 'gi');
+                    element.innerHTML = originalText.replace(regex, '<span class="search-highlight">$1</span>');
+                } else {
+                    element.textContent = originalText;
+                }
+            });
+        });
+
+        // Print functionality
+        window.addEventListener('keydown', function(e) {
+            if ((e.ctrlKey || e.metaKey) && e.key === 'p') {
+                window.print();
+            }
+        });
+
+        console.log('🚀 Quick Reference Cheat Sheet loaded!');
+        console.log('💡 Use Ctrl+P to print, or search above to highlight terms');
+    </script>
+</body>
+</html>

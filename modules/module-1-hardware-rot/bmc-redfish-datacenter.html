@@ -1,0 +1,690 @@
+---
+layout: default
+title: "BMC & RedFish APIs: DataCenter Asset Management Security"
+description: "Deep dive into Baseboard Management Controller security and RedFish API for scalable datacenter operations"
+module_id: "module-1-hardware-rot"
+permalink: /modules/module-1-hardware-rot/bmc-redfish-datacenter/
+---
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BMC & RedFish APIs: Secure DataCenter Management</title>
+    <link rel="stylesheet" href="../../assets/css/main.css">
+    <link rel="stylesheet" href="../../assets/css/interactive.css">
+    <link rel="stylesheet" href="../../assets/css/demo-enhancements.css">
+    <link rel="stylesheet" href="../../assets/css/hardware-demo.css">
+    <style>
+        .bmc-architecture {
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            border-radius: 16px;
+            padding: 2rem;
+            margin: 2rem 0;
+            border: 1px solid #10b981;
+        }
+
+        .management-layer {
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin: 1rem 0;
+            transition: all 0.3s ease;
+        }
+
+        .management-layer:hover {
+            border-color: #10b981;
+            box-shadow: 0 8px 25px rgba(16, 185, 129, 0.2);
+        }
+
+        .redfish-endpoint {
+            background: rgba(15, 23, 42, 0.8);
+            border: 1px solid #374151;
+            border-radius: 8px;
+            padding: 1rem;
+            margin: 0.5rem 0;
+            font-family: 'JetBrains Mono', monospace;
+            position: relative;
+        }
+
+        .redfish-endpoint::before {
+            content: 'RedFish API';
+            position: absolute;
+            top: -8px;
+            left: 12px;
+            background: #1e293b;
+            color: #10b981;
+            font-size: 0.7rem;
+            padding: 0.2rem 0.5rem;
+            border-radius: 4px;
+            border: 1px solid #10b981;
+        }
+
+        .api-method {
+            display: inline-block;
+            background: #1f2937;
+            color: #60a5fa;
+            padding: 0.2rem 0.6rem;
+            border-radius: 4px;
+            font-weight: 600;
+            font-size: 0.8rem;
+            margin-right: 0.5rem;
+        }
+
+        .api-method.get { background: #065f46; color: #10b981; }
+        .api-method.post { background: #7c2d12; color: #f97316; }
+        .api-method.patch { background: #1e40af; color: #3b82f6; }
+        .api-method.delete { background: #7f1d1d; color: #ef4444; }
+
+        .security-controls {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1rem;
+            margin: 2rem 0;
+        }
+
+        .control-card {
+            background: rgba(30, 41, 59, 0.8);
+            border: 1px solid #475569;
+            border-radius: 12px;
+            padding: 1.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .control-card:hover {
+            border-color: #10b981;
+            transform: translateY(-4px);
+            box-shadow: 0 8px 25px rgba(16, 185, 129, 0.2);
+        }
+
+        .control-icon {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+            display: block;
+        }
+
+        .provisioning-flow {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            margin: 2rem 0;
+        }
+
+        .provisioning-step {
+            display: flex;
+            align-items: center;
+            background: rgba(15, 23, 42, 0.6);
+            border: 1px solid #475569;
+            border-radius: 8px;
+            padding: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .provisioning-step:hover {
+            border-color: #10b981;
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.2);
+        }
+
+        .step-number {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            margin-right: 1rem;
+            flex-shrink: 0;
+        }
+
+        .step-content h6 {
+            color: #10b981;
+            margin: 0 0 0.5rem 0;
+        }
+
+        .attack-vector {
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            border-radius: 8px;
+            padding: 1rem;
+            margin: 1rem 0;
+        }
+
+        .attack-vector h6 {
+            color: #ef4444;
+            margin: 0 0 0.5rem 0;
+        }
+
+        .mitigation-strategy {
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            border-radius: 6px;
+            padding: 0.75rem;
+            margin: 0.5rem 0;
+        }
+
+        .mitigation-strategy h7 {
+            color: #10b981;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .compliance-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+            margin: 1.5rem 0;
+        }
+
+        .compliance-item {
+            background: rgba(59, 130, 246, 0.1);
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            border-radius: 8px;
+            padding: 1rem;
+            text-align: center;
+        }
+
+        .compliance-item h6 {
+            color: #60a5fa;
+            margin: 0 0 0.5rem 0;
+        }
+
+        .json-example {
+            background: #0f1419;
+            border: 1px solid #374151;
+            border-radius: 6px;
+            padding: 1rem;
+            margin: 1rem 0;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.8rem;
+            overflow-x: auto;
+            color: #e5e7eb;
+        }
+
+        .json-key { color: #60a5fa; }
+        .json-string { color: #10b981; }
+        .json-number { color: #f59e0b; }
+        .json-boolean { color: #8b5cf6; }
+
+        @media (max-width: 768px) {
+            .security-controls {
+                grid-template-columns: 1fr;
+            }
+
+            .provisioning-step {
+                flex-direction: column;
+                text-align: center;
+                gap: 0.5rem;
+            }
+
+            .step-number {
+                margin-right: 0;
+                margin-bottom: 0.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header class="hero">
+            <h1>🖥️ BMC & RedFish APIs: DataCenter Asset Management</h1>
+            <p>Comprehensive guide to Baseboard Management Controller security and RedFish API for scalable datacenter operations</p>
+
+            <div class="hero-actions">
+                <button onclick="exploreBMCArchitecture()" class="cta-button">🏗️ BMC Architecture</button>
+                <button onclick="exploreRedfishAPIs()" class="cta-button secondary">🔌 RedFish APIs</button>
+            </div>
+        </header>
+
+        <!-- BMC Architecture Overview -->
+        <div class="bmc-architecture">
+            <h2>🖥️ Baseboard Management Controller (BMC) Architecture</h2>
+            <p class="section-intro">The BMC is a specialized microcontroller that provides out-of-band management capabilities for server platforms, operating independently of the main CPU and OS.</p>
+
+            <div class="management-layer">
+                <h3>🏗️ BMC Hardware Architecture</h3>
+
+                <div class="security-controls">
+                    <div class="control-card">
+                        <span class="control-icon">🔧</span>
+                        <h5>Dedicated ARM Processor</h5>
+                        <div class="control-details">
+                            <strong>Independent Computing:</strong><br>
+                            • ARM Cortex-A series (typically A7 or A9)<br>
+                            • 512MB - 2GB DDR4 memory<br>
+                            • 32MB - 128MB SPI flash storage<br>
+                            • Independent power rail (3.3V standby)
+                            <div class="purpose">Purpose: Provide management even when main system is powered off</div>
+                        </div>
+                    </div>
+
+                    <div class="control-card">
+                        <span class="control-icon">🌐</span>
+                        <h5>Network Interfaces</h5>
+                        <div class="control-details">
+                            <strong>Management Connectivity:</strong><br>
+                            • Dedicated Ethernet port (10/100/1000 Mbps)<br>
+                            • Shared NIC with host (NC-SI)<br>
+                            • Optional WiFi for edge deployments<br>
+                            • Serial over LAN (SOL) capability
+                            <div class="purpose">Purpose: Remote access and automation interfaces</div>
+                        </div>
+                    </div>
+
+                    <div class="control-card">
+                        <span class="control-icon">🔌</span>
+                        <h5>Hardware Interfaces</h5>
+                        <div class="control-details">
+                            <strong>Platform Control:</strong><br>
+                            • I²C buses for sensor monitoring<br>
+                            • SPI for BIOS/UEFI flash access<br>
+                            • JTAG for hardware debugging<br>
+                            • GPIO for power control
+                            <div class="purpose">Purpose: Direct hardware manipulation and monitoring</div>
+                        </div>
+                    </div>
+
+                    <div class="control-card">
+                        <span class="control-icon">🛡️</span>
+                        <h5>Security Features</h5>
+                        <div class="control-details">
+                            <strong>Hardware Security:</strong><br>
+                            • Secure boot with verified signatures<br>
+                            • Hardware root of trust (TPM/HSM)<br>
+                            • Cryptographic acceleration<br>
+                            • Tamper detection capabilities
+                            <div class="purpose">Purpose: Protect management plane from compromise</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="management-layer">
+                <h3>🔐 BMC Security Architecture</h3>
+
+                <div class="security-controls">
+                    <div class="control-card">
+                        <span class="control-icon">🔒</span>
+                        <h5>Secure Boot Process</h5>
+                        <div class="control-details">
+                            <strong>BMC Boot Chain:</strong><br>
+                            1. <strong>ROM Bootloader:</strong> Immutable first-stage bootloader<br>
+                            2. <strong>U-Boot SPL:</strong> Secondary Program Loader verification<br>
+                            3. <strong>U-Boot:</strong> Full bootloader with crypto verification<br>
+                            4. <strong>Linux Kernel:</strong> Signed kernel with measured boot<br>
+                            5. <strong>OpenBMC:</strong> Management software stack
+                        </div>
+                    </div>
+
+                    <div class="control-card">
+                        <span class="control-icon">🗝️</span>
+                        <h5>Key Management</h5>
+                        <div class="control-details">
+                            <strong>Cryptographic Keys:</strong><br>
+                            • <strong>OEM Root Key:</strong> Burned in OTP memory<br>
+                            • <strong>Firmware Signing Key:</strong> Verifies BMC updates<br>
+                            • <strong>TLS Certificates:</strong> HTTPS/RedFish encryption<br>
+                            • <strong>SSH Host Keys:</strong> Secure shell access<br>
+                            • <strong>LDAP/AD Integration:</strong> Enterprise authentication
+                        </div>
+                    </div>
+
+                    <div class="control-card">
+                        <span class="control-icon">🛡️</span>
+                        <h5>Access Control</h5>
+                        <div class="control-details">
+                            <strong>Multi-layered Authentication:</strong><br>
+                            • Role-based access control (RBAC)<br>
+                            • Multi-factor authentication (MFA)<br>
+                            • Session management and timeouts<br>
+                            • Audit logging and SIEM integration<br>
+                            • IP-based access restrictions
+                        </div>
+                    </div>
+
+                    <div class="control-card">
+                        <span class="control-icon">📊</span>
+                        <h5>Monitoring & Logging</h5>
+                        <div class="control-details">
+                            <strong>Security Monitoring:</strong><br>
+                            • Failed authentication attempts<br>
+                            • Configuration changes tracking<br>
+                            • Firmware update events<br>
+                            • Hardware tampering detection<br>
+                            • Performance anomaly detection
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- RedFish API Deep Dive -->
+        <div class="bmc-architecture">
+            <h2>🔌 RedFish API: Modern DataCenter Management</h2>
+            <p class="section-intro">RedFish is a modern, RESTful API standard for server hardware management, replacing legacy protocols like IPMI with secure, scalable automation capabilities.</p>
+
+            <div class="management-layer">
+                <h3>🌐 RedFish API Architecture</h3>
+
+                <div class="redfish-endpoint">
+                    <div class="api-method get">GET</div> <code>/redfish/v1/</code>
+                    <div class="endpoint-description">Service root - discover available resources</div>
+                </div>
+
+                <div class="json-example">
+{
+  <span class="json-key">"@odata.type"</span>: <span class="json-string">"#ServiceRoot.v1_5_0.ServiceRoot"</span>,
+  <span class="json-key">"Id"</span>: <span class="json-string">"RootService"</span>,
+  <span class="json-key">"Name"</span>: <span class="json-string">"Root Service"</span>,
+  <span class="json-key">"RedfishVersion"</span>: <span class="json-string">"1.12.0"</span>,
+  <span class="json-key">"Systems"</span>: {
+    <span class="json-key">"@odata.id"</span>: <span class="json-string">"/redfish/v1/Systems"</span>
+  },
+  <span class="json-key">"Chassis"</span>: {
+    <span class="json-key">"@odata.id"</span>: <span class="json-string">"/redfish/v1/Chassis"</span>
+  },
+  <span class="json-key">"Managers"</span>: {
+    <span class="json-key">"@odata.id"</span>: <span class="json-string">"/redfish/v1/Managers"</span>
+  }
+}
+                </div>
+
+                <div class="redfish-endpoint">
+                    <div class="api-method get">GET</div> <code>/redfish/v1/Systems/{id}</code>
+                    <div class="endpoint-description">System information and control</div>
+                </div>
+
+                <div class="redfish-endpoint">
+                    <div class="api-method post">POST</div> <code>/redfish/v1/Systems/{id}/Actions/ComputerSystem.Reset</code>
+                    <div class="endpoint-description">Power control operations</div>
+                </div>
+
+                <div class="redfish-endpoint">
+                    <div class="api-method get">GET</div> <code>/redfish/v1/UpdateService</code>
+                    <div class="endpoint-description">Firmware update management</div>
+                </div>
+
+                <div class="redfish-endpoint">
+                    <div class="api-method get">GET</div> <code>/redfish/v1/Chassis/{id}/Thermal</code>
+                    <div class="endpoint-description">Temperature and cooling monitoring</div>
+                </div>
+
+                <div class="redfish-endpoint">
+                    <div class="api-method patch">PATCH</div> <code>/redfish/v1/AccountService/Accounts/{id}</code>
+                    <div class="endpoint-description">User account management</div>
+                </div>
+            </div>
+
+            <div class="management-layer">
+                <h3>🔐 RedFish Security Features</h3>
+
+                <div class="security-controls">
+                    <div class="control-card">
+                        <span class="control-icon">🔒</span>
+                        <h5>Transport Security</h5>
+                        <div class="control-details">
+                            <strong>Encryption & Authentication:</strong><br>
+                            • TLS 1.3 mandatory encryption<br>
+                            • Certificate-based authentication<br>
+                            • OAUTH 2.0 / OpenID Connect support<br>
+                            • Kerberos integration<br>
+                            • Session-based authentication tokens
+                        </div>
+                    </div>
+
+                    <div class="control-card">
+                        <span class="control-icon">👤</span>
+                        <h5>Authorization & RBAC</h5>
+                        <div class="control-details">
+                            <strong>Access Control:</strong><br>
+                            • Fine-grained role definitions<br>
+                            • Resource-specific permissions<br>
+                            • Operation-level access control<br>
+                            • Privilege escalation prevention<br>
+                            • Administrative delegation
+                        </div>
+                    </div>
+
+                    <div class="control-card">
+                        <span class="control-icon">📋</span>
+                        <h5>Audit & Compliance</h5>
+                        <div class="control-details">
+                            <strong>Logging & Monitoring:</strong><br>
+                            • Comprehensive audit trails<br>
+                            • Event log streaming (SYSLOG)<br>
+                            • Configuration change tracking<br>
+                            • Security event correlation<br>
+                            • Compliance reporting (SOX, PCI-DSS)
+                        </div>
+                    </div>
+
+                    <div class="control-card">
+                        <span class="control-icon">🛡️</span>
+                        <h5>API Security</h5>
+                        <div class="control-details">
+                            <strong>Protection Mechanisms:</strong><br>
+                            • Rate limiting and throttling<br>
+                            • Input validation and sanitization<br>
+                            • Cross-origin resource sharing (CORS)<br>
+                            • API versioning and deprecation<br>
+                            • Error handling without info disclosure
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- DataCenter Provisioning Workflow -->
+        <div class="bmc-architecture">
+            <h2>🏭 DataCenter Asset Provisioning Workflow</h2>
+
+            <div class="provisioning-flow">
+                <div class="provisioning-step">
+                    <div class="step-number">1</div>
+                    <div class="step-content">
+                        <h6>🚚 Hardware Delivery & Racking</h6>
+                        <p><strong>Physical Security:</strong> Tamper-evident shipping, verified chain of custody, hardware authentication tags</p>
+                        <div class="redfish-endpoint">
+                            <div class="api-method get">GET</div> <code>/redfish/v1/Chassis/{id}/NetworkAdapters</code>
+                            <div class="endpoint-description">Verify hardware inventory matches manifest</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="provisioning-step">
+                    <div class="step-number">2</div>
+                    <div class="step-content">
+                        <h6>🔌 BMC Network Discovery</h6>
+                        <p><strong>Network Bootstrapping:</strong> DHCP reservation based on MAC address, automatic BMC IP assignment, TLS certificate enrollment</p>
+                        <div class="redfish-endpoint">
+                            <div class="api-method post">POST</div> <code>/redfish/v1/Managers/{id}/Actions/Manager.Reset</code>
+                            <div class="endpoint-description">Initialize BMC for configuration</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="provisioning-step">
+                    <div class="step-number">3</div>
+                    <div class="step-content">
+                        <h6>🔐 Security Configuration</h6>
+                        <p><strong>Hardening:</strong> Default password change, certificate installation, user account setup, firewall configuration</p>
+                        <div class="redfish-endpoint">
+                            <div class="api-method patch">PATCH</div> <code>/redfish/v1/AccountService</code>
+                            <div class="endpoint-description">Configure authentication policies</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="provisioning-step">
+                    <div class="step-number">4</div>
+                    <div class="step-content">
+                        <h6>⚙️ Firmware & BIOS Configuration</h6>
+                        <p><strong>Platform Setup:</strong> UEFI settings configuration, secure boot enablement, TPM activation, boot order setup</p>
+                        <div class="redfish-endpoint">
+                            <div class="api-method patch">PATCH</div> <code>/redfish/v1/Systems/{id}/Bios/Settings</code>
+                            <div class="endpoint-description">Configure platform security settings</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="provisioning-step">
+                    <div class="step-number">5</div>
+                    <div class="step-content">
+                        <h6>💿 OS Deployment</h6>
+                        <p><strong>Automated Installation:</strong> PXE boot configuration, OS image deployment, driver installation, domain joining</p>
+                        <div class="redfish-endpoint">
+                            <div class="api-method post">POST</div> <code>/redfish/v1/Systems/{id}/Actions/ComputerSystem.Reset</code>
+                            <div class="endpoint-description">Initiate network boot for OS installation</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="provisioning-step">
+                    <div class="step-number">6</div>
+                    <div class="step-content">
+                        <h6>📊 Monitoring Integration</h6>
+                        <p><strong>Management Integration:</strong> DCIM tool registration, monitoring agent deployment, alerting configuration</p>
+                        <div class="redfish-endpoint">
+                            <div class="api-method post">POST</div> <code>/redfish/v1/EventService/Subscriptions</code>
+                            <div class="endpoint-description">Register for hardware event notifications</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Security Threats and Mitigations -->
+        <div class="bmc-architecture">
+            <h2>⚠️ BMC Security Threats & Mitigations</h2>
+
+            <div class="attack-vector">
+                <h6>🎯 Common Attack Vectors</h6>
+
+                <div class="attack-scenario">
+                    <h6>1. Default Credentials</h6>
+                    <p><strong>Attack:</strong> Using manufacturer default usernames/passwords (admin/admin, root/calvin)</p>
+                    <div class="mitigation-strategy">
+                        <h7>🛡️ Mitigation:</h7>
+                        <p>Mandatory password change on first login, strong password policies, account lockout mechanisms</p>
+                    </div>
+                </div>
+
+                <div class="attack-scenario">
+                    <h6>2. Firmware Vulnerabilities</h6>
+                    <p><strong>Attack:</strong> Exploiting unpatched BMC firmware vulnerabilities for remote code execution</p>
+                    <div class="mitigation-strategy">
+                        <h7>🛡️ Mitigation:</h7>
+                        <p>Regular firmware updates, vulnerability scanning, secure firmware signing, rollback protection</p>
+                    </div>
+                </div>
+
+                <div class="attack-scenario">
+                    <h6>3. Network Attacks</h6>
+                    <p><strong>Attack:</strong> Man-in-the-middle attacks, protocol downgrade, certificate spoofing</p>
+                    <div class="mitigation-strategy">
+                        <h7>🛡️ Mitigation:</h7>
+                        <p>TLS 1.3 enforcement, certificate pinning, network segmentation, VPN access</p>
+                    </div>
+                </div>
+
+                <div class="attack-scenario">
+                    <h6>4. Privilege Escalation</h6>
+                    <p><strong>Attack:</strong> Exploiting RBAC misconfigurations to gain administrative access</p>
+                    <div class="mitigation-strategy">
+                        <h7>🛡️ Mitigation:</h7>
+                        <p>Least privilege principle, regular access reviews, role separation, privileged account monitoring</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Compliance and Standards -->
+        <div class="bmc-architecture">
+            <h2>📋 Compliance & Industry Standards</h2>
+
+            <div class="compliance-grid">
+                <div class="compliance-item">
+                    <h6>🏛️ Government Standards</h6>
+                    <div class="compliance-details">
+                        • NIST Cybersecurity Framework<br>
+                        • FedRAMP compliance requirements<br>
+                        • FISMA controls implementation<br>
+                        • Common Criteria evaluations
+                    </div>
+                </div>
+
+                <div class="compliance-item">
+                    <h6>🏭 Industry Standards</h6>
+                    <div class="compliance-details">
+                        • ISO/IEC 27001 ISMS<br>
+                        • SOC 2 Type II audits<br>
+                        • PCI-DSS for payment systems<br>
+                        • HIPAA for healthcare data
+                    </div>
+                </div>
+
+                <div class="compliance-item">
+                    <h6>🔧 Technical Standards</h6>
+                    <div class="compliance-details">
+                        • DMTF RedFish specification<br>
+                        • IPMI 2.0 legacy compatibility<br>
+                        • SNMP v3 security standards<br>
+                        • UEFI secure boot requirements
+                    </div>
+                </div>
+
+                <div class="compliance-item">
+                    <h6>🌍 Regional Regulations</h6>
+                    <div class="compliance-details">
+                        • EU GDPR data protection<br>
+                        • China Cybersecurity Law<br>
+                        • India IT Act compliance<br>
+                        • US HIPAA/SOX requirements
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Interactive Demo Section -->
+        <div class="interactive-section">
+            <h2>🎮 Interactive BMC & RedFish Demonstrations</h2>
+            <p>Explore BMC security and RedFish API automation through hands-on simulations</p>
+
+            <div class="demo-grid">
+                <button onclick="simulateBMCProvisioning()" class="demo-button">🏭 BMC Provisioning</button>
+                <button onclick="exploreRedfishSecurity()" class="demo-button">🔐 RedFish Security</button>
+                <button onclick="demonstrateAssetManagement()" class="demo-button">📊 Asset Management</button>
+                <button onclick="showAttackSimulation()" class="demo-button">⚔️ Attack Simulation</button>
+            </div>
+
+            <div id="bmc-demo-result" class="demo-result" style="display: none;">
+                <!-- Interactive demo results appear here -->
+            </div>
+        </div>
+
+        <div class="demo-actions">
+            <button onclick="startDatacenterTour()" class="cta-button">🏗️ Complete DataCenter Security Tour</button>
+            <button onclick="window.location.href='../'" class="cta-button secondary">↩️ Back to Module 1</button>
+        </div>
+    </div>
+
+    <script src="bmc-redfish-demo.js"></script>
+    <script>
+        // Initialize page
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('BMC & RedFish educational page loaded');
+            updateProgress('bmc-redfish', true);
+        });
+
+        // Progress tracking
+        function updateProgress(demoId, completed) {
+            localStorage.setItem(`hw_security_progress_${demoId}`, completed);
+            console.log(`Progress updated: ${demoId} = ${completed}`);
+        }
+    </script>
+</body>
+</html>

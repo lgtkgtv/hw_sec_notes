@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DataCenter NVMe Storage Architecture & Management</title>
+    <link rel="stylesheet" href="../../assets/css/styles.css">
+    <link rel="stylesheet" href="../../assets/css/demo-enhancements.css">
+    <style>
+        .storage-tier { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+        .nvme-component { border-left: 4px solid #8b5cf6; background: #f3f4f6; }
+        .management-layer { background: #e0f2fe; border: 2px solid #0288d1; }
+        .storage-demo { background: #f8fafc; border: 1px solid #e2e8f0; }
+        .performance-metric { background: #ecfdf5; border-left: 3px solid #10b981; }
+    </style>
+</head>
+
+<body>
+    <header class="demo-header">
+        <nav>
+            <a href="../../index.html">🏠 Course Home</a>
+            <a href="../module-0-crypto/index.html">📖 Module 0</a>
+            <a href="index.html">🔧 Module 1</a>
+        </nav>
+        <h1>🏢 DataCenter NVMe Storage Architecture</h1>
+        <p>Hardware Design, Management & Secure DevOps</p>
+    </header>
+
+    <main class="demo-container">
+        <!-- Storage Architecture Overview -->
+        <section class="demo-section">
+            <h2 class="section-title storage-tier">🏗️ DataCenter Storage Architecture Overview</h2>
+
+            <div class="nvme-component">
+                <h3>📊 Storage Tier Hierarchy</h3>
+                <div class="storage-demo">
+                    <h4>Tier 0: Ultra-High Performance (NVMe PCIe 5.0)</h4>
+                    <ul>
+                        <li><strong>Latency:</strong> &lt; 100 μs</li>
+                        <li><strong>IOPS:</strong> 1M+ random read/write</li>
+                        <li><strong>Bandwidth:</strong> 14+ GB/s sequential</li>
+                        <li><strong>Use Cases:</strong> Database logs, in-memory computing spill, real-time analytics</li>
+                        <li><strong>Form Factor:</strong> U.2, U.3, M.2, EDSFF E1.S/E1.L</li>
+                    </ul>
+                </div>
+
+                <div class="storage-demo">
+                    <h4>Tier 1: High Performance (NVMe PCIe 4.0)</h4>
+                    <ul>
+                        <li><strong>Latency:</strong> 100-300 μs</li>
+                        <li><strong>IOPS:</strong> 500K-1M random read/write</li>
+                        <li><strong>Bandwidth:</strong> 7+ GB/s sequential</li>
+                        <li><strong>Use Cases:</strong> Primary databases, VM storage, container persistent volumes</li>
+                        <li><strong>Deployment:</strong> Direct-attached, NVMe-oF fabric-attached</li>
+                    </ul>
+                </div>
+
+                <div class="storage-demo">
+                    <h4>Tier 2: Balanced Performance (QLC NVMe)</h4>
+                    <ul>
+                        <li><strong>Latency:</strong> 300-1000 μs</li>
+                        <li><strong>IOPS:</strong> 100K-500K random read/write</li>
+                        <li><strong>Bandwidth:</strong> 3+ GB/s sequential</li>
+                        <li><strong>Use Cases:</strong> Object storage, backup, archival, big data analytics</li>
+                        <li><strong>Optimization:</strong> Higher capacity per drive (30+ TB)</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- NVMe Management Infrastructure -->
+        <section class="demo-section">
+            <h2 class="section-title">🛠️ NVMe Management Infrastructure</h2>
+
+            <div class="management-layer">
+                <h3>📡 NVMe-oF (NVMe over Fabrics) Management</h3>
+                <div class="storage-demo">
+                    <h4>Transport Protocols</h4>
+                    <ul>
+                        <li><strong>RDMA (InfiniBand/RoCE):</strong> Ultra-low latency, CPU offload, 100/200/400 Gbps</li>
+                        <li><strong>TCP:</strong> Standard Ethernet, software implementation, 10/25/40/100 Gbps</li>
+                        <li><strong>Fibre Channel (FC-NVMe):</strong> Enterprise SAN integration, 32/64/128 Gbps</li>
+                    </ul>
+
+                    <h4>Fabric Discovery & Management</h4>
+                    <pre class="code-block">
+# NVMe Discovery Controller Configuration
+nvme discover -t rdma -a 192.168.100.100 -s 4420
+
+# Subsystem Connection
+nvme connect -t rdma -n nqn.1988-11.com.dell:PowerScale-cluster1 \
+             -a 192.168.100.100 -s 4420
+
+# Multipath Configuration for HA
+echo "device {
+    vendor \"NVME\"
+    product \"Dell PowerScale\"
+    path_grouping_policy multibus
+    path_selector \"round-robin 0\"
+    failback immediate
+}" >> /etc/multipath.conf
+                    </pre>
+                </div>
+
+                <h3>🔄 Storage Orchestration & DevOps</h3>
+                <div class="storage-demo">
+                    <h4>Kubernetes CSI (Container Storage Interface)</h4>
+                    <pre class="code-block">
+# StorageClass for High-Performance NVMe
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: nvme-ultra-fast
+provisioner: nvme.csi.dell.com
+parameters:
+  # Performance tier selection
+  storagePool: "tier0-nvme-pcie5"
+  # QoS constraints
+  minIOPS: "100000"
+  maxIOPS: "1000000"
+  # Security requirements
+  encryptionEnabled: "true"
+  # Placement constraints
+  rackAffinity: "high-performance"
+allowVolumeExpansion: true
+volumeBindingMode: WaitForFirstConsumer
+                    </pre>
+
+                    <h4>Persistent Volume Claim Example</h4>
+                    <pre class="code-block">
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: database-storage
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Ti
+  storageClassName: nvme-ultra-fast
+  # Performance annotations
+  annotations:
+    volume.beta.kubernetes.io/storage-provisioner: nvme.csi.dell.com
+    # Security annotations
+    volume.beta.kubernetes.io/mount-options: "rsize=1048576,wsize=1048576,hard,timeo=600"
+                    </pre>
+                </div>
+            </div>
+        </section>
+
+        <!-- Performance Management -->
+        <section class="demo-section">
+            <h2 class="section-title">📊 Performance Management & Monitoring</h2>
+
+            <div class="performance-metric">
+                <h3>📈 NVMe Performance Characteristics</h3>
+                <div class="storage-demo">
+                    <h4>Queue Depth Optimization</h4>
+                    <ul>
+                        <li><strong>Single Queue:</strong> Up to 64K commands per queue</li>
+                        <li><strong>Multi-Queue:</strong> Per-CPU core queues (typically 16-32 queues per device)</li>
+                        <li><strong>NUMA Awareness:</strong> Local memory access optimization</li>
+                        <li><strong>CPU Affinity:</strong> IRQ steering to appropriate cores</li>
+                    </ul>
+
+                    <h4>Performance Monitoring Tools</h4>
+                    <pre class="code-block">
+# NVMe device information and performance
+nvme list
+nvme smart-log /dev/nvme0n1
+
+# Performance monitoring with iostat
+iostat -x -d 1 nvme0n1
+
+# Advanced NVMe monitoring
+nvme get-log /dev/nvme0n1 --log-id=2 --log-len=512
+
+# SPDK-based performance testing
+spdk_nvme_perf -q 32 -o 4096 -w randread -t 60 -c 0x1
+                    </pre>
+                </div>
+
+                <h3>🎯 Quality of Service (QoS) Management</h3>
+                <div class="storage-demo">
+                    <h4>Storage QoS Configuration</h4>
+                    <pre class="code-block">
+# Linux blkio cgroup v2 configuration
+echo "8:0 rbps=2147483648 wbps=1073741824" > /sys/fs/cgroup/io.max
+echo "8:0 riops=100000 wiops=50000" > /sys/fs/cgroup/io.max
+
+# NVMe device-level QoS (if supported)
+nvme set-feature /dev/nvme0n1 --feature-id=0x12 --value=0x12345678
+
+# SPDK QoS rate limiting
+rpc.py bdev_set_qos_limit nvme0n1p1 --rw_ios_per_sec 100000
+                    </pre>
+
+                    <h4>Multi-Tenant Resource Isolation</h4>
+                    <ul>
+                        <li><strong>Namespace Isolation:</strong> NVMe namespaces per tenant</li>
+                        <li><strong>Bandwidth Allocation:</strong> Guaranteed/burst IOPS per tenant</li>
+                        <li><strong>Latency SLA:</strong> P99 latency guarantees</li>
+                        <li><strong>Priority Scheduling:</strong> Critical vs. best-effort workloads</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- Hardware Management -->
+        <section class="demo-section">
+            <h2 class="section-title">🔧 Hardware Management & Operations</h2>
+
+            <div class="management-layer">
+                <h3>🛡️ Drive Health & Predictive Analytics</h3>
+                <div class="storage-demo">
+                    <h4>SMART Monitoring & Alerts</h4>
+                    <pre class="code-block">
+# SMART attribute monitoring
+smartctl -a /dev/nvme0n1
+
+# Key NVMe SMART attributes to monitor:
+# - Critical Warning (0x01)
+# - Temperature (0x02)
+# - Available Spare (0x03)
+# - Available Spare Threshold (0x04)
+# - Percentage Used (0x05)
+# - Data Units Read/Written (0x06/0x07)
+# - Host Read/Write Commands (0x08/0x09)
+# - Power Cycles (0x0C)
+# - Unsafe Shutdowns (0x0E)
+
+# Automated health checking
+#!/bin/bash
+for drive in /dev/nvme*n1; do
+    temp=$(nvme smart-log $drive | grep "^temperature" | awk '{print $3}')
+    spare=$(nvme smart-log $drive | grep "^available_spare" | awk '{print $3}')
+
+    if [ $temp -gt 70 ]; then
+        echo "WARNING: $drive temperature ${temp}°C exceeds threshold"
+    fi
+
+    if [ $spare -lt 10 ]; then
+        echo "CRITICAL: $drive available spare ${spare}% below threshold"
+    fi
+done
+                    </pre>
+                </div>
+
+                <h3>🔄 Lifecycle Management</h3>
+                <div class="storage-demo">
+                    <h4>Drive Provisioning Workflow</h4>
+                    <div class="workflow-steps">
+                        <div class="step">
+                            <h5>1. Hardware Discovery</h5>
+                            <ul>
+                                <li>PCIe enumeration and device identification</li>
+                                <li>NVMe controller initialization</li>
+                                <li>Namespace discovery and formatting</li>
+                            </ul>
+                        </div>
+
+                        <div class="step">
+                            <h5>2. Security Initialization</h5>
+                            <ul>
+                                <li>TCG Opal security protocol activation</li>
+                                <li>Self-encrypting drive (SED) key provisioning</li>
+                                <li>Secure erase capability verification</li>
+                            </ul>
+                        </div>
+
+                        <div class="step">
+                            <h5>3. Performance Optimization</h5>
+                            <ul>
+                                <li>Queue pair configuration</li>
+                                <li>CPU affinity optimization</li>
+                                <li>NUMA topology awareness</li>
+                            </ul>
+                        </div>
+
+                        <div class="step">
+                            <h5>4. Monitoring Integration</h5>
+                            <ul>
+                                <li>Telemetry collection setup</li>
+                                <li>Alert threshold configuration</li>
+                                <li>Predictive failure detection</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- DevOps Integration -->
+        <section class="demo-section">
+            <h2 class="section-title">🚀 DevOps Integration & Automation</h2>
+
+            <div class="management-layer">
+                <h3>📋 Infrastructure as Code (IaC)</h3>
+                <div class="storage-demo">
+                    <h4>Ansible Storage Automation</h4>
+                    <pre class="code-block">
+---
+# NVMe storage cluster configuration
+- name: Configure NVMe storage cluster
+  hosts: storage_nodes
+  vars:
+    nvme_devices:
+      - device: /dev/nvme0n1
+        tier: tier0
+        capacity: 7.68TB
+        encryption: enabled
+      - device: /dev/nvme1n1
+        tier: tier1
+        capacity: 15.36TB
+        encryption: enabled
+
+  tasks:
+    - name: Initialize NVMe devices
+      shell: |
+        # Format with 4K sectors for optimal performance
+        nvme format {{ item.device }} --ses=1 --lbaf=1
+
+        # Enable TCG Opal security if supported
+        sedutil-cli --initialSetup {{ ansible_vault_opal_password }} {{ item.device }}
+
+      loop: "{{ nvme_devices }}"
+
+    - name: Configure multipath
+      template:
+        src: multipath.conf.j2
+        dest: /etc/multipath.conf
+      notify: restart multipath
+
+    - name: Setup monitoring
+      copy:
+        content: |
+          #!/bin/bash
+          # NVMe health monitoring script
+          for device in {{ nvme_devices | map(attribute='device') | join(' ') }}; do
+            nvme smart-log $device | logger -t nvme-health
+          done
+        dest: /usr/local/bin/nvme-health-check.sh
+        mode: '0755'
+
+    - name: Configure cron for health monitoring
+      cron:
+        name: "NVMe health monitoring"
+        minute: "*/5"
+        job: "/usr/local/bin/nvme-health-check.sh"
+                    </pre>
+                </div>
+
+                <h3>🐳 Container Storage Integration</h3>
+                <div class="storage-demo">
+                    <h4>Docker Volume Plugin Configuration</h4>
+                    <pre class="code-block">
+# Docker daemon configuration for NVMe storage
+{
+  "storage-driver": "overlay2",
+  "storage-opts": [
+    "overlay2.override_kernel_check=true"
+  ],
+  "data-root": "/data/docker",
+  "log-driver": "json-file",
+  "log-opts": {
+    "max-size": "100m",
+    "max-file": "3"
+  },
+  # Direct NVMe device mounting for performance
+  "graph": "/nvme-fast/docker"
+}
+
+# High-performance container deployment
+docker run -d \
+  --name database-server \
+  --mount type=bind,source=/nvme-tier0/db,target=/var/lib/mysql \
+  --mount type=tmpfs,destination=/tmp,tmpfs-mode=1777,tmpfs-size=1G \
+  --cpuset-cpus="0-7" \
+  --memory=32g \
+  --restart=unless-stopped \
+  mysql:8.0
+                    </pre>
+                </div>
+
+                <h3>📊 Observability & Alerting</h3>
+                <div class="storage-demo">
+                    <h4>Prometheus NVMe Exporter Configuration</h4>
+                    <pre class="code-block">
+# prometheus.yml configuration
+global:
+  scrape_interval: 15s
+
+scrape_configs:
+  - job_name: 'nvme-exporter'
+    static_configs:
+      - targets: ['storage-node1:9101', 'storage-node2:9101']
+    scrape_interval: 30s
+    metrics_path: /metrics
+
+# Key NVMe metrics to monitor:
+# - nvme_device_temperature_celsius
+# - nvme_available_spare_percent
+# - nvme_percentage_used
+# - nvme_data_units_read_total
+# - nvme_data_units_written_total
+# - nvme_host_read_commands_total
+# - nvme_host_write_commands_total
+# - nvme_critical_warning
+
+# Grafana Dashboard Query Examples:
+# Temperature: avg(nvme_device_temperature_celsius) by (device)
+# IOPS: rate(nvme_host_read_commands_total[5m]) + rate(nvme_host_write_commands_total[5m])
+# Throughput: rate(nvme_data_units_read_total[5m]) * 512 + rate(nvme_data_units_written_total[5m]) * 512
+                    </pre>
+                </div>
+            </div>
+        </section>
+
+        <!-- Interactive Demo -->
+        <section class="demo-section">
+            <h2 class="section-title">🎮 Interactive NVMe Storage Demo</h2>
+
+            <div class="demo-controls">
+                <button onclick="demonstrateNVMePerformance()" class="demo-button">
+                    📊 Performance Benchmark
+                </button>
+                <button onclick="showNVMeTopology()" class="demo-button">
+                    🗺️ Storage Topology
+                </button>
+                <button onclick="simulateFailover()" class="demo-button">
+                    🔄 Failover Simulation
+                </button>
+                <button onclick="monitorHealth()" class="demo-button">
+                    🏥 Health Monitoring
+                </button>
+            </div>
+
+            <div id="nvme-demo-output" class="demo-output">
+                <p>Click any button above to explore NVMe storage management capabilities.</p>
+            </div>
+        </section>
+    </main>
+
+    <footer class="demo-footer">
+        <div class="footer-nav">
+            <a href="ia64-secure-boot-complete.html">← IA64 Secure Boot</a>
+            <a href="datacenter-gpu-resources.html">GPU Resources →</a>
+        </div>
+        <p>&copy; 2024 DataCenter Hardware Security Course. Educational content for masters-level study.</p>
+    </footer>
+
+    <script src="nvme-storage-demo.js"></script>
+</body>
+</html>
