@@ -1,0 +1,341 @@
+---
+layout: default
+title: "Module 2: GPU & Accelerator Security"
+description: "NVIDIA GPU security architecture, firmware attestation, NVLink protocols, and AI/ML accelerator hardening"
+module_id: "module-2-gpu-security"
+module_number: 2
+permalink: /modules/module-2-gpu-security/
+---
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Module 2: GPU & Accelerator Security - DataCenter Hardware Security</title>
+    <link rel="stylesheet" href="../../assets/css/main.css">
+    <link rel="stylesheet" href="../../assets/css/interactive.css">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-brand">
+                <h1>🎮 Module 2: GPU & Accelerator Security</h1>
+                <p>AI/ML accelerator security and confidential computing</p>
+            </div>
+            <div class="nav-menu">
+                <a href="../../index.html" class="nav-link">← Home</a>
+                <a href="#overview" class="nav-link">Overview</a>
+                <a href="#concepts" class="nav-link">Core Concepts</a>
+                <a href="#demos" class="nav-link">Interactive Demos</a>
+                <a href="#assessment" class="nav-link">Assessment</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Module Overview -->
+    <section id="overview" class="hero">
+        <div class="container">
+            <div class="hero-content">
+                <h1>GPU & Accelerator Security Fundamentals</h1>
+                <p class="hero-subtitle">Master security for AI/ML accelerators, NVIDIA confidential computing, GPU firmware security, and high-performance computing protection</p>
+                <div class="hero-stats">
+                    <div class="stat">
+                        <span class="stat-number">6-10</span>
+                        <span class="stat-label">Hours</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-number">4</span>
+                        <span class="stat-label">Key Topics</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-number">Advanced</span>
+                        <span class="stat-label">Level</span>
+                    </div>
+                </div>
+                <div class="hero-actions">
+                    <a href="#concepts" class="btn btn-primary">Start Learning</a>
+                    <a href="gpu-security-deep-dive.html" class="btn btn-secondary">Try Deep Dive</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Learning Objectives -->
+    <section class="section">
+        <div class="container">
+            <h2>🎯 Learning Objectives</h2>
+            <div class="learning-paths">
+                <div class="objective-card">
+                    <h3>🔒 GPU Security Architecture</h3>
+                    <p>Understand NVIDIA Hopper and Ada Lovelace security features, memory protection, and isolation mechanisms</p>
+                    <ul>
+                        <li>GPU firmware security and attestation</li>
+                        <li>Memory encryption and isolation</li>
+                        <li>Secure memory allocation</li>
+                        <li>GPU virtualization security</li>
+                    </ul>
+                </div>
+                <div class="objective-card">
+                    <h3>🛡️ Confidential Computing</h3>
+                    <p>Explore NVIDIA Confidential Computing, H100 protections, and AI workload security</p>
+                    <ul>
+                        <li>Trusted execution environments for AI</li>
+                        <li>GPU attestation protocols</li>
+                        <li>Secure model inference</li>
+                        <li>Data protection in GPU memory</li>
+                    </ul>
+                </div>
+                <div class="objective-card">
+                    <h3>⚡ Performance Security</h3>
+                    <p>Balance high-performance computing with security controls and monitoring</p>
+                    <ul>
+                        <li>CUDA runtime security</li>
+                        <li>Performance impact analysis</li>
+                        <li>Security monitoring for AI workloads</li>
+                        <li>Resource isolation techniques</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Core Concepts -->
+    <section id="concepts" class="section bg-light">
+        <div class="container">
+            <h2>🔐 Core GPU Security Concepts</h2>
+
+            <!-- NVIDIA GPU Security Architecture -->
+            <div class="concept-block">
+                <h3>🎮 NVIDIA GPU Security Architecture</h3>
+                <div class="concept-content">
+                    <div class="concept-text">
+                        <p>Modern GPUs like NVIDIA's H100 and A100 include sophisticated security features designed for datacenter and cloud environments.</p>
+
+                        <div class="key-features">
+                            <h4>🔧 Hardware Security Features:</h4>
+                            <ul>
+                                <li><strong>Secure Boot:</strong> Verified GPU firmware loading</li>
+                                <li><strong>Memory Encryption:</strong> Hardware-accelerated memory protection</li>
+                                <li><strong>Attestation:</strong> Remote verification of GPU state</li>
+                                <li><strong>Isolation:</strong> Multi-tenant workload separation</li>
+                            </ul>
+                        </div>
+
+                        <div class="architecture-demo">
+                            <h4>🏗️ GPU Security Stack:</h4>
+                            <div class="stack-layers">
+                                <div class="layer">🔒 <strong>Application Layer:</strong> CUDA applications, ML frameworks</div>
+                                <div class="layer">⚙️ <strong>Runtime Layer:</strong> CUDA runtime, driver security</div>
+                                <div class="layer">🛡️ <strong>Firmware Layer:</strong> GPU firmware, security protocols</div>
+                                <div class="layer">🎮 <strong>Hardware Layer:</strong> GPU silicon, memory encryption</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="interactive-demo-section">
+                    <h4>🧪 Interactive Demonstrations</h4>
+                    <div class="demo-buttons">
+                        <button onclick="exploreGPUArchitecture()" class="btn btn-primary">🎮 Explore GPU Security</button>
+                        <button onclick="demonstrateMemoryProtection()" class="btn btn-secondary">🛡️ Memory Protection</button>
+                        <button onclick="simulateAttestationFlow()" class="btn btn-outline">📋 Attestation Demo</button>
+                    </div>
+                    <div id="gpu-architecture-result" class="demo-result" style="display: none;">
+                        <div id="gpu-output" class="simulation-output"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Confidential Computing -->
+            <div class="concept-block">
+                <h3>🔒 GPU Confidential Computing</h3>
+                <div class="concept-content">
+                    <div class="concept-text">
+                        <p>NVIDIA Confidential Computing protects AI workloads and sensitive data during GPU processing, enabling secure multi-tenant AI services.</p>
+
+                        <div class="confidential-features">
+                            <h4>🛡️ Protection Mechanisms:</h4>
+                            <ul>
+                                <li><strong>Memory Encryption:</strong> AES-256 encrypted GPU memory</li>
+                                <li><strong>Secure Enclaves:</strong> Isolated execution environments</li>
+                                <li><strong>Attestation:</strong> Proof of secure execution state</li>
+                                <li><strong>Key Management:</strong> Hardware-protected encryption keys</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="interactive-demo-section">
+                    <h4>🧪 Confidential Computing Lab</h4>
+                    <div class="demo-buttons">
+                        <button onclick="simulateConfidentialWorkload()" class="btn btn-primary">🔐 Confidential AI Demo</button>
+                        <button onclick="demonstrateEncryption()" class="btn btn-secondary">🔑 Memory Encryption</button>
+                        <button onclick="showThreatModel()" class="btn btn-outline">⚠️ Threat Analysis</button>
+                    </div>
+                    <div id="confidential-result" class="demo-result" style="display: none;">
+                        <div id="confidential-output" class="simulation-output"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- GPU Virtualization Security -->
+            <div class="concept-block">
+                <h3>🌐 GPU Virtualization Security</h3>
+                <div class="concept-content">
+                    <div class="concept-text">
+                        <p>GPU virtualization enables secure multi-tenancy through vGPU and Multi-Instance GPU (MIG) technologies.</p>
+
+                        <div class="virtualization-types">
+                            <h4>📊 Virtualization Technologies:</h4>
+                            <div class="tech-comparison">
+                                <div class="tech-item">
+                                    <h5>🔄 vGPU (Virtual GPU)</h5>
+                                    <p>Time-sliced GPU sharing with memory isolation</p>
+                                </div>
+                                <div class="tech-item">
+                                    <h5>⚡ MIG (Multi-Instance GPU)</h5>
+                                    <p>Hardware partitioning with dedicated resources</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="interactive-demo-section">
+                    <h4>🧪 Virtualization Security Lab</h4>
+                    <div class="demo-buttons">
+                        <button onclick="demonstrateVGPU()" class="btn btn-primary">🔄 vGPU Security</button>
+                        <button onclick="demonstrateMIG()" class="btn btn-secondary">⚡ MIG Isolation</button>
+                        <button onclick="compareVirtualization()" class="btn btn-outline">⚖️ Compare Technologies</button>
+                    </div>
+                    <div id="virtualization-result" class="demo-result" style="display: none;">
+                        <div id="virtualization-output" class="simulation-output"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Interactive Demos -->
+    <section id="demos" class="section">
+        <div class="container">
+            <h2>🧪 Interactive GPU Security Lab</h2>
+            <p class="section-subtitle">Hands-on exploration of GPU security concepts and technologies</p>
+
+            <div class="demo-grid">
+                <div class="demo-card">
+                    <h3>🎮 GPU Security Deep Dive</h3>
+                    <p>Comprehensive exploration of NVIDIA GPU security architecture and features</p>
+                    <a href="gpu-security-deep-dive.html" class="btn btn-primary">Launch Deep Dive</a>
+                </div>
+                <div class="demo-card">
+                    <h3>💾 GPU Memory Security</h3>
+                    <p>Interactive demonstration of GPU memory protection and encryption</p>
+                    <a href="gpu-memory-demo.html" class="btn btn-primary">Try Memory Demo</a>
+                </div>
+                <div class="demo-card">
+                    <h3>🏢 DataCenter GPU Resources</h3>
+                    <p>Explore GPU resource allocation and security in datacenter environments</p>
+                    <a href="datacenter-gpu-resources.html" class="btn btn-primary">Resource Explorer</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Assessment Section -->
+    <section id="assessment" class="section bg-light">
+        <div class="container">
+            <h2>📝 Knowledge Assessment</h2>
+            <div class="assessment-intro">
+                <p>Test your understanding of GPU and accelerator security with this comprehensive assessment.</p>
+                <div class="assessment-stats">
+                    <span>12 Questions • ~20 minutes • Passing: 75%</span>
+                </div>
+            </div>
+
+            <div class="assessment-card">
+                <h3>GPU & Accelerator Security Quiz</h3>
+                <div class="question-preview">
+                    <h4>Sample Question:</h4>
+                    <p><strong>Which NVIDIA GPU feature provides hardware-based memory encryption for confidential computing workloads?</strong></p>
+                    <ul class="preview-options">
+                        <li>A) CUDA Streams</li>
+                        <li>B) Memory Protection Extensions</li>
+                        <li>C) NVLink Protocol</li>
+                        <li>D) GPU Direct Storage</li>
+                    </ul>
+                </div>
+                <div class="assessment-actions">
+                    <button class="btn btn-primary" onclick="startAssessment()">Start Assessment</button>
+                    <button class="btn btn-secondary" onclick="showStudyGuide()">Study Guide</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Next Steps -->
+    <section class="section">
+        <div class="container">
+            <h2>🚀 Next Steps</h2>
+            <div class="next-steps">
+                <div class="next-module">
+                    <h3>Ready for Module 3?</h3>
+                    <p>Continue with storage security, including NVMe SSDs and hardware encryption.</p>
+                    <a href="../module-3-storage-security/index.html" class="btn btn-primary">Module 3: Storage Security →</a>
+                </div>
+                <div class="additional-resources">
+                    <h3>📚 Additional Resources</h3>
+                    <ul>
+                        <li><a href="../../reference/gpu-security-commands.html">GPU Security Commands</a></li>
+                        <li><a href="../../reference/nvidia-confidential-computing.html">NVIDIA CC Guide</a></li>
+                        <li><a href="gpu-security-deep-dive.html">Advanced GPU Security</a></li>
+                        <li><a href="datacenter-gpu-resources.html">DataCenter GPU Management</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <script src="../../assets/js/main.js"></script>
+    <script src="../../assets/js/progress-tracker.js"></script>
+    <script src="gpu-security-demo.js"></script>
+    <script>
+        // Additional helper functions for the interface
+        function scrollToSection(sectionId) {
+            document.getElementById(sectionId).scrollIntoView({
+                behavior: 'smooth'
+            });
+        }
+
+        // Initialize page functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('Module 2: GPU & Accelerator Security loaded');
+
+            // Add demo result containers if they don't exist
+            const requiredContainers = [
+                'gpu-architecture-result',
+                'confidential-result',
+                'virtualization-result'
+            ];
+
+            requiredContainers.forEach(containerId => {
+                if (!document.getElementById(containerId)) {
+                    const container = document.createElement('div');
+                    container.id = containerId;
+                    container.className = 'demo-result';
+                    container.style.display = 'none';
+                    container.innerHTML = `<div id="${containerId.replace('-result', '-output')}" class="simulation-output"></div>`;
+
+                    // Find the parent demo section and append
+                    const demoSection = document.getElementById('demos');
+                    if (demoSection) {
+                        demoSection.appendChild(container);
+                    }
+                }
+            });
+        });
+    </script>
+</body>
+</html>

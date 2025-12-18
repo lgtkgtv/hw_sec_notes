@@ -1,0 +1,490 @@
+---
+layout: default
+title: "Module 5: Datacenter Infrastructure Security"
+description: "BMC hardening, RedFish APIs, out-of-band management security, asset provisioning, and datacenter-scale operations"
+module_id: "module-5-datacenter-infrastructure"
+module_number: 5
+permalink: /modules/module-5-datacenter-infrastructure/
+---
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Module 5: Datacenter Infrastructure Security - DataCenter Hardware Security</title>
+    <link rel="stylesheet" href="../../assets/css/main.css">
+    <link rel="stylesheet" href="../../assets/css/interactive.css">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-brand">
+                <h1>🏭 Module 5: Datacenter Infrastructure Security</h1>
+                <p>Enterprise datacenter operations and security at scale</p>
+            </div>
+            <div class="nav-menu">
+                <a href="../../index.html" class="nav-link">← Home</a>
+                <a href="#overview" class="nav-link">Overview</a>
+                <a href="#concepts" class="nav-link">Core Concepts</a>
+                <a href="#demos" class="nav-link">Interactive Demos</a>
+                <a href="#assessment" class="nav-link">Assessment</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Module Overview -->
+    <section id="overview" class="hero">
+        <div class="container">
+            <div class="hero-content">
+                <h1>Datacenter Infrastructure Security</h1>
+                <p class="hero-subtitle">Master enterprise datacenter security operations including BMC hardening, RedFish API security, out-of-band management, and large-scale infrastructure automation</p>
+                <div class="hero-stats">
+                    <div class="stat">
+                        <span class="stat-number">8-12</span>
+                        <span class="stat-label">Hours</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-number">7</span>
+                        <span class="stat-label">Key Topics</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-number">Expert</span>
+                        <span class="stat-label">Level</span>
+                    </div>
+                </div>
+                <div class="hero-actions">
+                    <a href="#concepts" class="btn btn-primary">Start Learning</a>
+                    <a href="bmc-redfish-datacenter.html" class="btn btn-secondary">Try BMC Demo</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Learning Objectives -->
+    <section class="section">
+        <div class="container">
+            <h2>🎯 Learning Objectives</h2>
+            <div class="learning-paths">
+                <div class="objective-card">
+                    <h3>🖥️ BMC Security</h3>
+                    <p>Master Baseboard Management Controller security and hardening practices</p>
+                    <ul>
+                        <li>BMC firmware security and updates</li>
+                        <li>Network isolation and segmentation</li>
+                        <li>Authentication and access control</li>
+                        <li>Vulnerability management at scale</li>
+                    </ul>
+                </div>
+                <div class="objective-card">
+                    <h3>🔌 RedFish API Security</h3>
+                    <p>Secure implementation and management of RedFish APIs for datacenter automation</p>
+                    <ul>
+                        <li>RedFish authentication mechanisms</li>
+                        <li>API security best practices</li>
+                        <li>Automation and orchestration security</li>
+                        <li>Monitoring and audit logging</li>
+                    </ul>
+                </div>
+                <div class="objective-card">
+                    <h3>🏭 Operations at Scale</h3>
+                    <p>Manage security for thousands of servers and infrastructure components</p>
+                    <ul>
+                        <li>Asset discovery and inventory</li>
+                        <li>Automated security provisioning</li>
+                        <li>Compliance monitoring and reporting</li>
+                        <li>Incident response procedures</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Core Concepts -->
+    <section id="concepts" class="section bg-light">
+        <div class="container">
+            <h2>🏭 Core Datacenter Security Concepts</h2>
+
+            <!-- BMC Security and Hardening -->
+            <div class="concept-block">
+                <h3>🖥️ Baseboard Management Controller (BMC) Security</h3>
+                <div class="concept-content">
+                    <div class="concept-text">
+                        <p>BMCs provide out-of-band management capabilities but also represent a significant security risk surface that must be properly secured and managed.</p>
+
+                        <div class="bmc-security-features">
+                            <h4>🛡️ BMC Security Controls:</h4>
+                            <ul>
+                                <li><strong>Firmware Integrity:</strong> Secure boot and verified firmware updates</li>
+                                <li><strong>Network Security:</strong> Dedicated management networks and VLANs</li>
+                                <li><strong>Authentication:</strong> Multi-factor authentication and role-based access</li>
+                                <li><strong>Encryption:</strong> TLS for all management communications</li>
+                            </ul>
+                        </div>
+
+                        <div class="bmc-architecture">
+                            <h4>🏗️ Enterprise BMC Architecture:</h4>
+                            <div class="architecture-layers">
+                                <div class="layer">🌐 <strong>Management Network:</strong> Isolated VLAN for BMC traffic</div>
+                                <div class="layer">🔐 <strong>Authentication Layer:</strong> LDAP/AD integration, MFA</div>
+                                <div class="layer">🔧 <strong>BMC Firmware:</strong> Hardened, regularly updated</div>
+                                <div class="layer">💻 <strong>Hardware Interface:</strong> IPMI, RedFish APIs</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="interactive-demo-section">
+                    <h4>🧪 Interactive Demonstrations</h4>
+                    <div class="demo-buttons">
+                        <button onclick="exploreBMCArchitecture()" class="btn btn-primary">🖥️ BMC Architecture</button>
+                        <button onclick="demonstrateBMCHardening()" class="btn btn-secondary">🛡️ BMC Hardening</button>
+                        <button onclick="simulateBMCAttack()" class="btn btn-outline">⚠️ Attack Simulation</button>
+                    </div>
+                    <div id="bmc-security-result" class="demo-result" style="display: none;">
+                        <div id="bmc-security-output" class="simulation-output"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- RedFish API Security -->
+            <div class="concept-block">
+                <h3>🔌 RedFish API Security Implementation</h3>
+                <div class="concept-content">
+                    <div class="concept-text">
+                        <p>RedFish provides modern REST APIs for server management, but requires careful security implementation for enterprise datacenter environments.</p>
+
+                        <div class="redfish-security">
+                            <h4>🔐 RedFish Security Features:</h4>
+                            <ul>
+                                <li><strong>TLS 1.3:</strong> Mandatory encryption for all API communications</li>
+                                <li><strong>OAuth 2.0:</strong> Token-based authentication and authorization</li>
+                                <li><strong>Role-Based Access:</strong> Fine-grained permission controls</li>
+                                <li><strong>Audit Logging:</strong> Comprehensive activity tracking</li>
+                            </ul>
+                        </div>
+
+                        <div class="api-security-stack">
+                            <h4>🏗️ API Security Stack:</h4>
+                            <div class="api-layers">
+                                <div class="api-layer">
+                                    <span class="layer-name">Application Layer</span>
+                                    <span class="layer-desc">Management applications, orchestration tools</span>
+                                </div>
+                                <div class="api-layer">
+                                    <span class="layer-name">API Gateway</span>
+                                    <span class="layer-desc">Rate limiting, authentication, monitoring</span>
+                                </div>
+                                <div class="api-layer">
+                                    <span class="layer-name">RedFish Service</span>
+                                    <span class="layer-desc">Server management REST APIs</span>
+                                </div>
+                                <div class="api-layer">
+                                    <span class="layer-name">BMC Firmware</span>
+                                    <span class="layer-desc">Hardware management interface</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="interactive-demo-section">
+                    <h4>🧪 RedFish Security Lab</h4>
+                    <div class="demo-buttons">
+                        <button onclick="exploreRedfishAPIs()" class="btn btn-primary">🔌 RedFish APIs</button>
+                        <button onclick="demonstrateAuthentication()" class="btn btn-secondary">🔐 Authentication</button>
+                        <button onclick="simulateAPIAttack()" class="btn btn-outline">⚠️ API Security Testing</button>
+                    </div>
+                    <div id="redfish-result" class="demo-result" style="display: none;">
+                        <div id="redfish-output" class="simulation-output"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Asset Provisioning and Management -->
+            <div class="concept-block">
+                <h3>📦 Automated Asset Provisioning Security</h3>
+                <div class="concept-content">
+                    <div class="concept-text">
+                        <p>Large-scale datacenter operations require automated provisioning processes with integrated security controls and compliance verification.</p>
+
+                        <div class="provisioning-workflow">
+                            <h4>🔄 Secure Provisioning Workflow:</h4>
+                            <div class="workflow-steps">
+                                <div class="step">1️⃣ <strong>Discovery:</strong> Automated hardware detection and inventory</div>
+                                <div class="step">2️⃣ <strong>Verification:</strong> Hardware authentication and compliance check</div>
+                                <div class="step">3️⃣ <strong>Configuration:</strong> Security policy application and hardening</div>
+                                <div class="step">4️⃣ <strong>Deployment:</strong> OS installation and application provisioning</div>
+                                <div class="step">5️⃣ <strong>Monitoring:</strong> Continuous compliance and security monitoring</div>
+                            </div>
+                        </div>
+
+                        <div class="scale-considerations">
+                            <h4>📈 Scale Considerations:</h4>
+                            <ul>
+                                <li><strong>Automation:</strong> Zero-touch provisioning with security controls</li>
+                                <li><strong>Compliance:</strong> Automated policy enforcement and reporting</li>
+                                <li><strong>Monitoring:</strong> Real-time security posture assessment</li>
+                                <li><strong>Incident Response:</strong> Automated threat detection and remediation</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="interactive-demo-section">
+                    <h4>🧪 Provisioning Security Lab</h4>
+                    <div class="demo-buttons">
+                        <button onclick="simulateProvisioning()" class="btn btn-primary">📦 Asset Provisioning</button>
+                        <button onclick="demonstrateCompliance()" class="btn btn-secondary">📋 Compliance Checking</button>
+                        <button onclick="analyzeScaleOperations()" class="btn btn-outline">📈 Scale Analysis</button>
+                    </div>
+                    <div id="provisioning-result" class="demo-result" style="display: none;">
+                        <div id="provisioning-output" class="simulation-output"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Interactive Demos -->
+    <section id="demos" class="section">
+        <div class="container">
+            <h2>🧪 Interactive Datacenter Security Lab</h2>
+            <p class="section-subtitle">Hands-on exploration of enterprise datacenter security operations</p>
+
+            <div class="demo-grid">
+                <div class="demo-card">
+                    <h3>🖥️ BMC & RedFish Deep Dive</h3>
+                    <p>Comprehensive exploration of BMC security and RedFish API implementation</p>
+                    <a href="bmc-redfish-datacenter.html" class="btn btn-primary">Launch Deep Dive</a>
+                </div>
+                <div class="demo-card">
+                    <h3>📊 RedFish Scale Analysis</h3>
+                    <p>Interactive demonstration of RedFish API security at datacenter scale</p>
+                    <a href="redfish-bmc-scale-analysis.html" class="btn btn-primary">Scale Explorer</a>
+                </div>
+                <div class="demo-card">
+                    <h3>📋 BMC Assessment Tool</h3>
+                    <p>Security assessment and hardening recommendations for BMC infrastructure</p>
+                    <a href="bmc-assessment.html" class="btn btn-primary">Assessment Tool</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Datacenter Security Scenarios -->
+    <section class="section bg-light">
+        <div class="container">
+            <h2>🎯 Real-World Security Scenarios</h2>
+
+            <div class="scenario-grid">
+                <div class="scenario-card">
+                    <h3>🚨 BMC Vulnerability Response</h3>
+                    <p>Critical vulnerability discovered in BMC firmware affecting 10,000+ servers</p>
+                    <div class="scenario-details">
+                        <h4>Response Requirements:</h4>
+                        <ul>
+                            <li>Assess impact across datacenter infrastructure</li>
+                            <li>Coordinate emergency patching procedures</li>
+                            <li>Implement temporary mitigations</li>
+                            <li>Document incident response timeline</li>
+                        </ul>
+                    </div>
+                    <button onclick="runScenario('vulnerability')" class="btn btn-warning">🚨 Run Scenario</button>
+                </div>
+
+                <div class="scenario-card">
+                    <h3>🔐 RedFish API Security Audit</h3>
+                    <p>Annual security audit of RedFish API implementations across multiple datacenters</p>
+                    <div class="scenario-details">
+                        <h4>Audit Scope:</h4>
+                        <ul>
+                            <li>Authentication and authorization controls</li>
+                            <li>API security configuration assessment</li>
+                            <li>Access logging and monitoring review</li>
+                            <li>Compliance verification procedures</li>
+                        </ul>
+                    </div>
+                    <button onclick="runScenario('audit')" class="btn btn-info">🔍 Run Audit</button>
+                </div>
+
+                <div class="scenario-card">
+                    <h3>⚡ Rapid Scale Deployment</h3>
+                    <p>Deploy 1,000 new servers with full security provisioning in 48 hours</p>
+                    <div class="scenario-details">
+                        <h4>Deployment Challenges:</h4>
+                        <ul>
+                            <li>Automated security configuration</li>
+                            <li>Compliance verification at scale</li>
+                            <li>Network security integration</li>
+                            <li>Monitoring and alerting setup</li>
+                        </ul>
+                    </div>
+                    <button onclick="runScenario('deployment')" class="btn btn-success">🚀 Run Deployment</button>
+                </div>
+            </div>
+
+            <div id="scenario-result" class="demo-result" style="display: none;">
+                <div id="scenario-output" class="simulation-output"></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Assessment Section -->
+    <section id="assessment" class="section">
+        <div class="container">
+            <h2>📝 Knowledge Assessment</h2>
+            <div class="assessment-intro">
+                <p>Complete your datacenter hardware security education with this comprehensive final assessment.</p>
+                <div class="assessment-stats">
+                    <span>25 Questions • ~45 minutes • Passing: 80%</span>
+                </div>
+            </div>
+
+            <div class="assessment-card">
+                <h3>Datacenter Infrastructure Security Final Exam</h3>
+                <div class="question-preview">
+                    <h4>Sample Question:</h4>
+                    <p><strong>Which RedFish security feature provides the strongest protection against unauthorized API access in a multi-tenant datacenter environment?</strong></p>
+                    <ul class="preview-options">
+                        <li>A) Basic HTTP Authentication</li>
+                        <li>B) OAuth 2.0 with JWT tokens</li>
+                        <li>C) IP address whitelisting</li>
+                        <li>D) Session-based cookies</li>
+                    </ul>
+                </div>
+                <div class="assessment-actions">
+                    <button class="btn btn-primary" onclick="startFinalAssessment()">Start Final Exam</button>
+                    <button class="btn btn-secondary" onclick="showComprehensiveGuide()">Study Guide</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Course Completion -->
+    <section class="section course-completion">
+        <div class="container">
+            <h2>🎉 Course Completion</h2>
+            <div class="completion-content">
+                <div class="completion-badge">
+                    <div class="badge-icon">🏆</div>
+                    <h3>DataCenter Hardware Security Expert</h3>
+                    <p>You've mastered the fundamentals of datacenter hardware security</p>
+                </div>
+
+                <div class="completion-summary">
+                    <h3>📊 Course Summary</h3>
+                    <div class="summary-stats">
+                        <div class="stat">
+                            <span class="stat-number">6</span>
+                            <span class="stat-label">Modules Completed</span>
+                        </div>
+                        <div class="stat">
+                            <span class="stat-number">50+</span>
+                            <span class="stat-label">Interactive Demos</span>
+                        </div>
+                        <div class="stat">
+                            <span class="stat-number">40-60</span>
+                            <span class="stat-label">Study Hours</span>
+                        </div>
+                    </div>
+
+                    <div class="completion-actions">
+                        <a href="../../index.html" class="btn btn-primary">🏠 Return to Course Home</a>
+                        <button onclick="generateCertificate()" class="btn btn-secondary">📜 Generate Certificate</button>
+                        <a href="../../reference/" class="btn btn-outline">📚 Reference Materials</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <script src="../../assets/js/main.js"></script>
+    <script src="../../assets/js/progress-tracker.js"></script>
+    <script src="bmc-redfish-demo.js"></script>
+    <script src="redfish-scale-demo.js"></script>
+    <script>
+        // Initialize page functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('Module 5: Datacenter Infrastructure Security loaded');
+
+            // Add demo result containers if they don't exist
+            const requiredContainers = [
+                'bmc-security-result',
+                'redfish-result',
+                'provisioning-result',
+                'scenario-result'
+            ];
+
+            requiredContainers.forEach(containerId => {
+                if (!document.getElementById(containerId)) {
+                    const container = document.createElement('div');
+                    container.id = containerId;
+                    container.className = 'demo-result';
+                    container.style.display = 'none';
+                    container.innerHTML = `<div id="${containerId.replace('-result', '-output')}" class="simulation-output"></div>`;
+
+                    const demoSection = document.getElementById('demos');
+                    if (demoSection) {
+                        demoSection.appendChild(container);
+                    }
+                }
+            });
+        });
+
+        // Placeholder functions - will be implemented by the JavaScript files
+        function exploreBMCArchitecture() {
+            alert('BMC Architecture exploration - function will be implemented in bmc-redfish-demo.js');
+        }
+
+        function demonstrateBMCHardening() {
+            alert('BMC Hardening demo - function will be implemented in bmc-redfish-demo.js');
+        }
+
+        function simulateBMCAttack() {
+            alert('BMC Attack simulation - function will be implemented in bmc-redfish-demo.js');
+        }
+
+        function exploreRedfishAPIs() {
+            alert('RedFish API exploration - function will be implemented in bmc-redfish-demo.js');
+        }
+
+        function demonstrateAuthentication() {
+            alert('Authentication demo - function will be implemented in bmc-redfish-demo.js');
+        }
+
+        function simulateAPIAttack() {
+            alert('API Security testing - function will be implemented in bmc-redfish-demo.js');
+        }
+
+        function simulateProvisioning() {
+            alert('Asset provisioning simulation - function will be implemented in redfish-scale-demo.js');
+        }
+
+        function demonstrateCompliance() {
+            alert('Compliance checking demo - function will be implemented in redfish-scale-demo.js');
+        }
+
+        function analyzeScaleOperations() {
+            alert('Scale operations analysis - function will be implemented in redfish-scale-demo.js');
+        }
+
+        function runScenario(type) {
+            alert(`${type} scenario simulation - function will be implemented in redfish-scale-demo.js`);
+        }
+
+        function startFinalAssessment() {
+            alert('Final assessment functionality will be implemented in the full version.');
+        }
+
+        function showComprehensiveGuide() {
+            alert('Comprehensive study guide will open with all course concepts.');
+        }
+
+        function generateCertificate() {
+            alert('Certificate generation functionality will be implemented in the full version.');
+        }
+    </script>
+</body>
+</html>

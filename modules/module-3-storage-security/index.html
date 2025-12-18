@@ -1,0 +1,389 @@
+---
+layout: default
+title: "Module 3: Storage & I/O Security"
+description: "NVMe SSD security features, TCG Opal self-encrypting drives, PCIe security protocols, and enterprise storage encryption"
+module_id: "module-3-storage-security"
+module_number: 3
+permalink: /modules/module-3-storage-security/
+---
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Module 3: Storage & I/O Security - DataCenter Hardware Security</title>
+    <link rel="stylesheet" href="../../assets/css/main.css">
+    <link rel="stylesheet" href="../../assets/css/interactive.css">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-brand">
+                <h1>💾 Module 3: Storage & I/O Security</h1>
+                <p>Enterprise storage encryption and hardware protection</p>
+            </div>
+            <div class="nav-menu">
+                <a href="../../index.html" class="nav-link">← Home</a>
+                <a href="#overview" class="nav-link">Overview</a>
+                <a href="#concepts" class="nav-link">Core Concepts</a>
+                <a href="#demos" class="nav-link">Interactive Demos</a>
+                <a href="#assessment" class="nav-link">Assessment</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Module Overview -->
+    <section id="overview" class="hero">
+        <div class="container">
+            <div class="hero-content">
+                <h1>Storage & I/O Security Fundamentals</h1>
+                <p class="hero-subtitle">Master enterprise storage security including NVMe SSDs, TCG Opal encryption, PCIe protection, and datacenter storage architectures</p>
+                <div class="hero-stats">
+                    <div class="stat">
+                        <span class="stat-number">6-8</span>
+                        <span class="stat-label">Hours</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-number">5</span>
+                        <span class="stat-label">Key Topics</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-number">Advanced</span>
+                        <span class="stat-label">Level</span>
+                    </div>
+                </div>
+                <div class="hero-actions">
+                    <a href="#concepts" class="btn btn-primary">Start Learning</a>
+                    <a href="nvme-security-deep-dive.html" class="btn btn-secondary">Try NVMe Demo</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Learning Objectives -->
+    <section class="section">
+        <div class="container">
+            <h2>🎯 Learning Objectives</h2>
+            <div class="learning-paths">
+                <div class="objective-card">
+                    <h3>💽 NVMe Security</h3>
+                    <p>Understand NVMe SSD security features, encryption, and enterprise management</p>
+                    <ul>
+                        <li>NVMe security protocols and commands</li>
+                        <li>Hardware-based encryption (SED)</li>
+                        <li>Key management and provisioning</li>
+                        <li>Performance impact analysis</li>
+                    </ul>
+                </div>
+                <div class="objective-card">
+                    <h3>🔐 TCG Opal</h3>
+                    <p>Master Trusted Computing Group Opal specification for self-encrypting drives</p>
+                    <ul>
+                        <li>Opal 2.0 specification implementation</li>
+                        <li>Authentication and locking mechanisms</li>
+                        <li>Enterprise key management</li>
+                        <li>Secure erase and sanitization</li>
+                    </ul>
+                </div>
+                <div class="objective-card">
+                    <h3>⚡ PCIe Security</h3>
+                    <p>Explore PCIe security protocols and device protection mechanisms</p>
+                    <ul>
+                        <li>PCIe access control and isolation</li>
+                        <li>DMA protection (IOMMU)</li>
+                        <li>Device authentication protocols</li>
+                        <li>Fabric security management</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Core Concepts -->
+    <section id="concepts" class="section bg-light">
+        <div class="container">
+            <h2>💾 Core Storage Security Concepts</h2>
+
+            <!-- NVMe Security Architecture -->
+            <div class="concept-block">
+                <h3>💽 NVMe Security Features</h3>
+                <div class="concept-content">
+                    <div class="concept-text">
+                        <p>Modern NVMe SSDs include sophisticated hardware-based security features designed for enterprise and datacenter environments.</p>
+
+                        <div class="nvme-features">
+                            <h4>🔧 NVMe Security Commands:</h4>
+                            <ul>
+                                <li><strong>Security Send/Receive:</strong> Encrypted communication channel</li>
+                                <li><strong>Format NVM:</strong> Secure format and cryptographic erase</li>
+                                <li><strong>Sanitize:</strong> Hardware-based data destruction</li>
+                                <li><strong>Namespace Management:</strong> Isolation and access control</li>
+                            </ul>
+                        </div>
+
+                        <div class="encryption-stack">
+                            <h4>🔐 Storage Encryption Stack:</h4>
+                            <div class="stack-layers">
+                                <div class="layer">📁 <strong>File System:</strong> Application-level encryption</div>
+                                <div class="layer">🗄️ <strong>Block Level:</strong> OS-managed encryption (BitLocker, LUKS)</div>
+                                <div class="layer">💾 <strong>Hardware Level:</strong> Self-encrypting drives (SED)</div>
+                                <div class="layer">⚙️ <strong>Controller Level:</strong> NVMe security protocols</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="interactive-demo-section">
+                    <h4>🧪 Interactive Demonstrations</h4>
+                    <div class="demo-buttons">
+                        <button onclick="exploreNVMeCommands()" class="btn btn-primary">💽 NVMe Security Commands</button>
+                        <button onclick="demonstrateEncryption()" class="btn btn-secondary">🔐 Encryption Demo</button>
+                        <button onclick="simulatePerformance()" class="btn btn-outline">⚡ Performance Analysis</button>
+                    </div>
+                    <div id="nvme-result" class="demo-result" style="display: none;">
+                        <div id="nvme-output" class="simulation-output"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TCG Opal Implementation -->
+            <div class="concept-block">
+                <h3>🔐 TCG Opal Self-Encrypting Drives</h3>
+                <div class="concept-content">
+                    <div class="concept-text">
+                        <p>Trusted Computing Group Opal specification provides standardized security for self-encrypting drives with hardware-based protection.</p>
+
+                        <div class="opal-features">
+                            <h4>🛡️ Opal 2.0 Features:</h4>
+                            <ul>
+                                <li><strong>Pre-boot Authentication:</strong> Secure unlock before OS load</li>
+                                <li><strong>Multi-user Support:</strong> Role-based access control</li>
+                                <li><strong>Range-based Encryption:</strong> Selective data protection</li>
+                                <li><strong>Hardware Security:</strong> Keys never leave the drive</li>
+                            </ul>
+                        </div>
+
+                        <div class="opal-workflow">
+                            <h4>🔄 Enterprise Opal Workflow:</h4>
+                            <div class="workflow-steps">
+                                <div class="step">1️⃣ <strong>Provisioning:</strong> Initialize drive security</div>
+                                <div class="step">2️⃣ <strong>Authentication:</strong> User/admin credential setup</div>
+                                <div class="step">3️⃣ <strong>Encryption:</strong> Automatic data protection</div>
+                                <div class="step">4️⃣ <strong>Management:</strong> Key rotation and access control</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="interactive-demo-section">
+                    <h4>🧪 TCG Opal Laboratory</h4>
+                    <div class="demo-buttons">
+                        <button onclick="simulateOpalProvisioning()" class="btn btn-primary">🔧 Opal Provisioning</button>
+                        <button onclick="demonstrateAuthentication()" class="btn btn-secondary">🔑 Authentication Flow</button>
+                        <button onclick="showKeyManagement()" class="btn btn-outline">🗝️ Key Management</button>
+                    </div>
+                    <div id="opal-result" class="demo-result" style="display: none;">
+                        <div id="opal-output" class="simulation-output"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- PCIe and Fabric Security -->
+            <div class="concept-block">
+                <h3>⚡ PCIe and Storage Fabric Security</h3>
+                <div class="concept-content">
+                    <div class="concept-text">
+                        <p>PCIe security protocols and fabric management ensure secure communication between storage devices and system components.</p>
+
+                        <div class="pcie-security">
+                            <h4>🛡️ PCIe Security Features:</h4>
+                            <ul>
+                                <li><strong>Access Control Services (ACS):</strong> P2P traffic control</li>
+                                <li><strong>IOMMU Protection:</strong> DMA attack prevention</li>
+                                <li><strong>Device Authentication:</strong> Secure device identification</li>
+                                <li><strong>Fabric Management:</strong> Security policy enforcement</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="interactive-demo-section">
+                    <h4>🧪 PCIe Security Lab</h4>
+                    <div class="demo-buttons">
+                        <button onclick="demonstratePCIeSecurity()" class="btn btn-primary">⚡ PCIe Protection</button>
+                        <button onclick="simulateIOMMU()" class="btn btn-secondary">🛡️ IOMMU Demo</button>
+                        <button onclick="analyzeFabricSecurity()" class="btn btn-outline">🔗 Fabric Analysis</button>
+                    </div>
+                    <div id="pcie-result" class="demo-result" style="display: none;">
+                        <div id="pcie-output" class="simulation-output"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Interactive Demos -->
+    <section id="demos" class="section">
+        <div class="container">
+            <h2>🧪 Interactive Storage Security Lab</h2>
+            <p class="section-subtitle">Hands-on exploration of enterprise storage security technologies</p>
+
+            <div class="demo-grid">
+                <div class="demo-card">
+                    <h3>💽 NVMe Security Deep Dive</h3>
+                    <p>Comprehensive exploration of NVMe security commands and enterprise features</p>
+                    <a href="nvme-security-deep-dive.html" class="btn btn-primary">Launch Deep Dive</a>
+                </div>
+                <div class="demo-card">
+                    <h3>🏢 DataCenter NVMe Storage</h3>
+                    <p>Interactive demonstration of datacenter storage architecture and security</p>
+                    <a href="datacenter-nvme-storage.html" class="btn btn-primary">Storage Explorer</a>
+                </div>
+                <div class="demo-card">
+                    <h3>🔐 Encryption Performance</h3>
+                    <p>Analyze the performance impact of various storage encryption technologies</p>
+                    <button onclick="analyzeEncryptionPerformance()" class="btn btn-primary">Performance Lab</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Assessment Section -->
+    <section id="assessment" class="section bg-light">
+        <div class="container">
+            <h2>📝 Knowledge Assessment</h2>
+            <div class="assessment-intro">
+                <p>Test your understanding of storage and I/O security with this technical assessment.</p>
+                <div class="assessment-stats">
+                    <span>15 Questions • ~25 minutes • Passing: 75%</span>
+                </div>
+            </div>
+
+            <div class="assessment-card">
+                <h3>Storage & I/O Security Quiz</h3>
+                <div class="question-preview">
+                    <h4>Sample Question:</h4>
+                    <p><strong>Which TCG Opal feature allows for selective encryption of specific data ranges on a self-encrypting drive?</strong></p>
+                    <ul class="preview-options">
+                        <li>A) Global Range Encryption</li>
+                        <li>B) Namespace Isolation</li>
+                        <li>C) Range-based Encryption</li>
+                        <li>D) Block-level Authentication</li>
+                    </ul>
+                </div>
+                <div class="assessment-actions">
+                    <button class="btn btn-primary" onclick="startAssessment()">Start Assessment</button>
+                    <button class="btn btn-secondary" onclick="showStudyGuide()">Study Guide</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Next Steps -->
+    <section class="section">
+        <div class="container">
+            <h2>🚀 Next Steps</h2>
+            <div class="next-steps">
+                <div class="next-module">
+                    <h3>Ready for Module 4?</h3>
+                    <p>Continue with cloud service provider security and datacenter relationships.</p>
+                    <a href="../module-4-cloud-security/index.html" class="btn btn-primary">Module 4: Cloud Security →</a>
+                </div>
+                <div class="additional-resources">
+                    <h3>📚 Additional Resources</h3>
+                    <ul>
+                        <li><a href="../../reference/nvme-security-commands.html">NVMe Security Commands</a></li>
+                        <li><a href="../../reference/tcg-opal-guide.html">TCG Opal Implementation</a></li>
+                        <li><a href="nvme-security-deep-dive.html">Advanced NVMe Security</a></li>
+                        <li><a href="datacenter-nvme-storage.html">DataCenter Storage</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <script src="../../assets/js/main.js"></script>
+    <script src="../../assets/js/progress-tracker.js"></script>
+    <script src="nvme-security-demo.js"></script>
+    <script src="nvme-storage-demo.js"></script>
+    <script>
+        // Initialize page functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('Module 3: Storage & I/O Security loaded');
+
+            // Add demo result containers if they don't exist
+            const requiredContainers = [
+                'nvme-result',
+                'opal-result',
+                'pcie-result'
+            ];
+
+            requiredContainers.forEach(containerId => {
+                if (!document.getElementById(containerId)) {
+                    const container = document.createElement('div');
+                    container.id = containerId;
+                    container.className = 'demo-result';
+                    container.style.display = 'none';
+                    container.innerHTML = `<div id="${containerId.replace('-result', '-output')}" class="simulation-output"></div>`;
+
+                    const demoSection = document.getElementById('demos');
+                    if (demoSection) {
+                        demoSection.appendChild(container);
+                    }
+                }
+            });
+        });
+
+        // Placeholder functions - will be implemented by the JavaScript files
+        function exploreNVMeCommands() {
+            alert('NVMe Commands demo - function will be implemented in nvme-security-demo.js');
+        }
+
+        function demonstrateEncryption() {
+            alert('Encryption demo - function will be implemented in nvme-security-demo.js');
+        }
+
+        function simulatePerformance() {
+            alert('Performance analysis - function will be implemented in nvme-security-demo.js');
+        }
+
+        function simulateOpalProvisioning() {
+            alert('Opal provisioning demo - function will be implemented in nvme-security-demo.js');
+        }
+
+        function demonstrateAuthentication() {
+            alert('Authentication flow - function will be implemented in nvme-security-demo.js');
+        }
+
+        function showKeyManagement() {
+            alert('Key management demo - function will be implemented in nvme-security-demo.js');
+        }
+
+        function demonstratePCIeSecurity() {
+            alert('PCIe security demo - function will be implemented in nvme-security-demo.js');
+        }
+
+        function simulateIOMMU() {
+            alert('IOMMU demo - function will be implemented in nvme-security-demo.js');
+        }
+
+        function analyzeFabricSecurity() {
+            alert('Fabric security analysis - function will be implemented in nvme-security-demo.js');
+        }
+
+        function analyzeEncryptionPerformance() {
+            alert('Encryption performance analysis - function will be implemented in nvme-storage-demo.js');
+        }
+
+        function startAssessment() {
+            alert('Assessment functionality will be implemented in the full version.');
+        }
+
+        function showStudyGuide() {
+            alert('Study guide will open with key storage security concepts.');
+        }
+    </script>
+</body>
+</html>

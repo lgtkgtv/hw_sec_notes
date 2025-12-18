@@ -1,0 +1,487 @@
+---
+layout: default
+title: "Module 4: Cloud Service Provider Security"
+description: "Oracle OCI security practices, AWS Nitro system, multi-vendor hardware management, and cloud datacenter security relationships"
+module_id: "module-4-cloud-security"
+module_number: 4
+permalink: /modules/module-4-cloud-security/
+---
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Module 4: Cloud Service Provider Security - DataCenter Hardware Security</title>
+    <link rel="stylesheet" href="../../assets/css/main.css">
+    <link rel="stylesheet" href="../../assets/css/interactive.css">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-brand">
+                <h1>☁️ Module 4: Cloud Service Provider Security</h1>
+                <p>Cloud hardware management and security architecture</p>
+            </div>
+            <div class="nav-menu">
+                <a href="../../index.html" class="nav-link">← Home</a>
+                <a href="#overview" class="nav-link">Overview</a>
+                <a href="#concepts" class="nav-link">Core Concepts</a>
+                <a href="#demos" class="nav-link">Interactive Demos</a>
+                <a href="#assessment" class="nav-link">Assessment</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Module Overview -->
+    <section id="overview" class="hero">
+        <div class="container">
+            <div class="hero-content">
+                <h1>Cloud Service Provider Security</h1>
+                <p class="hero-subtitle">Master cloud infrastructure security, CSP-datacenter relationships, multi-vendor hardware management, and enterprise cloud security architectures</p>
+                <div class="hero-stats">
+                    <div class="stat">
+                        <span class="stat-number">8-10</span>
+                        <span class="stat-label">Hours</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-number">6</span>
+                        <span class="stat-label">Key Topics</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-number">Advanced</span>
+                        <span class="stat-label">Level</span>
+                    </div>
+                </div>
+                <div class="hero-actions">
+                    <a href="#concepts" class="btn btn-primary">Start Learning</a>
+                    <a href="datacenter-csp-relationship.html" class="btn btn-secondary">Try CSP Analysis</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Learning Objectives -->
+    <section class="section">
+        <div class="container">
+            <h2>🎯 Learning Objectives</h2>
+            <div class="learning-paths">
+                <div class="objective-card">
+                    <h3>🏗️ CSP Architecture</h3>
+                    <p>Understand cloud service provider hardware security architectures and models</p>
+                    <ul>
+                        <li>AWS Nitro System security architecture</li>
+                        <li>Oracle OCI security practices</li>
+                        <li>Google Cloud security chip implementations</li>
+                        <li>Multi-cloud security strategies</li>
+                    </ul>
+                </div>
+                <div class="objective-card">
+                    <h3>🤝 CSP-DataCenter Relationships</h3>
+                    <p>Explore the complex relationships between cloud providers and datacenter operators</p>
+                    <ul>
+                        <li>Business model analysis</li>
+                        <li>Hardware ownership and responsibility</li>
+                        <li>Security boundary definitions</li>
+                        <li>Compliance and audit requirements</li>
+                    </ul>
+                </div>
+                <div class="objective-card">
+                    <h3>⚙️ Multi-Vendor Management</h3>
+                    <p>Master the challenges of managing hardware from multiple vendors securely</p>
+                    <ul>
+                        <li>Vendor security assessment</li>
+                        <li>Supply chain risk management</li>
+                        <li>Unified security policies</li>
+                        <li>Resource orchestration security</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Core Concepts -->
+    <section id="concepts" class="section bg-light">
+        <div class="container">
+            <h2>☁️ Core Cloud Security Concepts</h2>
+
+            <!-- CSP Security Models -->
+            <div class="concept-block">
+                <h3>🏗️ Cloud Service Provider Security Models</h3>
+                <div class="concept-content">
+                    <div class="concept-text">
+                        <p>Major cloud service providers implement different approaches to hardware security, each with unique architectures and security boundaries.</p>
+
+                        <div class="csp-comparison">
+                            <h4>🏢 Major CSP Security Models:</h4>
+                            <div class="provider-grid">
+                                <div class="provider-card">
+                                    <h5>🔶 AWS Nitro System</h5>
+                                    <p>Hardware-based virtualization with dedicated security chip</p>
+                                    <ul>
+                                        <li>Nitro Cards for compute, storage, networking</li>
+                                        <li>Hardware root of trust</li>
+                                        <li>Hypervisor offloading</li>
+                                    </ul>
+                                </div>
+                                <div class="provider-card">
+                                    <h5>🟠 Oracle OCI</h5>
+                                    <p>Bare metal and virtualized infrastructure security</p>
+                                    <ul>
+                                        <li>Dedicated hardware tenancy</li>
+                                        <li>Hardware security modules</li>
+                                        <li>Network isolation</li>
+                                    </ul>
+                                </div>
+                                <div class="provider-card">
+                                    <h5>🔵 Google Cloud</h5>
+                                    <p>Custom silicon and security-first design</p>
+                                    <ul>
+                                        <li>Titan security chips</li>
+                                        <li>Shielded VMs</li>
+                                        <li>Confidential computing</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="interactive-demo-section">
+                    <h4>🧪 Interactive Demonstrations</h4>
+                    <div class="demo-buttons">
+                        <button onclick="compareCSPArchitectures()" class="btn btn-primary">🏗️ Compare CSP Models</button>
+                        <button onclick="analyzeSecurityBoundaries()" class="btn btn-secondary">🛡️ Security Boundaries</button>
+                        <button onclick="demonstrateNitroSystem()" class="btn btn-outline">🔶 AWS Nitro Demo</button>
+                    </div>
+                    <div id="csp-architecture-result" class="demo-result" style="display: none;">
+                        <div id="csp-architecture-output" class="simulation-output"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- DataCenter-CSP Relationships -->
+            <div class="concept-block">
+                <h3>🤝 DataCenter and CSP Relationships</h3>
+                <div class="concept-content">
+                    <div class="concept-text">
+                        <p>Understanding the complex business and technical relationships between cloud service providers and datacenter operators is crucial for security architecture.</p>
+
+                        <div class="relationship-models">
+                            <h4>💼 Business Relationship Models:</h4>
+                            <div class="model-grid">
+                                <div class="model-card">
+                                    <h5>🏗️ Colocation Model</h5>
+                                    <p>CSP leases space and uses datacenter infrastructure</p>
+                                    <div class="model-details">
+                                        <strong>Security Responsibility:</strong>
+                                        <ul>
+                                            <li>DataCenter: Physical security, power, cooling</li>
+                                            <li>CSP: Hardware, software, data protection</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                                <div class="model-card">
+                                    <h5>🤝 Wholesale Model</h5>
+                                    <p>CSP leases entire facilities from datacenter provider</p>
+                                    <div class="model-details">
+                                        <strong>Security Responsibility:</strong>
+                                        <ul>
+                                            <li>DataCenter: Building, infrastructure services</li>
+                                            <li>CSP: All technology and data security</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                                <div class="model-card">
+                                    <h5>🏢 Owned Infrastructure</h5>
+                                    <p>CSP owns and operates their own datacenters</p>
+                                    <div class="model-details">
+                                        <strong>Security Responsibility:</strong>
+                                        <ul>
+                                            <li>CSP: End-to-end security responsibility</li>
+                                            <li>Full control over physical and logical security</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="interactive-demo-section">
+                    <h4>🧪 Relationship Analysis Lab</h4>
+                    <div class="demo-buttons">
+                        <button onclick="analyzeBusinessModels()" class="btn btn-primary">💼 Business Model Analysis</button>
+                        <button onclick="mapSecurityResponsibilities()" class="btn btn-secondary">🛡️ Security Mapping</button>
+                        <button onclick="assessRiskDistribution()" class="btn btn-outline">⚖️ Risk Assessment</button>
+                    </div>
+                    <div id="relationship-result" class="demo-result" style="display: none;">
+                        <div id="relationship-output" class="simulation-output"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Multi-Vendor Hardware Management -->
+            <div class="concept-block">
+                <h3>⚙️ Multi-Vendor Hardware Security Management</h3>
+                <div class="concept-content">
+                    <div class="concept-text">
+                        <p>Cloud datacenters typically deploy hardware from multiple vendors, creating complex security management challenges that require unified approaches.</p>
+
+                        <div class="vendor-challenges">
+                            <h4>🔧 Multi-Vendor Challenges:</h4>
+                            <ul>
+                                <li><strong>Security Policy Consistency:</strong> Unified security across different hardware</li>
+                                <li><strong>Firmware Management:</strong> Coordinated updates and vulnerability patching</li>
+                                <li><strong>Compliance Verification:</strong> Meeting standards across all vendors</li>
+                                <li><strong>Supply Chain Security:</strong> Managing multiple vendor relationships</li>
+                            </ul>
+                        </div>
+
+                        <div class="orchestration-stack">
+                            <h4>🎼 Resource Orchestration Security:</h4>
+                            <div class="stack-layers">
+                                <div class="layer">🌐 <strong>Orchestration Layer:</strong> Kubernetes, OpenStack</div>
+                                <div class="layer">⚙️ <strong>Hypervisor Layer:</strong> VMware, Xen, KVM</div>
+                                <div class="layer">🔧 <strong>Hardware Abstraction:</strong> Vendor management layers</div>
+                                <div class="layer">💻 <strong>Physical Hardware:</strong> Multi-vendor equipment</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="interactive-demo-section">
+                    <h4>🧪 Multi-Vendor Management Lab</h4>
+                    <div class="demo-buttons">
+                        <button onclick="simulateVendorManagement()" class="btn btn-primary">⚙️ Vendor Management</button>
+                        <button onclick="demonstrateOrchestration()" class="btn btn-secondary">🎼 Orchestration Security</button>
+                        <button onclick="analyzeSupplyChain()" class="btn btn-outline">🔗 Supply Chain Analysis</button>
+                    </div>
+                    <div id="vendor-result" class="demo-result" style="display: none;">
+                        <div id="vendor-output" class="simulation-output"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Interactive Demos -->
+    <section id="demos" class="section">
+        <div class="container">
+            <h2>🧪 Interactive Cloud Security Lab</h2>
+            <p class="section-subtitle">Hands-on exploration of cloud service provider security architectures</p>
+
+            <div class="demo-grid">
+                <div class="demo-card">
+                    <h3>🔄 DataCenter-CSP Relationship Analysis</h3>
+                    <p>Comprehensive analysis of business models and security responsibilities</p>
+                    <a href="datacenter-csp-relationship.html" class="btn btn-primary">Launch Analysis</a>
+                </div>
+                <div class="demo-card">
+                    <h3>🎼 CSP Resource Orchestration</h3>
+                    <p>Interactive demonstration of multi-vendor resource management and security</p>
+                    <a href="csp-resource-orchestration.html" class="btn btn-primary">Resource Explorer</a>
+                </div>
+                <div class="demo-card">
+                    <h3>🏗️ Multi-Cloud Architecture</h3>
+                    <p>Analyze security architectures across multiple cloud service providers</p>
+                    <button onclick="analyzeMultiCloudSecurity()" class="btn btn-primary">Architecture Lab</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Real-World Case Studies -->
+    <section class="section bg-light">
+        <div class="container">
+            <h2>📊 Real-World Case Studies</h2>
+
+            <div class="case-study-grid">
+                <div class="case-study">
+                    <h3>🏢 Enterprise Multi-Cloud Security</h3>
+                    <p>How a Fortune 500 company manages security across AWS, Azure, and Google Cloud</p>
+                    <div class="case-highlights">
+                        <ul>
+                            <li>Unified security policy management</li>
+                            <li>Cross-cloud compliance verification</li>
+                            <li>Vendor security assessment processes</li>
+                        </ul>
+                    </div>
+                    <button onclick="exploreCaseStudy('enterprise')" class="btn btn-secondary">Explore Case Study</button>
+                </div>
+
+                <div class="case-study">
+                    <h3>🏛️ Government Cloud Security</h3>
+                    <p>Security architecture for FedRAMP-authorized government cloud services</p>
+                    <div class="case-highlights">
+                        <ul>
+                            <li>Enhanced security boundary controls</li>
+                            <li>Continuous monitoring requirements</li>
+                            <li>Supply chain verification processes</li>
+                        </ul>
+                    </div>
+                    <button onclick="exploreCaseStudy('government')" class="btn btn-secondary">Explore Case Study</button>
+                </div>
+
+                <div class="case-study">
+                    <h3>🏥 Healthcare Cloud Compliance</h3>
+                    <p>HIPAA-compliant cloud architecture with multi-vendor hardware management</p>
+                    <div class="case-highlights">
+                        <ul>
+                            <li>Data encryption and key management</li>
+                            <li>Access control and audit logging</li>
+                            <li>Business associate agreements</li>
+                        </ul>
+                    </div>
+                    <button onclick="exploreCaseStudy('healthcare')" class="btn btn-secondary">Explore Case Study</button>
+                </div>
+            </div>
+
+            <div id="case-study-result" class="demo-result" style="display: none;">
+                <div id="case-study-output" class="simulation-output"></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Assessment Section -->
+    <section id="assessment" class="section">
+        <div class="container">
+            <h2>📝 Knowledge Assessment</h2>
+            <div class="assessment-intro">
+                <p>Test your understanding of cloud service provider security and multi-vendor management.</p>
+                <div class="assessment-stats">
+                    <span>18 Questions • ~30 minutes • Passing: 75%</span>
+                </div>
+            </div>
+
+            <div class="assessment-card">
+                <h3>Cloud Service Provider Security Quiz</h3>
+                <div class="question-preview">
+                    <h4>Sample Question:</h4>
+                    <p><strong>In the AWS Nitro System, what component provides the hardware root of trust for the virtualization infrastructure?</strong></p>
+                    <ul class="preview-options">
+                        <li>A) Nitro Controller</li>
+                        <li>B) Nitro Security Chip</li>
+                        <li>C) Nitro Hypervisor</li>
+                        <li>D) Nitro Cards</li>
+                    </ul>
+                </div>
+                <div class="assessment-actions">
+                    <button class="btn btn-primary" onclick="startAssessment()">Start Assessment</button>
+                    <button class="btn btn-secondary" onclick="showStudyGuide()">Study Guide</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Next Steps -->
+    <section class="section">
+        <div class="container">
+            <h2>🚀 Next Steps</h2>
+            <div class="next-steps">
+                <div class="next-module">
+                    <h3>Ready for Module 5?</h3>
+                    <p>Complete the course with datacenter infrastructure security and operations.</p>
+                    <a href="../module-5-datacenter-infrastructure/index.html" class="btn btn-primary">Module 5: Infrastructure Security →</a>
+                </div>
+                <div class="additional-resources">
+                    <h3>📚 Additional Resources</h3>
+                    <ul>
+                        <li><a href="../../reference/csp-security-models.html">CSP Security Models</a></li>
+                        <li><a href="../../reference/cloud-compliance-guide.html">Cloud Compliance Guide</a></li>
+                        <li><a href="datacenter-csp-relationship.html">CSP Relationship Analysis</a></li>
+                        <li><a href="csp-resource-orchestration.html">Resource Orchestration</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <script src="../../assets/js/main.js"></script>
+    <script src="../../assets/js/progress-tracker.js"></script>
+    <script src="datacenter-csp-demo.js"></script>
+    <script src="csp-orchestration-demo.js"></script>
+    <script>
+        // Initialize page functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('Module 4: Cloud Service Provider Security loaded');
+
+            // Add demo result containers if they don't exist
+            const requiredContainers = [
+                'csp-architecture-result',
+                'relationship-result',
+                'vendor-result'
+            ];
+
+            requiredContainers.forEach(containerId => {
+                if (!document.getElementById(containerId)) {
+                    const container = document.createElement('div');
+                    container.id = containerId;
+                    container.className = 'demo-result';
+                    container.style.display = 'none';
+                    container.innerHTML = `<div id="${containerId.replace('-result', '-output')}" class="simulation-output"></div>`;
+
+                    const demoSection = document.getElementById('demos');
+                    if (demoSection) {
+                        demoSection.appendChild(container);
+                    }
+                }
+            });
+        });
+
+        // Placeholder functions - will be implemented by the JavaScript files
+        function compareCSPArchitectures() {
+            alert('CSP Architecture comparison - function will be implemented in datacenter-csp-demo.js');
+        }
+
+        function analyzeSecurityBoundaries() {
+            alert('Security boundaries analysis - function will be implemented in datacenter-csp-demo.js');
+        }
+
+        function demonstrateNitroSystem() {
+            alert('AWS Nitro System demo - function will be implemented in datacenter-csp-demo.js');
+        }
+
+        function analyzeBusinessModels() {
+            alert('Business model analysis - function will be implemented in datacenter-csp-demo.js');
+        }
+
+        function mapSecurityResponsibilities() {
+            alert('Security responsibility mapping - function will be implemented in datacenter-csp-demo.js');
+        }
+
+        function assessRiskDistribution() {
+            alert('Risk distribution assessment - function will be implemented in datacenter-csp-demo.js');
+        }
+
+        function simulateVendorManagement() {
+            alert('Vendor management simulation - function will be implemented in csp-orchestration-demo.js');
+        }
+
+        function demonstrateOrchestration() {
+            alert('Orchestration security demo - function will be implemented in csp-orchestration-demo.js');
+        }
+
+        function analyzeSupplyChain() {
+            alert('Supply chain analysis - function will be implemented in csp-orchestration-demo.js');
+        }
+
+        function analyzeMultiCloudSecurity() {
+            alert('Multi-cloud security analysis - function will be implemented in csp-orchestration-demo.js');
+        }
+
+        function exploreCaseStudy(type) {
+            alert(`${type} case study exploration - function will be implemented in datacenter-csp-demo.js`);
+        }
+
+        function startAssessment() {
+            alert('Assessment functionality will be implemented in the full version.');
+        }
+
+        function showStudyGuide() {
+            alert('Study guide will open with key cloud security concepts.');
+        }
+    </script>
+</body>
+</html>
