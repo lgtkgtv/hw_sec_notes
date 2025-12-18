@@ -1,0 +1,641 @@
+---
+layout: default
+title: "Course Modules - DataCenter Hardware Security"
+description: "Complete list of all modules in the DataCenter Hardware Security interactive course"
+permalink: /modules/
+---
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ page.title }}</title>
+    <link rel="stylesheet" href="{{ '/assets/css/main.css' | relative_url }}">
+    <link rel="stylesheet" href="{{ '/assets/css/interactive.css' | relative_url }}">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-brand">
+                <a href="{{ '/' | relative_url }}">🔒 DataCenter Hardware Security</a>
+            </div>
+            <div class="nav-menu">
+                <a href="{{ '/' | relative_url }}" class="nav-link">Home</a>
+                <a href="{{ '/modules/' | relative_url }}" class="nav-link active">Modules</a>
+                <a href="#progress" class="nav-link">Progress</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="container">
+            <!-- Header -->
+            <div class="page-header">
+                <h1>📚 Course Modules</h1>
+                <p class="subtitle">Complete your journey through datacenter hardware security with six comprehensive modules</p>
+
+                <div class="progress-overview">
+                    <div class="progress-stats">
+                        <div class="stat">
+                            <span class="stat-number" id="completed-modules">0</span>
+                            <span class="stat-label">Modules Completed</span>
+                        </div>
+                        <div class="stat">
+                            <span class="stat-number" id="total-progress">0%</span>
+                            <span class="stat-label">Overall Progress</span>
+                        </div>
+                        <div class="stat">
+                            <span class="stat-number" id="study-time">0h</span>
+                            <span class="stat-label">Study Time</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Course Modules -->
+            <div class="modules-section">
+                <!-- Module 0: Cryptography Fundamentals -->
+                <div class="module-detailed-card" data-module="0">
+                    <div class="module-header">
+                        <div class="module-icon">🔐</div>
+                        <div class="module-title">
+                            <h2>Module 0: Cryptography Fundamentals</h2>
+                            <div class="module-meta">
+                                <span class="difficulty foundation">Foundation</span>
+                                <span class="duration">8-12 hours</span>
+                                <span class="status active">Active</span>
+                            </div>
+                        </div>
+                        <div class="module-progress">
+                            <div class="progress-circle" data-progress="0">
+                                <span class="progress-text">0%</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="module-content">
+                        <p>Master the cryptographic building blocks of hardware security including symmetric encryption, asymmetric cryptography, digital signatures, and Hardware Security Modules (HSMs).</p>
+
+                        <div class="learning-objectives">
+                            <h4>🎯 Learning Objectives:</h4>
+                            <ul>
+                                <li>Understand AES encryption and hardware acceleration</li>
+                                <li>Compare RSA vs ECC for hardware implementations</li>
+                                <li>Master digital signature creation and verification</li>
+                                <li>Explore HSM capabilities and compliance</li>
+                            </ul>
+                        </div>
+
+                        <div class="module-topics">
+                            <h4>📋 Topics Covered:</h4>
+                            <div class="topics-grid">
+                                <span class="topic">AES Encryption Demo</span>
+                                <span class="topic">RSA Key Exchange</span>
+                                <span class="topic">ECC Performance Analysis</span>
+                                <span class="topic">Digital Signatures</span>
+                                <span class="topic">Hash Functions & Avalanche</span>
+                                <span class="topic">HSM Integration</span>
+                                <span class="topic">Performance Benchmarking</span>
+                                <span class="topic">Compliance Standards</span>
+                            </div>
+                        </div>
+
+                        <div class="interactive-demos">
+                            <h4>🧪 Interactive Demonstrations:</h4>
+                            <div class="demos-list">
+                                <a href="{{ '/modules/module-0-crypto/' | relative_url }}" class="demo-link">
+                                    <span class="demo-icon">⚡</span>
+                                    <span class="demo-name">AES Encryption Laboratory</span>
+                                </a>
+                                <a href="{{ '/modules/module-0-crypto/' | relative_url }}#asymmetric" class="demo-link">
+                                    <span class="demo-icon">🔗</span>
+                                    <span class="demo-name">RSA vs ECC Comparison</span>
+                                </a>
+                                <a href="{{ '/modules/module-0-crypto/' | relative_url }}#signatures" class="demo-link">
+                                    <span class="demo-icon">✍️</span>
+                                    <span class="demo-name">Digital Signature Simulator</span>
+                                </a>
+                            </div>
+                        </div>
+
+                        <div class="module-actions">
+                            <a href="{{ '/modules/module-0-crypto/' | relative_url }}" class="btn btn-primary">Start Module 0</a>
+                            <a href="#module-1" class="btn btn-outline">Next: Hardware RoT</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Module 1: Hardware Root of Trust -->
+                <div class="module-detailed-card" data-module="1" id="module-1">
+                    <div class="module-header">
+                        <div class="module-icon">🏗️</div>
+                        <div class="module-title">
+                            <h2>Module 1: Hardware Root of Trust</h2>
+                            <div class="module-meta">
+                                <span class="difficulty intermediate">Intermediate</span>
+                                <span class="duration">8-12 hours</span>
+                                <span class="status active">Active</span>
+                            </div>
+                        </div>
+                        <div class="module-progress">
+                            <div class="progress-circle" data-progress="0">
+                                <span class="progress-text">0%</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="module-content">
+                        <p>Understand hardware-based security foundations, secure boot processes, TPM architecture, and platform attestation protocols essential for datacenter security.</p>
+
+                        <div class="learning-objectives">
+                            <h4>🎯 Learning Objectives:</h4>
+                            <ul>
+                                <li>Master secure boot chain verification</li>
+                                <li>Understand TPM 2.0 architecture and operations</li>
+                                <li>Learn Intel Boot Guard implementation</li>
+                                <li>Explore platform attestation protocols</li>
+                            </ul>
+                        </div>
+
+                        <div class="interactive-demos">
+                            <h4>🧪 Interactive Demonstrations:</h4>
+                            <div class="demos-list">
+                                <a href="{{ '/modules/module-1-hardware-rot/boot-simulator.html' | relative_url }}" class="demo-link">
+                                    <span class="demo-icon">🔄</span>
+                                    <span class="demo-name">Boot Sequence Simulator</span>
+                                </a>
+                                <a href="{{ '/modules/module-1-hardware-rot/' | relative_url }}" class="demo-link">
+                                    <span class="demo-icon">🔒</span>
+                                    <span class="demo-name">TPM Operations Lab</span>
+                                </a>
+                                <a href="{{ '/modules/module-1-hardware-rot/bmc-redfish-datacenter.html' | relative_url }}" class="demo-link">
+                                    <span class="demo-icon">🖥️</span>
+                                    <span class="demo-name">BMC Security Deep Dive</span>
+                                </a>
+                            </div>
+                        </div>
+
+                        <div class="module-actions">
+                            <a href="{{ '/modules/module-1-hardware-rot/' | relative_url }}" class="btn btn-primary">Start Module 1</a>
+                            <a href="#module-2" class="btn btn-outline">Next: GPU Security</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Module 2: GPU Security -->
+                <div class="module-detailed-card" data-module="2" id="module-2">
+                    <div class="module-header">
+                        <div class="module-icon">🎮</div>
+                        <div class="module-title">
+                            <h2>Module 2: GPU & Accelerator Security</h2>
+                            <div class="module-meta">
+                                <span class="difficulty advanced">Advanced</span>
+                                <span class="duration">6-10 hours</span>
+                                <span class="status active">Active</span>
+                            </div>
+                        </div>
+                        <div class="module-progress">
+                            <div class="progress-circle" data-progress="0">
+                                <span class="progress-text">0%</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="module-content">
+                        <p>Explore NVIDIA confidential computing, GPU firmware security, virtualization protection, and AI/ML accelerator hardening in modern datacenters.</p>
+
+                        <div class="interactive-demos">
+                            <h4>🧪 Interactive Demonstrations:</h4>
+                            <div class="demos-list">
+                                <a href="{{ '/modules/module-2-gpu-security/gpu-security-deep-dive.html' | relative_url }}" class="demo-link">
+                                    <span class="demo-icon">🛡️</span>
+                                    <span class="demo-name">GPU Security Architecture</span>
+                                </a>
+                                <a href="{{ '/modules/module-2-gpu-security/' | relative_url }}" class="demo-link">
+                                    <span class="demo-icon">🔐</span>
+                                    <span class="demo-name">Confidential Computing Demo</span>
+                                </a>
+                            </div>
+                        </div>
+
+                        <div class="module-actions">
+                            <a href="{{ '/modules/module-2-gpu-security/' | relative_url }}" class="btn btn-primary">Start Module 2</a>
+                            <a href="#module-3" class="btn btn-outline">Next: Storage Security</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Module 3: Storage Security -->
+                <div class="module-detailed-card" data-module="3" id="module-3">
+                    <div class="module-header">
+                        <div class="module-icon">💾</div>
+                        <div class="module-title">
+                            <h2>Module 3: Storage & I/O Security</h2>
+                            <div class="module-meta">
+                                <span class="difficulty advanced">Advanced</span>
+                                <span class="duration">6-8 hours</span>
+                                <span class="status active">Active</span>
+                            </div>
+                        </div>
+                        <div class="module-progress">
+                            <div class="progress-circle" data-progress="0">
+                                <span class="progress-text">0%</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="module-content">
+                        <p>Deep dive into NVMe security, TCG Opal self-encrypting drives, PCIe protection, and enterprise key management strategies.</p>
+
+                        <div class="interactive-demos">
+                            <h4>🧪 Interactive Demonstrations:</h4>
+                            <div class="demos-list">
+                                <a href="{{ '/modules/module-3-storage-security/nvme-security-deep-dive.html' | relative_url }}" class="demo-link">
+                                    <span class="demo-icon">⚡</span>
+                                    <span class="demo-name">NVMe Security Lab</span>
+                                </a>
+                                <a href="{{ '/modules/module-3-storage-security/' | relative_url }}" class="demo-link">
+                                    <span class="demo-icon">🔐</span>
+                                    <span class="demo-name">TCG Opal Implementation</span>
+                                </a>
+                            </div>
+                        </div>
+
+                        <div class="module-actions">
+                            <a href="{{ '/modules/module-3-storage-security/' | relative_url }}" class="btn btn-primary">Start Module 3</a>
+                            <a href="#module-4" class="btn btn-outline">Next: Cloud Security</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Module 4: Cloud Security -->
+                <div class="module-detailed-card" data-module="4" id="module-4">
+                    <div class="module-header">
+                        <div class="module-icon">☁️</div>
+                        <div class="module-title">
+                            <h2>Module 4: Cloud Service Provider Security</h2>
+                            <div class="module-meta">
+                                <span class="difficulty advanced">Advanced</span>
+                                <span class="duration">8-10 hours</span>
+                                <span class="status active">Active</span>
+                            </div>
+                        </div>
+                        <div class="module-progress">
+                            <div class="progress-circle" data-progress="0">
+                                <span class="progress-text">0%</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="module-content">
+                        <p>Analyze datacenter-CSP relationships, multi-tenant security, resource orchestration, and cloud hardware management at scale.</p>
+
+                        <div class="interactive-demos">
+                            <h4>🧪 Interactive Demonstrations:</h4>
+                            <div class="demos-list">
+                                <a href="{{ '/modules/module-4-cloud-security/datacenter-csp-relationship.html' | relative_url }}" class="demo-link">
+                                    <span class="demo-icon">🔄</span>
+                                    <span class="demo-name">CSP Relationship Analysis</span>
+                                </a>
+                                <a href="{{ '/modules/module-4-cloud-security/' | relative_url }}" class="demo-link">
+                                    <span class="demo-icon">🏗️</span>
+                                    <span class="demo-name">Multi-Tenant Architecture</span>
+                                </a>
+                            </div>
+                        </div>
+
+                        <div class="module-actions">
+                            <a href="{{ '/modules/module-4-cloud-security/' | relative_url }}" class="btn btn-primary">Start Module 4</a>
+                            <a href="#module-5" class="btn btn-outline">Next: Infrastructure</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Module 5: Infrastructure Security -->
+                <div class="module-detailed-card" data-module="5" id="module-5">
+                    <div class="module-header">
+                        <div class="module-icon">🏭</div>
+                        <div class="module-title">
+                            <h2>Module 5: Datacenter Infrastructure Security</h2>
+                            <div class="module-meta">
+                                <span class="difficulty expert">Expert</span>
+                                <span class="duration">8-12 hours</span>
+                                <span class="status active">Active</span>
+                            </div>
+                        </div>
+                        <div class="module-progress">
+                            <div class="progress-circle" data-progress="0">
+                                <span class="progress-text">0%</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="module-content">
+                        <p>Master BMC security, RedFish APIs, out-of-band management, asset provisioning, and datacenter-scale operations security.</p>
+
+                        <div class="interactive-demos">
+                            <h4>🧪 Interactive Demonstrations:</h4>
+                            <div class="demos-list">
+                                <a href="{{ '/modules/module-5-datacenter-infrastructure/bmc-redfish-datacenter.html' | relative_url }}" class="demo-link">
+                                    <span class="demo-icon">🖥️</span>
+                                    <span class="demo-name">BMC & RedFish Deep Dive</span>
+                                </a>
+                                <a href="{{ '/modules/module-5-datacenter-infrastructure/' | relative_url }}" class="demo-link">
+                                    <span class="demo-icon">🏭</span>
+                                    <span class="demo-name">Datacenter Operations</span>
+                                </a>
+                            </div>
+                        </div>
+
+                        <div class="module-actions">
+                            <a href="{{ '/modules/module-5-datacenter-infrastructure/' | relative_url }}" class="btn btn-primary">Start Module 5</a>
+                            <a href="{{ '/' | relative_url }}" class="btn btn-outline">Course Complete!</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Learning Path Recommendation -->
+            <div class="learning-path-section">
+                <h2>🗺️ Recommended Learning Path</h2>
+                <div class="path-recommendations">
+                    <div class="path-card">
+                        <h3>🎓 Academic Track</h3>
+                        <p>For students and researchers</p>
+                        <div class="path-order">
+                            <span class="step">Module 0</span> →
+                            <span class="step">Module 1</span> →
+                            <span class="step">Module 2-5</span>
+                        </div>
+                    </div>
+                    <div class="path-card">
+                        <h3>💼 Professional Track</h3>
+                        <p>For industry practitioners</p>
+                        <div class="path-order">
+                            <span class="step">Module 1</span> →
+                            <span class="step">Module 5</span> →
+                            <span class="step">Specialization</span>
+                        </div>
+                    </div>
+                    <div class="path-card">
+                        <h3>🚀 Executive Track</h3>
+                        <p>For technical leadership</p>
+                        <div class="path-order">
+                            <span class="step">Module 4</span> →
+                            <span class="step">Module 5</span> →
+                            <span class="step">Module 1</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Scripts -->
+    <script src="{{ '/assets/js/main.js' | relative_url }}"></script>
+    <script src="{{ '/assets/js/progress-tracker.js' | relative_url }}"></script>
+
+    <script>
+        // Initialize modules page
+        document.addEventListener('DOMContentLoaded', function() {
+            updateProgressStats();
+            initializeModuleProgressCircles();
+
+            // Add click handlers for module cards
+            document.querySelectorAll('.module-detailed-card').forEach(card => {
+                card.addEventListener('click', function(e) {
+                    if (!e.target.closest('a')) {
+                        const moduleLink = card.querySelector('.btn-primary');
+                        if (moduleLink) {
+                            window.location.href = moduleLink.href;
+                        }
+                    }
+                });
+            });
+        });
+
+        function updateProgressStats() {
+            // This would integrate with the actual progress tracking system
+            // For now, showing placeholder values
+            const completedModules = getCompletedModulesCount();
+            const totalProgress = calculateOverallProgress();
+            const studyTime = getTotalStudyTime();
+
+            document.getElementById('completed-modules').textContent = completedModules;
+            document.getElementById('total-progress').textContent = totalProgress + '%';
+            document.getElementById('study-time').textContent = studyTime + 'h';
+        }
+
+        function initializeModuleProgressCircles() {
+            document.querySelectorAll('.progress-circle').forEach(circle => {
+                const progress = parseInt(circle.dataset.progress) || 0;
+                animateProgressCircle(circle, progress);
+            });
+        }
+
+        function animateProgressCircle(circle, targetProgress) {
+            // Animate progress circle (would implement actual SVG animation)
+            circle.querySelector('.progress-text').textContent = targetProgress + '%';
+        }
+
+        function getCompletedModulesCount() {
+            // Integrate with localStorage progress tracking
+            return 0; // Placeholder
+        }
+
+        function calculateOverallProgress() {
+            // Calculate based on completed demonstrations and assessments
+            return 0; // Placeholder
+        }
+
+        function getTotalStudyTime() {
+            // Track time spent in each module
+            return 0; // Placeholder
+        }
+    </script>
+
+    <style>
+        .page-header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .progress-overview {
+            margin: 2rem 0;
+        }
+
+        .progress-stats {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .modules-section {
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+        }
+
+        .module-detailed-card {
+            background: white;
+            border-radius: 1rem;
+            padding: 2rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: transform 0.2s ease;
+            cursor: pointer;
+        }
+
+        .module-detailed-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+        }
+
+        .module-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            gap: 1rem;
+        }
+
+        .module-icon {
+            font-size: 3rem;
+            flex-shrink: 0;
+        }
+
+        .module-title {
+            flex: 1;
+        }
+
+        .module-title h2 {
+            margin: 0 0 0.5rem 0;
+            color: #1a202c;
+        }
+
+        .progress-circle {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: conic-gradient(#4f46e5 0deg, #e5e7eb 0deg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        .progress-circle::after {
+            content: '';
+            width: 46px;
+            height: 46px;
+            background: white;
+            border-radius: 50%;
+            position: absolute;
+        }
+
+        .progress-text {
+            position: relative;
+            z-index: 1;
+            font-weight: 600;
+            font-size: 0.8rem;
+            color: #374151;
+        }
+
+        .learning-objectives,
+        .interactive-demos {
+            margin: 1.5rem 0;
+        }
+
+        .learning-objectives h4,
+        .interactive-demos h4,
+        .module-topics h4 {
+            color: #374151;
+            margin-bottom: 0.75rem;
+            font-size: 1rem;
+            font-weight: 600;
+        }
+
+        .topics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 0.5rem;
+            margin-top: 0.5rem;
+        }
+
+        .demos-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .demo-link {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            background: #f8fafc;
+            border-radius: 0.5rem;
+            color: #4f46e5;
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: background 0.2s ease;
+        }
+
+        .demo-link:hover {
+            background: #e0e7ff;
+            text-decoration: none;
+        }
+
+        .learning-path-section {
+            margin-top: 4rem;
+            text-align: center;
+        }
+
+        .path-recommendations {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+
+        .path-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 1.5rem;
+            border-radius: 1rem;
+            text-align: center;
+        }
+
+        .path-order {
+            margin-top: 1rem;
+            font-weight: 600;
+        }
+
+        .step {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 0.25rem 0.75rem;
+            border-radius: 0.5rem;
+            display: inline-block;
+            margin: 0.25rem;
+        }
+
+        @media (max-width: 768px) {
+            .module-header {
+                flex-direction: column;
+                text-align: center;
+                gap: 1rem;
+            }
+
+            .demos-list {
+                flex-direction: column;
+            }
+
+            .demo-link {
+                justify-content: center;
+            }
+        }
+    </style>
+</body>
+</html>
