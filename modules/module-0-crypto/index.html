@@ -56,7 +56,7 @@ permalink: /modules/module-0-crypto/
                 </div>
                 <div class="hero-actions">
                     <a href="#concepts" class="btn btn-primary">Start Learning</a>
-                    <a href="interactive-crypto-demo.html" class="btn btn-secondary">Try Demo</a>
+                    <a href="#demo" class="btn btn-secondary">Try Demo</a>
                 </div>
             </div>
         </div>
@@ -367,17 +367,51 @@ permalink: /modules/module-0-crypto/
                 <div class="demo-card">
                     <h3>🔐 Encryption Playground</h3>
                     <p>Experiment with different encryption algorithms and see real-time results</p>
-                    <a href="interactive-crypto-demo.html" class="btn btn-primary">Launch Demo</a>
+                    <button onclick="demonstrateAES()" class="btn btn-primary">Launch AES Demo</button>
                 </div>
                 <div class="demo-card">
                     <h3>🏷️ Hash Generator</h3>
                     <p>Generate and compare hash values with different algorithms</p>
-                    <a href="#hash-generator" class="btn btn-primary">Try It</a>
+                    <button onclick="scrollToHashGenerator()" class="btn btn-primary">Try It</button>
                 </div>
                 <div class="demo-card">
                     <h3>✍️ Digital Signature Tool</h3>
                     <p>Create and verify digital signatures step-by-step</p>
-                    <a href="#signature-tool" class="btn btn-primary">Start Tool</a>
+                    <button onclick="demonstrateSignature()" class="btn btn-primary">Start Tool</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Hash Generator Interactive Section -->
+    <section id="hash-generator" class="section bg-light">
+        <div class="container">
+            <h2>🏷️ Hash Function Generator</h2>
+            <div class="hash-demo">
+                <div class="hash-input-section">
+                    <label for="hash-input">Enter text to hash:</label>
+                    <input type="text" id="hash-input" placeholder="Type your message here..." value="Hello DataCenter Security!">
+                    <button onclick="generateHashes()" class="btn btn-primary">Generate Hashes</button>
+                </div>
+
+                <div class="hash-results">
+                    <div class="hash-result">
+                        <h4>SHA-256:</h4>
+                        <code id="sha256-output">Type above and click "Generate Hashes"</code>
+                    </div>
+                    <div class="hash-result">
+                        <h4>SHA-512:</h4>
+                        <code id="sha512-output">Type above and click "Generate Hashes"</code>
+                    </div>
+                </div>
+
+                <div class="hash-actions">
+                    <button onclick="demonstrateAvalanche()" class="btn btn-secondary">🌊 Demonstrate Avalanche Effect</button>
+                    <button onclick="showHashUses()" class="btn btn-secondary">📚 Hash Applications</button>
+                </div>
+
+                <div id="hash-demo-result" class="demo-result" style="display: none;">
+                    <div id="hash-output" class="simulation-output"></div>
                 </div>
             </div>
         </div>
@@ -439,6 +473,44 @@ permalink: /modules/module-0-crypto/
     <script src="../../assets/js/main.js"></script>
     <script src="../../assets/js/progress-tracker.js"></script>
     <script src="crypto-demo.js"></script>
+    <script>
+        // Additional helper functions for the interface
+        function scrollToHashGenerator() {
+            document.getElementById('hash-generator').scrollIntoView({
+                behavior: 'smooth'
+            });
+        }
+
+        // Initialize page functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('Module 0: Cryptography Fundamentals loaded');
+
+            // Add demo result containers for existing functions
+            if (!document.getElementById('aes-demo-result')) {
+                const demoSection = document.getElementById('demo');
+                if (demoSection) {
+                    const resultContainer = document.createElement('div');
+                    resultContainer.id = 'aes-demo-result';
+                    resultContainer.className = 'demo-result';
+                    resultContainer.style.display = 'none';
+                    resultContainer.innerHTML = '<div id="aes-output" class="simulation-output"></div>';
+                    demoSection.appendChild(resultContainer);
+                }
+            }
+
+            if (!document.getElementById('signature-demo-result')) {
+                const demoSection = document.getElementById('demo');
+                if (demoSection) {
+                    const resultContainer = document.createElement('div');
+                    resultContainer.id = 'signature-demo-result';
+                    resultContainer.className = 'demo-result';
+                    resultContainer.style.display = 'none';
+                    resultContainer.innerHTML = '<div id="signature-output" class="simulation-output"></div>';
+                    demoSection.appendChild(resultContainer);
+                }
+            }
+        });
+    </script>
 </body>
 </html>
 

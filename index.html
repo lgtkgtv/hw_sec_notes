@@ -186,6 +186,30 @@
             margin-bottom: 0.5rem;
         }
 
+        .feature p {
+            margin-bottom: 1.5rem;
+        }
+
+        .feature-button {
+            display: inline-block;
+            background: linear-gradient(45deg, #10b981, #059669);
+            color: white;
+            padding: 0.75rem 1.5rem;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: 500;
+            font-size: 0.95rem;
+            transition: all 0.3s ease;
+            box-shadow: 0 3px 10px rgba(16, 185, 129, 0.3);
+        }
+
+        .feature-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(16, 185, 129, 0.5);
+            color: white;
+            text-decoration: none;
+        }
+
         .footer {
             margin-top: 4rem;
             text-align: center;
@@ -223,18 +247,22 @@
                 <div class="feature">
                     <h4>🔐 Live Crypto Demos</h4>
                     <p>Interactive AES, RSA, ECC demonstrations</p>
+                    <a href="modules/module-0-crypto/" class="feature-button">Try Crypto Labs</a>
                 </div>
                 <div class="feature">
                     <h4>🔍 TPM Exploration</h4>
                     <p>Hands-on Trusted Platform Module simulation</p>
+                    <a href="modules/module-1-hardware-rot/" class="feature-button">Explore TPM</a>
                 </div>
                 <div class="feature">
                     <h4>⚡ Boot Simulator</h4>
                     <p>Step through secure boot process</p>
+                    <a href="modules/module-1-hardware-rot/boot-simulator.html" class="feature-button">Start Simulator</a>
                 </div>
                 <div class="feature">
                     <h4>🎮 Security Scenarios</h4>
                     <p>Real-world incident investigations</p>
+                    <a href="modules/module-4-cloud-security/datacenter-csp-relationship.html" class="feature-button">Investigate</a>
                 </div>
             </div>
         </div>
@@ -260,24 +288,44 @@
                 <a href="modules/module-1-hardware-rot/" class="module-link">Start Module →</a>
             </div>
 
-            <div class="module-card coming-soon">
+            <div class="module-card">
                 <h3>Module 2: GPU & Accelerator Security</h3>
                 <p>NVIDIA GPU security architecture, firmware attestation, NVLink protocols, CUDA runtime security, and AI/ML accelerator hardening patterns.</p>
                 <div class="module-meta">
                     <span class="difficulty advanced">Advanced</span>
                     <span class="duration">6-10 hours</span>
                 </div>
-                <a href="#" class="module-link">Coming Soon</a>
+                <a href="modules/module-2-gpu-security/" class="module-link">Start Module →</a>
             </div>
 
-            <div class="module-card coming-soon">
-                <h3>Module 3: Cloud Infrastructure Security</h3>
-                <p>Oracle OCI security practices, AWS Nitro system, storage security (NVMe), BMC hardening, and multi-vendor hardware management.</p>
+            <div class="module-card">
+                <h3>Module 3: Storage & I/O Security</h3>
+                <p>NVMe SSD security features, TCG Opal self-encrypting drives, PCIe security protocols, storage encryption at rest and in transit.</p>
                 <div class="module-meta">
                     <span class="difficulty advanced">Advanced</span>
+                    <span class="duration">6-8 hours</span>
+                </div>
+                <a href="modules/module-3-storage-security/" class="module-link">Start Module →</a>
+            </div>
+
+            <div class="module-card">
+                <h3>Module 4: Cloud Service Provider Security</h3>
+                <p>Oracle OCI security practices, AWS Nitro system, multi-vendor hardware management, and cloud datacenter relationship analysis.</p>
+                <div class="module-meta">
+                    <span class="difficulty advanced">Advanced</span>
+                    <span class="duration">8-10 hours</span>
+                </div>
+                <a href="modules/module-4-cloud-security/" class="module-link">Start Module →</a>
+            </div>
+
+            <div class="module-card">
+                <h3>Module 5: Datacenter Infrastructure Security</h3>
+                <p>BMC hardening, RedFish APIs, out-of-band management security, asset provisioning workflows, and datacenter-scale operations.</p>
+                <div class="module-meta">
+                    <span class="difficulty expert">Expert</span>
                     <span class="duration">8-12 hours</span>
                 </div>
-                <a href="#" class="module-link">Coming Soon</a>
+                <a href="modules/module-5-datacenter-infrastructure/" class="module-link">Start Module →</a>
             </div>
         </div>
 
