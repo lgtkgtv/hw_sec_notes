@@ -85,13 +85,21 @@ course:
       path: "modules/module-2-gpu-security"
       difficulty: "Advanced"
       duration: "6-10 hours"
-      status: "coming-soon"
     - id: 3
-      name: "Cloud Infrastructure Security"
-      path: "modules/module-3-cloud-security"
+      name: "Storage & I/O Security"
+      path: "modules/module-3-storage-security"
       difficulty: "Advanced"
+      duration: "6-8 hours"
+    - id: 4
+      name: "Cloud Service Provider Security"
+      path: "modules/module-4-cloud-security"
+      difficulty: "Advanced"
+      duration: "8-10 hours"
+    - id: 5
+      name: "Datacenter Infrastructure Security"
+      path: "modules/module-5-datacenter-infrastructure"
+      difficulty: "Expert"
       duration: "8-12 hours"
-      status: "coming-soon"
 
 # SEO and social media
 seo:
