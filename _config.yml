@@ -43,16 +43,12 @@ exclude:
   - .github
   - DEPLOYMENT.md
 
-# Include in processing
-include:
-  - modules
-  - assets
 
 # Collections for course content
 collections:
   modules:
     output: true
-    permalink: /:collection/:name/
+    permalink: /:modules/:name/
 
 # Defaults
 defaults:
