@@ -1829,6 +1829,124 @@ Future (Post-Quantum):
 }
 
 // ===== ASSESSMENT FUNCTIONS =====
+// Assessment System Implementation
+let currentQuestion = 0;
+let userAnswers = [];
+let quizStarted = false;
+
+const hardwareRoTQuestions = [
+    {
+        question: "Which component in the secure boot chain provides the immutable trust anchor?",
+        options: [
+            "UEFI firmware signature database",
+            "TPM Platform Configuration Registers",
+            "Hardware Root of Trust (eFused keys)",
+            "Operating system bootloader"
+        ],
+        correct: 2,
+        explanation: "Hardware Root of Trust provides the immutable foundation that cannot be modified after manufacturing, making it the ultimate trust anchor."
+    },
+    {
+        question: "What is the primary purpose of Intel Boot Guard?",
+        options: [
+            "Encrypt the operating system kernel",
+            "Manage UEFI variable storage",
+            "Verify the Initial Boot Block (IBB) using eFused keys",
+            "Provide remote attestation capabilities"
+        ],
+        correct: 2,
+        explanation: "Intel Boot Guard uses eFused public keys permanently burned into CPU silicon to verify the Initial Boot Block, establishing the first link in the chain of trust."
+    },
+    {
+        question: "In TPM 2.0, what are Platform Configuration Registers (PCRs) primarily used for?",
+        options: [
+            "Storing encryption keys permanently",
+            "Recording measurements of boot components and system state",
+            "Managing UEFI Secure Boot certificates",
+            "Generating random numbers for cryptographic operations"
+        ],
+        correct: 1,
+        explanation: "PCRs store cryptographic hashes (measurements) of boot components and system configuration, creating a tamper-evident record of the system state."
+    },
+    {
+        question: "Which phase of the UEFI boot process is responsible for loading and verifying device drivers?",
+        options: [
+            "SEC (Security) Phase",
+            "PEI (Pre-EFI Initialization) Phase",
+            "DXE (Driver Execution Environment) Phase",
+            "BDS (Boot Device Selection) Phase"
+        ],
+        correct: 2,
+        explanation: "The DXE phase loads and verifies UEFI drivers, establishes security protocols, and makes boot services available to the system."
+    },
+    {
+        question: "What makes CPU-integrated security solutions like Intel Boot Guard particularly secure?",
+        options: [
+            "They use stronger encryption algorithms",
+            "They are based on industry standards",
+            "Keys are burned into silicon and cannot be modified",
+            "They provide better performance than discrete solutions"
+        ],
+        correct: 2,
+        explanation: "CPU-integrated solutions burn cryptographic keys directly into silicon during manufacturing, making them physically immutable and impossible to modify or bypass."
+    },
+    {
+        question: "In remote attestation, what is the purpose of including a nonce in the challenge?",
+        options: [
+            "To encrypt the attestation response",
+            "To prevent replay attacks by ensuring freshness",
+            "To identify which PCRs to include in the quote",
+            "To specify the cryptographic algorithm to use"
+        ],
+        correct: 1,
+        explanation: "A nonce is a random number that prevents replay attacks by ensuring the attestation quote is fresh and generated specifically for this challenge."
+    },
+    {
+        question: "Which attack vector is specifically prevented by hardware root of trust implementations?",
+        options: [
+            "Network-based denial of service attacks",
+            "Social engineering attacks against users",
+            "Bootkits that infect the pre-OS boot process",
+            "Application-layer buffer overflow exploits"
+        ],
+        correct: 2,
+        explanation: "Hardware RoT prevents bootkits by verifying the integrity of boot components before they execute, blocking unsigned or modified boot code."
+    },
+    {
+        question: "What is the main advantage of discrete TPM chips over CPU-integrated security solutions?",
+        options: [
+            "Higher security through hardware isolation",
+            "Better performance and lower latency",
+            "Industry standardization and vendor independence",
+            "Lower cost and simpler integration"
+        ],
+        correct: 2,
+        explanation: "Discrete TPMs follow TCG industry standards and work across different CPU vendors, providing vendor independence and interoperability."
+    },
+    {
+        question: "During secure boot, what happens when a component fails verification?",
+        options: [
+            "The system logs the failure and continues booting",
+            "The component is replaced with a backup version",
+            "The boot process stops and the system halts",
+            "The failure is ignored for compatibility reasons"
+        ],
+        correct: 2,
+        explanation: "Secure boot is designed to be fail-secure - any verification failure stops the boot process to prevent execution of potentially compromised code."
+    },
+    {
+        question: "What information does a TPM attestation quote typically include?",
+        options: [
+            "Private keys and certificates stored in the TPM",
+            "PCR values, nonce, and a digital signature",
+            "UEFI variable contents and boot order settings",
+            "Network configuration and system logs"
+        ],
+        correct: 1,
+        explanation: "An attestation quote contains PCR measurements, the challenge nonce, and a digital signature created with the TPM's Attestation Identity Key (AIK)."
+    }
+];
+
 function startAssessment() {
     const event = new CustomEvent('assessmentStart', {
         detail: {
@@ -1838,11 +1956,324 @@ function startAssessment() {
     });
     document.dispatchEvent(event);
 
-    alert('Assessment functionality will be implemented in the full version. For now, explore the interactive demos above!');
+    // Create assessment container if it doesn't exist
+    let assessmentContainer = document.getElementById('assessment-container');
+    if (!assessmentContainer) {
+        assessmentContainer = document.createElement('div');
+        assessmentContainer.id = 'assessment-container';
+        assessmentContainer.className = 'assessment-overlay';
+        document.body.appendChild(assessmentContainer);
+    }
+
+    // Reset quiz state
+    currentQuestion = 0;
+    userAnswers = [];
+    quizStarted = true;
+
+    assessmentContainer.innerHTML = `
+        <div class="assessment-modal">
+            <div class="assessment-header">
+                <h2>🏗️ Hardware Root of Trust Assessment</h2>
+                <button class="assessment-close" onclick="closeAssessment()">&times;</button>
+            </div>
+            <div class="assessment-content">
+                <div class="assessment-progress">
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 0%"></div>
+                    </div>
+                    <span class="progress-text">Question 1 of ${hardwareRoTQuestions.length}</span>
+                </div>
+                <div id="question-container">
+                    ${renderQuestion(0)}
+                </div>
+                <div class="assessment-controls">
+                    <button id="prev-btn" onclick="previousQuestion()" disabled>Previous</button>
+                    <button id="next-btn" onclick="nextQuestion()">Next</button>
+                    <button id="submit-btn" onclick="submitAssessment()" style="display: none;">Submit Assessment</button>
+                </div>
+            </div>
+        </div>
+    `;
+
+    assessmentContainer.style.display = 'flex';
+    updateQuizProgress();
+}
+
+function renderQuestion(index) {
+    const question = hardwareRoTQuestions[index];
+    return `
+        <div class="question-block">
+            <h3 class="question-text">${question.question}</h3>
+            <div class="options-container">
+                ${question.options.map((option, optionIndex) => `
+                    <label class="option-label">
+                        <input type="radio" name="question${index}" value="${optionIndex}"
+                               onchange="selectAnswer(${index}, ${optionIndex})"
+                               ${userAnswers[index] === optionIndex ? 'checked' : ''}>
+                        <span class="option-text">${option}</span>
+                    </label>
+                `).join('')}
+            </div>
+        </div>
+    `;
+}
+
+function selectAnswer(questionIndex, answerIndex) {
+    userAnswers[questionIndex] = answerIndex;
+    updateQuizProgress();
+}
+
+function nextQuestion() {
+    if (currentQuestion < hardwareRoTQuestions.length - 1) {
+        currentQuestion++;
+        document.getElementById('question-container').innerHTML = renderQuestion(currentQuestion);
+        updateQuizProgress();
+    }
+}
+
+function previousQuestion() {
+    if (currentQuestion > 0) {
+        currentQuestion--;
+        document.getElementById('question-container').innerHTML = renderQuestion(currentQuestion);
+        updateQuizProgress();
+    }
+}
+
+function updateQuizProgress() {
+    const progressPercent = ((currentQuestion + 1) / hardwareRoTQuestions.length) * 100;
+    const progressFill = document.querySelector('.progress-fill');
+    const progressText = document.querySelector('.progress-text');
+    const prevBtn = document.getElementById('prev-btn');
+    const nextBtn = document.getElementById('next-btn');
+    const submitBtn = document.getElementById('submit-btn');
+
+    if (progressFill) progressFill.style.width = progressPercent + '%';
+    if (progressText) progressText.textContent = `Question ${currentQuestion + 1} of ${hardwareRoTQuestions.length}`;
+
+    if (prevBtn) prevBtn.disabled = currentQuestion === 0;
+
+    if (currentQuestion === hardwareRoTQuestions.length - 1) {
+        if (nextBtn) nextBtn.style.display = 'none';
+        if (submitBtn) submitBtn.style.display = 'inline-block';
+    } else {
+        if (nextBtn) nextBtn.style.display = 'inline-block';
+        if (submitBtn) submitBtn.style.display = 'none';
+    }
+}
+
+function submitAssessment() {
+    const score = calculateScore();
+    const percentage = Math.round((score / hardwareRoTQuestions.length) * 100);
+
+    document.getElementById('assessment-container').innerHTML = `
+        <div class="assessment-modal">
+            <div class="assessment-header">
+                <h2>📊 Assessment Results</h2>
+                <button class="assessment-close" onclick="closeAssessment()">&times;</button>
+            </div>
+            <div class="assessment-results">
+                <div class="score-display">
+                    <div class="score-circle ${percentage >= 80 ? 'passing' : 'failing'}">
+                        <span class="score-number">${percentage}%</span>
+                        <span class="score-label">${score}/${hardwareRoTQuestions.length} Correct</span>
+                    </div>
+                </div>
+
+                <div class="results-summary">
+                    <h3>${percentage >= 80 ? '🎉 Congratulations!' : '📚 Keep Learning!'}</h3>
+                    <p>${percentage >= 80
+                        ? 'You have demonstrated strong understanding of hardware root of trust concepts!'
+                        : 'Consider reviewing the module content and try the assessment again.'
+                    }</p>
+                </div>
+
+                <div class="detailed-results">
+                    <h4>Detailed Results:</h4>
+                    ${generateDetailedResults()}
+                </div>
+
+                <div class="assessment-actions">
+                    <button class="btn btn-primary" onclick="retakeAssessment()">Retake Assessment</button>
+                    <button class="btn btn-secondary" onclick="closeAssessment()">Continue Learning</button>
+                    ${percentage >= 80 ? '<button class="btn btn-success" onclick="proceedToNextModule()">Next Module →</button>' : ''}
+                </div>
+            </div>
+        </div>
+    `;
+}
+
+function calculateScore() {
+    let score = 0;
+    userAnswers.forEach((answer, index) => {
+        if (answer === hardwareRoTQuestions[index].correct) {
+            score++;
+        }
+    });
+    return score;
+}
+
+function generateDetailedResults() {
+    return hardwareRoTQuestions.map((question, index) => {
+        const isCorrect = userAnswers[index] === question.correct;
+        const userChoice = userAnswers[index] !== undefined ? question.options[userAnswers[index]] : 'No answer';
+        const correctChoice = question.options[question.correct];
+
+        return `
+            <div class="result-item ${isCorrect ? 'correct' : 'incorrect'}">
+                <div class="result-header">
+                    <span class="result-icon">${isCorrect ? '✅' : '❌'}</span>
+                    <span class="question-number">Question ${index + 1}</span>
+                </div>
+                <div class="result-details">
+                    <p><strong>Your Answer:</strong> ${userChoice}</p>
+                    ${!isCorrect ? `<p><strong>Correct Answer:</strong> ${correctChoice}</p>` : ''}
+                    <p class="explanation"><strong>Explanation:</strong> ${question.explanation}</p>
+                </div>
+            </div>
+        `;
+    }).join('');
+}
+
+function retakeAssessment() {
+    currentQuestion = 0;
+    userAnswers = [];
+    startAssessment();
+}
+
+function proceedToNextModule() {
+    // Update progress in localStorage
+    localStorage.setItem('hw_security_progress_module-1-hardware-rot', 'true');
+
+    // Navigate to next module
+    window.location.href = '../module-2-gpu-security/index.html';
+}
+
+function closeAssessment() {
+    const container = document.getElementById('assessment-container');
+    if (container) {
+        container.style.display = 'none';
+        container.remove();
+    }
+    quizStarted = false;
 }
 
 function showStudyGuide() {
-    alert('Study guide will open with key hardware security concepts and practice questions.');
+    // Create study guide modal
+    let studyGuideContainer = document.getElementById('study-guide-container');
+    if (!studyGuideContainer) {
+        studyGuideContainer = document.createElement('div');
+        studyGuideContainer.id = 'study-guide-container';
+        studyGuideContainer.className = 'study-guide-overlay';
+        document.body.appendChild(studyGuideContainer);
+    }
+
+    studyGuideContainer.innerHTML = `
+        <div class="study-guide-modal">
+            <div class="study-guide-header">
+                <h2>📚 Hardware Root of Trust Study Guide</h2>
+                <button class="study-guide-close" onclick="closeStudyGuide()">&times;</button>
+            </div>
+            <div class="study-guide-content">
+                <div class="study-section">
+                    <h3>🔑 Key Concepts to Remember</h3>
+                    <div class="concept-grid">
+                        <div class="concept-card">
+                            <h4>Hardware Root of Trust</h4>
+                            <p>Immutable trust anchor built into silicon that cannot be modified after manufacturing. Forms the foundation for all security verification.</p>
+                        </div>
+                        <div class="concept-card">
+                            <h4>Chain of Trust</h4>
+                            <p>Sequential verification process where each component verifies the next: Hardware RoT → IBB → Firmware → Bootloader → OS → Drivers</p>
+                        </div>
+                        <div class="concept-card">
+                            <h4>TPM PCRs</h4>
+                            <p>Platform Configuration Registers store cryptographic measurements (hashes) of boot components, creating tamper-evident boot history.</p>
+                        </div>
+                        <div class="concept-card">
+                            <h4>Remote Attestation</h4>
+                            <p>Protocol allowing remote verification of system integrity using TPM-signed measurements without physical access.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="study-section">
+                    <h3>🏗️ UEFI Boot Phases</h3>
+                    <div class="boot-phases">
+                        <div class="phase-item">
+                            <span class="phase-name">SEC</span>
+                            <span class="phase-desc">Security phase - Boot Guard verifies IBB</span>
+                        </div>
+                        <div class="phase-item">
+                            <span class="phase-name">PEI</span>
+                            <span class="phase-desc">Pre-EFI Init - Memory and platform setup</span>
+                        </div>
+                        <div class="phase-item">
+                            <span class="phase-name">DXE</span>
+                            <span class="phase-desc">Driver Execution - Load and verify drivers</span>
+                        </div>
+                        <div class="phase-item">
+                            <span class="phase-name">BDS</span>
+                            <span class="phase-desc">Boot Device Selection - Choose and verify OS loader</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="study-section">
+                    <h3>⚖️ Implementation Comparison</h3>
+                    <div class="comparison-table">
+                        <div class="comparison-row header">
+                            <div>Solution</div>
+                            <div>Security</div>
+                            <div>Flexibility</div>
+                            <div>Cost</div>
+                        </div>
+                        <div class="comparison-row">
+                            <div>CPU-Integrated (Boot Guard)</div>
+                            <div>Excellent</div>
+                            <div>Limited</div>
+                            <div>Included</div>
+                        </div>
+                        <div class="comparison-row">
+                            <div>Discrete TPM</div>
+                            <div>Good</div>
+                            <div>High</div>
+                            <div>$5-20</div>
+                        </div>
+                        <div class="comparison-row">
+                            <div>Custom Secure Element</div>
+                            <div>Excellent</div>
+                            <div>Customizable</div>
+                            <div>$20-100</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="study-section">
+                    <h3>🎯 Practice Questions</h3>
+                    <div class="practice-questions">
+                        <p><strong>Q: What makes eFused keys in CPU silicon immutable?</strong></p>
+                        <p>A: They are physically burned into silicon during manufacturing and cannot be electronically modified.</p>
+
+                        <p><strong>Q: Why does secure boot stop on verification failure?</strong></p>
+                        <p>A: Fail-secure design prevents execution of potentially compromised code that could harm system security.</p>
+
+                        <p><strong>Q: How does remote attestation prove system integrity?</strong></p>
+                        <p>A: TPM signs PCR measurements with private key, creating unforgeable proof of system state for remote verification.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+
+    studyGuideContainer.style.display = 'flex';
+}
+
+function closeStudyGuide() {
+    const container = document.getElementById('study-guide-container');
+    if (container) {
+        container.style.display = 'none';
+        container.remove();
+    }
 }
 
 // ===== UTILITY FUNCTIONS =====
